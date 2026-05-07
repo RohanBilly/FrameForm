@@ -9,11 +9,11 @@
 <body>
   <nav class="navbar">
     <div class="nav-inner">
-      <a href="/" class="nav-logo">FLM</a>
+      <a href="/poster" class="nav-logo">FLM</a>
       <div class="nav-links">
-        <a href="/films" class="nav-link {% if request.path.startswith('/film') %}active{% endif %}">Films</a>
-        <a href="/stats"  class="nav-link {% if request.path == '/stats' %}active{% endif %}">Stats</a>
         <a href="/poster" class="nav-link {% if request.path == '/poster' %}active{% endif %}">Poster</a>
+        <a href="/films"  class="nav-link {% if request.path.startswith('/film') %}active{% endif %}">Films</a>
+        <a href="/stats"  class="nav-link {% if request.path == '/stats' %}active{% endif %}">Stats</a>
       </div>
       <form class="nav-search" action="/films" method="get">
         <input type="hidden" name="view" value="ranked">

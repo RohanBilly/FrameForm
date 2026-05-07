@@ -37,6 +37,10 @@ def _total_minutes():
 
 @app.route("/")
 def index():
+    return redirect(url_for("poster"))
+
+@app.route("/home")
+def home():
     ranked = sorted(manager.films, key=lambda f: f.rank_idx)
     recent = manager.films[-12:][::-1]
     mins = _total_minutes()
@@ -62,7 +66,7 @@ def index():
         str(max((int(k) for k in years_watched if k.isdigit()), default=0)), 0
     )
 
-    return render_template("index.html",
+    return render_template("index.html", route="home",
         total=len(manager.films),
         hours=round(mins / 60),
         this_year=this_year,
@@ -76,18 +80,46 @@ def index():
 
 @app.route("/poster")
 def poster():
-    return render_template("poster.html", total=len(manager.films))
+    import re as _re
+    years = set()
+    for f in manager.films:
+        if f.date_watched:
+            m = _re.match(r'^(\d{4})', f.date_watched) or \
+                _re.match(r'^\d{1,2}/\d{1,2}/(\d{4})$', f.date_watched)
+            if m:
+                years.add(int(m.group(1)))
+    min_year = min(years) if years else 2000
+    max_year = max(years) if years else 2025
+    return render_template("poster.html", total=len(manager.films),
+                           min_year=min_year, max_year=max_year)
 
+
+def _watch_year(f):
+    import re as _re
+    if not f.date_watched:
+        return None
+    m = _re.match(r'^(\d{4})', f.date_watched) or \
+        _re.match(r'^\d{1,2}/\d{1,2}/(\d{4})$', f.date_watched)
+    return int(m.group(1)) if m else None
 
 @app.route("/api/films")
 def api_films():
-    view  = request.args.get("view", "ranked")
-    limit = request.args.get("limit", type=int, default=None)
+    view      = request.args.get("view", "ranked")
+    limit     = request.args.get("limit",     type=int, default=None)
+    from_year = request.args.get("from_year", type=int, default=None)
+    to_year   = request.args.get("to_year",   type=int, default=None)
     films_list = (
         list(manager.films) if view == "chrono"
         else sorted(manager.films, key=lambda f: f.rank_idx)
     )
-    if limit:
+    if from_year is not None or to_year is not None:
+        films_list = [
+            f for f in films_list
+            if (y := _watch_year(f)) is not None
+            and (from_year is None or y >= from_year)
+            and (to_year   is None or y <= to_year)
+        ]
+    elif limit:
         films_list = films_list[:limit]
     return jsonify([{
         "title": f.title,

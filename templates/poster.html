@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div class="control-row" id="numbering-row">
+        <div class="control-row" id="numbering-row" style="flex-direction:column; align-items:stretch; gap:8px;">
           <span class="control-label">Labels</span>
           <div class="toggle-group">
             <button class="toggle-btn active" id="btn-lbl-num"  onclick="setLabelMode('numbers')">Nums</button>
@@ -80,22 +80,52 @@
         </div>
 
 
-        <div class="control-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+        <div class="control-row">
+          <span class="control-label">Films</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-sel-count" onclick="setSelectionMode('count')">Count</button>
+            <button class="toggle-btn"        id="btn-sel-years" onclick="setSelectionMode('years')">Years</button>
+          </div>
+        </div>
+
+        <!-- count mode -->
+        <div id="count-mode-row" style="flex-direction:column; align-items:stretch; gap:10px;" class="control-row">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="control-label">Films</span>
+            <span class="control-label">Count</span>
             <span class="control-value" id="count-display" onclick="editValue('count-display','count')" style="cursor:pointer;" title="Click to type value">25</span>
           </div>
           <input type="range" class="count-slider" id="count-slider"
                  min="5" max="{{ total }}" value="25" step="1"
                  oninput="onCountSlide(this.value)">
           <div class="slider-hints">
-            <span>5</span><span>25</span><span>50</span><span>100</span><span>{{ total }}</span>
+            <span>5</span><span>All</span>
           </div>
           <div class="quick-counts">
-            {% for n in [10, 25, 50, 100] %}
-            <button class="quick-btn" onclick="setCount({{ n }})">{{ n }}</button>
-            {% endfor %}
+            <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.10))">10%</button>
+            <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.25))">25%</button>
+            <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.50))">50%</button>
+            <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.75))">75%</button>
             <button class="quick-btn" onclick="setCount({{ total }})">All</button>
+          </div>
+        </div>
+
+        <!-- years mode -->
+        <div id="years-mode-row" style="display:none; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="control-label" style="flex-shrink:0;">From</span>
+            <input type="number" id="year-from-input" class="year-input"
+                   min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year }}"
+                   oninput="onYearRangeChange()">
+            <span class="control-label" style="flex-shrink:0;">To</span>
+            <input type="number" id="year-to-input" class="year-input"
+                   min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year }}"
+                   oninput="onYearRangeChange()">
+          </div>
+          <div class="quick-counts">
+            <button class="quick-btn" onclick="setYearRange({{ max_year }},{{ max_year }})">This yr</button>
+            <button class="quick-btn" onclick="setYearRange({{ max_year - 2 }},{{ max_year }})">3 yrs</button>
+            <button class="quick-btn" onclick="setYearRange({{ max_year - 4 }},{{ max_year }})">5 yrs</button>
+            <button class="quick-btn" onclick="setYearRange({{ min_year }},{{ max_year }})">All</button>
           </div>
         </div>
       </div>
@@ -141,11 +171,18 @@
         </div>
         <div id="cast-options" style="display:none; flex-direction:column; gap:16px;">
           <div class="control-row">
+            <span class="control-label">Align</span>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="btn-cast-left"   onclick="setCastAlign('left')">Left</button>
+              <button class="toggle-btn"        id="btn-cast-center" onclick="setCastAlign('center')">Center</button>
+            </div>
+          </div>
+          <div class="control-row" style="flex-direction:column; align-items:stretch; gap:8px;">
             <span class="control-label">Include</span>
             <div class="toggle-group">
-              <button class="toggle-btn active" id="btn-cast-both" onclick="setCastType('both')">Both</button>
-              <button class="toggle-btn"        id="btn-cast-act"  onclick="setCastType('actors')">Actors</button>
               <button class="toggle-btn"        id="btn-cast-dir"  onclick="setCastType('directors')">Directors</button>
+              <button class="toggle-btn"        id="btn-cast-act"  onclick="setCastType('actors')">Actors</button>
+              <button class="toggle-btn active" id="btn-cast-both" onclick="setCastType('both')">Both</button>
             </div>
           </div>
           <div id="actor-count-row" style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
@@ -166,6 +203,16 @@
                    min="1" max="15" value="5" step="1"
                    oninput="onDirectorSlide(this.value)">
           </div>
+          <div style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="control-label">Font size</span>
+              <span class="control-value" id="cast-font-display">1.00×</span>
+            </div>
+            <input type="range" class="count-slider" id="cast-font-slider"
+                   min="60" max="160" value="100" step="1"
+                   oninput="onCastFontSlide(this.value)">
+            <div class="slider-hints"><span>60%</span><span>100%</span><span>160%</span></div>
+          </div>
         </div>
       </div>
 
@@ -174,6 +221,12 @@
 
   <!-- ── POSTER STAGE ── -->
   <div class="builder-stage">
+    <div class="zoom-bar">
+      <button class="zoom-btn" onclick="adjustZoom(-0.05)">−</button>
+      <span class="zoom-label" id="zoom-display">25%</span>
+      <button class="zoom-btn" onclick="adjustZoom(+0.05)">+</button>
+      <button class="zoom-btn zoom-fit" onclick="resetZoom()">Fit</button>
+    </div>
     <div class="poster-wrap" id="posterWrap">
       <div class="poster-canvas" id="posterCanvas">
         <div class="poster-loading" id="posterLoading" style="display:none;">
@@ -181,12 +234,6 @@
           <span>Loading posters…</span>
         </div>
       </div>
-    </div>
-    <div class="zoom-bar">
-      <button class="zoom-btn" onclick="adjustZoom(-0.05)">−</button>
-      <span class="zoom-label" id="zoom-display">15%</span>
-      <button class="zoom-btn" onclick="adjustZoom(+0.05)">+</button>
-      <button class="zoom-btn zoom-fit" onclick="resetZoom()">Fit</button>
     </div>
     <div class="stage-actions">
       <button class="download-btn" onclick="downloadPoster()">↓ Download PNG</button>
@@ -201,7 +248,9 @@
 {% block scripts %}
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-const TOTAL = {{ total }};
+const TOTAL    = {{ total }};
+const MIN_YEAR = {{ min_year }};
+const MAX_YEAR = {{ max_year }};
 
 // Canvas is rendered at 2800×4200px (2× original) — displayed scaled down, downloaded at scale:2 = 5600×8400px
 const CW = 2800, CH = 4200;
@@ -211,8 +260,9 @@ const state = {
   labelMode: 'numbers', dateFormat: 'DD/MM/YY',
   yearBreaks: false,
   fontScale: 1.0, lineSpacing: 64,
-  castEnabled: false, castType: 'both',
-  actorCount: 5, directorCount: 5,
+  selectionMode: 'count', yearFrom: MAX_YEAR, yearTo: MAX_YEAR,
+  castEnabled: false, castType: 'both', castAlign: 'left',
+  actorCount: 5, directorCount: 5, castFontScale: 1.0,
   colors: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
   cache: {},
   posterOffsets: {},
@@ -220,13 +270,45 @@ const state = {
   editedTexts: {},
 };
 
-let currentZoom = 0.15;
+let currentZoom = 0.25;
 let renderTimer  = null;
 let _pan         = null;
 const _mctx = (() => { const c = document.createElement('canvas'); return c.getContext('2d'); })();
 
 window.addEventListener('DOMContentLoaded', () => {
-  applyZoom(0.15);
+  // Smart defaults based on library size
+  let initCount, initCols, initYearBreaks;
+  if (TOTAL > 400) {
+    initCount = 400; initCols = 6; initYearBreaks = true;
+  } else if (TOTAL > 200) {
+    initCount = 200; initCols = 4; initYearBreaks = false;
+  } else if (TOTAL > 100) {
+    initCount = 100; initCols = 3; initYearBreaks = true;
+  } else {
+    initCount = TOTAL; initCols = 0; initYearBreaks = false;
+  }
+  initCount = Math.min(initCount, TOTAL);
+
+  state.order      = 'chrono';
+  state.count      = initCount;
+  state.cols       = initCols;
+  state.yearBreaks = initYearBreaks;
+
+  // Sync order buttons
+  document.getElementById('btn-ranked').className = 'toggle-btn';
+  document.getElementById('btn-chrono').className = 'toggle-btn active';
+  // Sync count slider + display
+  document.getElementById('count-slider').value       = initCount;
+  document.getElementById('count-display').textContent = initCount;
+  // Sync cols slider + display
+  document.getElementById('cols-slider').value       = initCols;
+  document.getElementById('cols-display').textContent = initCols === 0 ? 'Auto' : String(initCols);
+  // Sync year-breaks buttons
+  document.getElementById('btn-yb-on').className  = 'toggle-btn' + (initYearBreaks  ? ' active' : '');
+  document.getElementById('btn-yb-off').className = 'toggle-btn' + (!initYearBreaks ? ' active' : '');
+
+  updateControlVis();
+  applyZoom(0.25);
   render();
   setupEditHandler();
   setupPanHandler();
@@ -241,7 +323,7 @@ function applyZoom(z) {
   document.getElementById('zoom-display').textContent = Math.round(currentZoom * 100) + '%';
 }
 function adjustZoom(d) { applyZoom(currentZoom + d); }
-function resetZoom()   { applyZoom(0.15); }
+function resetZoom()   { applyZoom(0.25); }
 
 // ── control visibility ──
 function updateControlVis() {
@@ -311,6 +393,29 @@ function onCountSlide(v) {
 }
 function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
 
+// ── selection mode (count vs years) ──
+function setSelectionMode(v) {
+  state.selectionMode = v;
+  document.getElementById('btn-sel-count').className = 'toggle-btn' + (v === 'count' ? ' active' : '');
+  document.getElementById('btn-sel-years').className = 'toggle-btn' + (v === 'years' ? ' active' : '');
+  document.getElementById('count-mode-row').style.display  = v === 'count' ? '' : 'none';
+  document.getElementById('years-mode-row').style.display  = v === 'years' ? 'flex' : 'none';
+  scheduleRender();
+}
+function onYearRangeChange() {
+  const from = parseInt(document.getElementById('year-from-input').value) || MIN_YEAR;
+  const to   = parseInt(document.getElementById('year-to-input').value)   || MAX_YEAR;
+  state.yearFrom = Math.min(from, to);
+  state.yearTo   = Math.max(from, to);
+  scheduleRender();
+}
+function setYearRange(from, to) {
+  state.yearFrom = from; state.yearTo = to;
+  document.getElementById('year-from-input').value = from;
+  document.getElementById('year-to-input').value   = to;
+  scheduleRender();
+}
+
 // ── font scale / line spacing ──
 function onFontScaleSlide(v) {
   state.fontScale = parseInt(v) / 100;
@@ -357,6 +462,12 @@ function setCastType(v) {
   document.getElementById('director-count-row').style.display = v !== 'actors'    ? 'flex' : 'none';
   render();
 }
+function setCastAlign(v) {
+  state.castAlign = v;
+  document.getElementById('btn-cast-left').className   = 'toggle-btn' + (v === 'left'   ? ' active' : '');
+  document.getElementById('btn-cast-center').className = 'toggle-btn' + (v === 'center' ? ' active' : '');
+  render();
+}
 function onActorSlide(v) {
   state.actorCount = parseInt(v);
   document.getElementById('actor-count-display').textContent = v;
@@ -367,9 +478,19 @@ function onDirectorSlide(v) {
   document.getElementById('director-count-display').textContent = v;
   scheduleRender();
 }
+function onCastFontSlide(v) {
+  state.castFontScale = parseInt(v) / 100;
+  document.getElementById('cast-font-display').textContent = state.castFontScale.toFixed(2) + '×';
+  scheduleRender();
+}
 
 // ── fetch ──
 async function getFilms() {
+  if (state.selectionMode === 'years') {
+    return (await fetch(
+      `/api/films?view=${state.order}&from_year=${state.yearFrom}&to_year=${state.yearTo}`
+    )).json();
+  }
   return (await fetch(`/api/films?view=${state.order}&limit=${state.count}`)).json();
 }
 async function fetchPosterUrl(title, year) {
@@ -431,11 +552,11 @@ function _makeFetchOverlay(msg) {
   return d;
 }
 
-// ── cast height (canvas units) ──
+// ── cast height estimate (used by image mode; text mode refines via two-pass) ──
 function castHeight() {
   if (!state.castEnabled) return 0;
   const secs = (state.castType !== 'directors' ? 1 : 0) + (state.castType !== 'actors' ? 1 : 0);
-  return 100 + secs * 180;
+  return 60 + secs * 120;
 }
 
 // ── render ──
@@ -455,11 +576,17 @@ async function render() {
 // ── TEXT RENDER ──
 function renderText(films, castData) {
   const n = films.length;
-  const PAD      = 160;
-  const HEADER_H = 500;
-  const CAST_H   = castHeight();
-  const availW   = CW - PAD * 2;
-  const availH   = CH - PAD * 2 - HEADER_H - CAST_H - (CAST_H ? 60 : 0);
+  const PAD     = 160;
+  const PAD_B   = PAD - 10;
+  const availW  = CW - PAD * 2;
+
+  // Header font constants (don't depend on grid layout — compute first so HEADER_H is accurate)
+  const titleFs = Math.round(CW * 0.052);
+  const labelFs = Math.round(CW * 0.012);
+  const ruleH   = Math.round(CH * 0.003);
+  const hdrMgn  = Math.round(CH * 0.009);
+  // Actual rendered header height: subtitle line + gap + title + rule margin + rule + container margin
+  const HEADER_H = Math.ceil(labelFs * 1.2) + 16 + titleFs + hdrMgn + ruleH + hdrMgn;
 
   // Build render items with optional year separators
   const items = [];
@@ -477,7 +604,6 @@ function renderText(films, castData) {
   const numCols = state.cols > 0 ? state.cols
     : (n > 350 ? 7 : n > 250 ? 6 : n > 200 ? 5 : n > 100 ? 4 : n > 70 ? 3 : n > 30 ? 2 : 1);
   const rows  = Math.ceil(items.length / numCols);
-  const itemH = availH / rows;
   const colGap = 20;
 
   // Size font to fit column width so titles aren't cut short
@@ -486,17 +612,36 @@ function renderText(films, castData) {
     : state.labelMode === 'dates' ? (state.dateFormat === 'DD/MM/YY' ? 4.5 : 3.2) : 2.2;
   const charBudget  = numMultiplier + 9.0;
   const fsFromWidth = Math.floor(colW / charBudget);
-  const rawFs = Math.min(Math.floor(itemH * 0.55), fsFromWidth);
-  const fs    = Math.round(Math.max(16, rawFs) * state.fontScale);
+
+  // Two-pass CAST_H: estimate fs without cast allocation, derive accurate cast height, recompute fs.
+  // This eliminates the large gap that appeared between the grid and the cast section.
+  const castSecs = !state.castEnabled ? 0
+    : (state.castType !== 'directors' ? 1 : 0) + (state.castType !== 'actors' ? 1 : 0);
+  const _castH = fs_ => {
+    if (!castSecs) return 0;
+    const cfs = _computeCastFs(fs_), hfs = Math.round(cfs * 0.75);
+    const rowH = Math.round(cfs * 1.8);
+    // Estimate how many names fit per row based on canvas width and font size
+    const namesPerRow = Math.max(3, Math.floor((CW - PAD * 2) / (cfs * 12)));
+    const dirSec = state.castType !== 'actors'    ? (hfs + 12 + rowH * Math.ceil(state.directorCount / namesPerRow)) : 0;
+    const actSec = state.castType !== 'directors' ? (hfs + 12 + rowH * Math.ceil(state.actorCount    / namesPerRow)) : 0;
+    // Sections sit side-by-side (flex row), height = max of the two
+    const sectH = (dirSec && actSec) ? Math.max(dirSec, actSec) : (dirSec || actSec);
+    return 26 + 18 + sectH;  // 26 = margin-top, 18 = rule(2)+margin(16)
+  };
+  const rawFs0 = Math.min(Math.floor((CH - PAD - PAD_B - HEADER_H) / rows * 0.55), fsFromWidth);
+  const fs0    = Math.round(Math.max(16, rawFs0) * state.fontScale);
+  const CAST_H = _castH(fs0);
+  const availH = CH - PAD - PAD_B - HEADER_H - CAST_H;
+  const itemH  = availH / rows;
+  const rawFs  = Math.min(Math.floor(itemH * 0.55), fsFromWidth);
+  const fs     = Math.round(Math.max(16, rawFs) * state.fontScale);
   const numW      = Math.round(fs * numMultiplier);
   const twoLine   = itemH > fs * 2.5;
   const rowLineH  = 1.4;   // 1.4 ensures descenders (g,p,y…) clear the span's overflow clip
   const titleMaxH = Math.round(fs * rowLineH * 2);
   const topPad    = twoLine ? Math.max(4, Math.round((itemH - titleMaxH) / 2)) : 0;
 
-  const titleFs = Math.round(CW * 0.052);
-  const labelFs = Math.round(CW * 0.012);
-  const ruleH   = Math.round(CH * 0.003);
   const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
   const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
 
@@ -545,55 +690,71 @@ function renderText(films, castData) {
     return `<div style="flex:1;display:flex;flex-direction:column;height:${availH}px;min-width:0;">${rowsHtml}</div>`;
   }).join('');
 
-  const castHtml = state.castEnabled ? buildCastHtml(castData, fs) : '';
+  const castHtml = state.castEnabled ? buildCastHtml(castData, fs, CAST_H) : '';
 
   document.getElementById('posterCanvas').innerHTML = `
-    <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;
+    <div style="padding:${PAD}px ${PAD}px ${PAD_B}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
-      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.009)}px;">
+      <div style="flex-shrink:0;margin-bottom:${hdrMgn}px;">
         <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"
              style="font-size:${labelFs}px;letter-spacing:0.22em;color:${state.colors.accent};text-transform:uppercase;margin-bottom:16px;">${hSubtitle}</div>
         <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(countLbl + ' FILMS')}"
              style="font-size:${titleFs}px;font-weight:800;color:${state.colors.text};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
-        <div style="height:${ruleH}px;background:${state.colors.accent};margin-top:${Math.round(CH*0.009)}px;border-radius:2px;"></div>
+        <div style="height:${ruleH}px;background:${state.colors.accent};margin-top:${hdrMgn}px;border-radius:2px;"></div>
       </div>
-      <div style="display:flex;gap:${colGap}px;flex:1;min-height:0;">${colsHtml}</div>
+      <div style="display:flex;gap:${colGap}px;flex-shrink:0;height:${Math.round(availH)}px;">${colsHtml}</div>
       ${castHtml}
     </div>`;
 }
 
+// ── CAST FONT SIZE ──
+// Slightly bigger than film titles by default; scales down as more names are shown
+function _computeCastFs(filmFs) {
+  const showDir = state.castType !== 'actors';
+  const showAct = state.castType !== 'directors';
+  const totalNames = (showDir ? state.directorCount : 0) + (showAct ? state.actorCount : 0);
+  const base  = Math.round(filmFs * 1.2);
+  const autoScale = Math.max(0.7, 1.0 - Math.max(0, totalNames - 5) * 0.025);
+  return Math.round(base * autoScale * state.castFontScale);
+}
+
 // ── CAST SECTION ──
-function buildCastHtml(castData, listFs) {
+function buildCastHtml(castData, listFs, maxH = 0) {
   const { actors = [], directors = [] } = castData;
   const showAct = state.castType !== 'directors';
   const showDir = state.castType !== 'actors';
-  const castFs  = Math.round(listFs * 0.9);
+  const castFs  = _computeCastFs(listFs);
   const hdrFs   = Math.round(castFs * 0.75);
-  const dot     = `<span style="color:${state.colors.accent};margin:0 20px;opacity:0.6;">·</span>`;
+  const dot     = `<span style="color:${state.colors.accent};margin:0 16px;opacity:0.5;">·</span>`;
+
+  const centered = state.castAlign === 'center';
+  const alignTxt = centered ? 'center' : 'left';
+  const justifyNames = centered ? 'justify-content:center;' : '';
+
+  const makeSection = (label, entries, limit) => {
+    const names = entries.slice(0, limit).map(([nm, cnt]) =>
+      `<span data-edit="cast" style="color:${state.colors.text};font-size:${castFs}px;font-weight:500;">${_et(nm)
+      }&nbsp;<span style="font-size:${castFs}px;color:${state.colors.accent};opacity:0.65;margin-left:10px;">${cnt}</span></span>`
+    ).join(dot);
+    return `<div style="flex:1;min-width:0;text-align:${alignTxt};">
+      <div style="font-size:${hdrFs}px;color:${state.colors.accent};letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;">${label}</div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;line-height:1.6;${justifyNames}">${names}</div>
+    </div>`;
+  };
 
   const sections = [];
-  if (showAct && actors.length) {
-    const names = actors.slice(0, state.actorCount)
-      .map(([nm]) => `<span data-edit="cast" style="color:${state.colors.text};font-size:${castFs}px;font-weight:500;">${_et(nm)}</span>`)
-      .join(dot);
-    sections.push(`<div>
-      <div style="font-size:${hdrFs}px;color:${state.colors.accent};letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;">Actors</div>
-      <div style="display:flex;flex-wrap:wrap;align-items:center;line-height:1.8;">${names}</div>
-    </div>`);
-  }
-  if (showDir && directors.length) {
-    const names = directors.slice(0, state.directorCount)
-      .map(([nm]) => `<span data-edit="cast" style="color:${state.colors.text};font-size:${castFs}px;font-weight:500;">${_et(nm)}</span>`)
-      .join(dot);
-    sections.push(`<div>
-      <div style="font-size:${hdrFs}px;color:${state.colors.accent};letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;">Directors</div>
-      <div style="display:flex;flex-wrap:wrap;align-items:center;line-height:1.8;">${names}</div>
-    </div>`);
-  }
+  if (showDir && directors.length) sections.push(makeSection('Directors', directors, state.directorCount));
+  if (showAct && actors.length)    sections.push(makeSection('Actors',    actors,    state.actorCount));
   if (!sections.length) return '';
-  return `<div style="flex-shrink:0;margin-top:40px;">
-    <div style="height:2px;background:${state.colors.accent};opacity:0.35;margin-bottom:36px;"></div>
-    <div style="display:flex;gap:120px;flex-wrap:wrap;">${sections.join('')}</div>
+
+  const sectionsStyle = centered
+    ? 'justify-content:center;'
+    : '';
+
+  const maxHStyle = maxH > 0 ? `max-height:${maxH - 26}px;overflow:hidden;` : '';
+  return `<div style="flex-shrink:0;margin-top:26px;${maxHStyle}">
+    <div style="height:2px;background:${state.colors.accent};opacity:0.35;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:24px;${sectionsStyle}">${sections.join('')}</div>
   </div>`;
 }
 
@@ -611,7 +772,7 @@ async function renderImages(films, castData) {
   const HEADER_H = 260;
   const CAST_H   = castHeight();
   const availW   = CW - PAD * 2;
-  const availH   = CH - PAD * 2 - HEADER_H - CAST_H - (CAST_H ? 60 : 0);
+  const availH   = CH - PAD * 2 - HEADER_H - CAST_H;
   const gap      = 10;
 
   let cols = 2;
@@ -659,10 +820,10 @@ async function renderImages(films, castData) {
   }).join('');
 
   const castFs   = Math.round(CW * 0.018);
-  const castHtml = state.castEnabled ? buildCastHtml(castData, castFs) : '';
+  const castHtml = state.castEnabled ? buildCastHtml(castData, castFs, CAST_H) : '';
 
   canvas.innerHTML = `
-    <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;
+    <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
       <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;">
         <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"

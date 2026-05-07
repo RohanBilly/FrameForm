@@ -249,13 +249,15 @@ body {
   overflow: hidden;
 }
 .toggle-btn {
-  padding: 6px 14px;
+  flex: 1;
+  padding: 6px 10px;
   font-size: 11px;
   color: var(--text);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+  text-align: center;
   transition: background 0.15s, color 0.15s;
   background: none;
   border: none;
@@ -395,8 +397,8 @@ body {
 }
 
 .builder-controls {
-  width: 270px;
-  min-width: 270px;
+  width: 300px;
+  min-width: 300px;
   background: var(--bg-alt);
   border-right: 1px solid var(--border);
   min-height: calc(100vh - 54px);
@@ -475,6 +477,7 @@ body {
   font-size: 10px;
   color: var(--text-muted);
   margin-top: -4px;
+  padding: 0 8px;
 }
 
 .quick-counts {
@@ -497,18 +500,20 @@ body {
 /* ── STAGE ── */
 .builder-stage {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 36px 24px 60px;
+  padding: 0px 24px 60px;
   gap: 20px;
+  overflow-x: auto;
 }
 
 .poster-wrap {
   filter: drop-shadow(0 8px 40px rgba(0,0,0,0.7));
   /* clips the scaled-up canvas down to display size */
-  width: 420px;
-  height: 630px;
+  width: 700px;
+  height: 1050px;
   overflow: hidden;
   position: relative;
   border-radius: 4px;
@@ -520,7 +525,7 @@ body {
 .poster-canvas {
   width: 2800px;
   height: 4200px;
-  transform: scale(0.15);
+  transform: scale(0.25);
   transform-origin: top left;
   position: absolute;
   top: 0; left: 0;
@@ -653,6 +658,15 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  position: sticky;
+  top: 11px;
+  z-index: 10;
+  background: var(--bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  align-self: center;
+  margin-top: -45px;
 }
 .zoom-btn {
   background: var(--bg-card);
@@ -678,6 +692,24 @@ body {
 
 /* ── STAGE ACTIONS ── */
 .stage-actions { display: flex; gap: 12px; align-items: center; }
+
+/* ── YEAR RANGE INPUTS ── */
+.year-input {
+  width: 62px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-bright);
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  padding: 4px 6px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.year-input:focus { border-color: var(--green); }
+.year-input::-webkit-inner-spin-button,
+.year-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 /* ── COLOUR PICKER INPUT ── */
 .color-input {
