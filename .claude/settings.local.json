@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import sys,io; sys.stdout=io.TextIOWrapper\\(sys.stdout.buffer,encoding='utf-8',errors='replace'\\); [print\\(l,end=''\\) for l in sys.stdin]\")"
+    ]
+  }
+}

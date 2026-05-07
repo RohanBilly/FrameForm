@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}FLM — Films{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title">Films</div>
+  <div class="page-subtitle">{{ total }} film{{ 's' if total != 1 else '' }}{% if query %} matching "{{ query }}"{% endif %}</div>
+</div>
+
+<div class="view-controls">
+  <div class="toggle-group">
+    <a href="/films?view=ranked{% if query %}&q={{ query }}{% endif %}"
+       class="toggle-btn {% if view == 'ranked' %}active{% endif %}">Ranked</a>
+    <a href="/films?view=chrono{% if query %}&q={{ query }}{% endif %}"
+       class="toggle-btn {% if view == 'chrono' %}active{% endif %}">Chronological</a>
+  </div>
+  <div class="toggle-group" id="layout-toggle">
+    <button class="toggle-btn active" id="btn-grid" onclick="setLayout('grid')">Grid</button>
+    <button class="toggle-btn" id="btn-list" onclick="setLayout('list')">List</button>
+  </div>
+  {% if query %}
+  <a href="/films?view={{ view }}" class="section-link" style="margin-left:auto;">Clear search ✕</a>
+  {% endif %}
+</div>
+
+<!-- POSTER GRID -->
+<div id="view-grid">
+  <div class="poster-grid">
+    {% for film in films %}
+    <a href="/film/{{ film.title | urlencode }}" class="poster-card" data-title="{{ film.title }}" data-year="{{ film.year }}">
+      <div class="poster-img">
+        <div class="poster-placeholder"><span>{{ film.title }}</span></div>
+        <img src="" alt="{{ film.title }}">
+        {% if view == 'ranked' %}
+        <div class="poster-rank">{{ loop.index }}</div>
+        {% endif %}
+      </div>
+      <div class="poster-title">{{ film.title }}</div>
+      <div class="poster-year">{{ film.year }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- LIST VIEW -->
+<div id="view-list" style="display:none;">
+  <table class="film-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Year</th>
+        <th>Director</th>
+        <th>{% if view == 'chrono' %}Watched{% else %}Rank{% endif %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for film in films %}
+      <tr>
+        <td class="rank">{{ loop.index }}</td>
+        <td class="title-cell"><a href="/film/{{ film.title | urlencode }}">{{ film.title }}</a></td>
+        <td class="year-cell">{{ film.year }}</td>
+        <td class="dir-cell">{{ film.directors[0] if film.directors else '—' }}</td>
+        <td class="date-cell">
+          {% if view == 'chrono' %}{{ film.date_watched or '—' }}
+          {% else %}#{{ film.rank_idx + 1 }}{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function setLayout(mode) {
+    document.getElementById('view-grid').style.display = mode === 'grid' ? '' : 'none';
+    document.getElementById('view-list').style.display = mode === 'list' ? '' : 'none';
+    document.getElementById('btn-grid').className = 'toggle-btn' + (mode === 'grid' ? ' active' : '');
+    document.getElementById('btn-list').className = 'toggle-btn' + (mode === 'list' ? ' active' : '');
+    localStorage.setItem('flm-layout', mode);
+  }
+  const saved = localStorage.getItem('flm-layout');
+  if (saved === 'list') setLayout('list');
+</script>
+{% endblock %}

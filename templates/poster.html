@@ -1,0 +1,854 @@
+{% extends "base.html" %}
+{% block title %}FLM — Poster Builder{% endblock %}
+
+{% block content %}
+<div class="builder-layout">
+
+  <!-- ── CONTROLS PANEL ── -->
+  <aside class="builder-controls">
+    <div class="controls-inner">
+
+      <!-- LIST -->
+      <div class="control-section">
+        <div class="control-section-title">LIST</div>
+
+        <div class="control-row">
+          <span class="control-label">Order</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-ranked" onclick="setOrder('ranked')">Ranked</button>
+            <button class="toggle-btn"        id="btn-chrono" onclick="setOrder('chrono')">Chrono</button>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <span class="control-label">Style</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-text"   onclick="setMode('text')">Text</button>
+            <button class="toggle-btn"        id="btn-images" onclick="setMode('images')">Posters</button>
+          </div>
+        </div>
+
+        <div class="control-row" id="numbering-row">
+          <span class="control-label">Labels</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-lbl-num"  onclick="setLabelMode('numbers')">Nums</button>
+            <button class="toggle-btn"        id="btn-lbl-date" onclick="setLabelMode('dates')">Dates</button>
+            <button class="toggle-btn"        id="btn-lbl-off"  onclick="setLabelMode('off')">Off</button>
+          </div>
+        </div>
+
+        <div class="control-row" id="date-format-row" style="display:none; flex-direction:column; align-items:stretch; gap:8px;">
+          <span class="control-label">Date format</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-dfmt-0" onclick="setDateFormat('DD/MM/YY')">DD/MM/YY</button>
+            <button class="toggle-btn"        id="btn-dfmt-1" onclick="setDateFormat('MM/YY')">MM/YY</button>
+            <button class="toggle-btn"        id="btn-dfmt-2" onclick="setDateFormat('DD/MM')">DD/MM</button>
+          </div>
+        </div>
+
+        <div class="control-row" id="year-breaks-row" style="display:none;">
+          <span class="control-label">Year breaks</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-yb-on"  onclick="setYearBreaks(true)">On</button>
+            <button class="toggle-btn active" id="btn-yb-off" onclick="setYearBreaks(false)">Off</button>
+          </div>
+        </div>
+
+        <div class="control-row" id="cols-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Columns</span>
+            <span class="control-value" id="cols-display" onclick="editValue('cols-display','cols')" style="cursor:pointer;" title="Click to type value">Auto</span>
+          </div>
+          <input type="range" class="count-slider" id="cols-slider"
+                 min="0" max="7" value="0" step="1"
+                 oninput="onColsSlide(this.value)">
+          <div class="slider-hints">
+            <span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+          </div>
+        </div>
+
+        <!-- font scale — text mode only -->
+        <div class="control-row" id="font-scale-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Font scale</span>
+            <span class="control-value" id="font-scale-display" onclick="editValue('font-scale-display','font')" style="cursor:pointer;" title="Click to type value">1.00×</span>
+          </div>
+          <input type="range" class="count-slider" id="font-scale-slider"
+                 min="80" max="120" value="100" step="1"
+                 oninput="onFontScaleSlide(this.value)">
+          <div class="slider-hints"><span>80%</span><span>100%</span><span>120%</span></div>
+        </div>
+
+        <!-- column gap — text mode only -->
+        <div class="control-row" id="line-spacing-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Col gap</span>
+            <span class="control-value" id="line-spacing-display" onclick="editValue('line-spacing-display','gap')" style="cursor:pointer;" title="Click to type value">64</span>
+          </div>
+          <input type="range" class="count-slider" id="line-spacing-slider"
+                 min="20" max="200" value="64" step="4"
+                 oninput="onLineSpacingSlide(this.value)">
+          <div class="slider-hints"><span>Tight</span><span></span><span>Wide</span></div>
+        </div>
+
+        <div class="control-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Films</span>
+            <span class="control-value" id="count-display" onclick="editValue('count-display','count')" style="cursor:pointer;" title="Click to type value">25</span>
+          </div>
+          <input type="range" class="count-slider" id="count-slider"
+                 min="5" max="{{ total }}" value="25" step="1"
+                 oninput="onCountSlide(this.value)">
+          <div class="slider-hints">
+            <span>5</span><span>25</span><span>50</span><span>100</span><span>{{ total }}</span>
+          </div>
+          <div class="quick-counts">
+            {% for n in [10, 25, 50, 100] %}
+            <button class="quick-btn" onclick="setCount({{ n }})">{{ n }}</button>
+            {% endfor %}
+            <button class="quick-btn" onclick="setCount({{ total }})">All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLOUR -->
+      <div class="control-section">
+        <div class="control-section-title">COLOUR</div>
+        <div class="control-row">
+          <span class="control-label">Background</span>
+          <input type="color" class="color-input" id="color-bg" value="#0d0d0d"
+                 oninput="setColor('bg', this.value)">
+        </div>
+        <div class="control-row">
+          <span class="control-label">Accent</span>
+          <input type="color" class="color-input" id="color-accent" value="#00e054"
+                 oninput="setColor('accent', this.value)">
+        </div>
+        <div class="control-row">
+          <span class="control-label">Text</span>
+          <input type="color" class="color-input" id="color-text" value="#ffffff"
+                 oninput="setColor('text', this.value)">
+        </div>
+        <div class="control-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <span class="control-label">Presets</span>
+          <div class="quick-counts">
+            <button class="quick-btn" onclick="applyPreset('letterboxd')">Letterboxd</button>
+            <button class="quick-btn" onclick="applyPreset('midnight')">Midnight</button>
+            <button class="quick-btn" onclick="applyPreset('paper')">Paper</button>
+            <button class="quick-btn" onclick="applyPreset('sepia')">Sepia</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAST -->
+      <div class="control-section">
+        <div class="control-section-title">CAST</div>
+        <div class="control-row">
+          <span class="control-label">Show cast</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-cast-on"  onclick="setCastEnabled(true)">On</button>
+            <button class="toggle-btn active" id="btn-cast-off" onclick="setCastEnabled(false)">Off</button>
+          </div>
+        </div>
+        <div id="cast-options" style="display:none; flex-direction:column; gap:16px;">
+          <div class="control-row">
+            <span class="control-label">Include</span>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="btn-cast-both" onclick="setCastType('both')">Both</button>
+              <button class="toggle-btn"        id="btn-cast-act"  onclick="setCastType('actors')">Actors</button>
+              <button class="toggle-btn"        id="btn-cast-dir"  onclick="setCastType('directors')">Directors</button>
+            </div>
+          </div>
+          <div id="actor-count-row" style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="control-label">Actors</span>
+              <span class="control-value" id="actor-count-display">5</span>
+            </div>
+            <input type="range" class="count-slider" id="actor-count-slider"
+                   min="1" max="15" value="5" step="1"
+                   oninput="onActorSlide(this.value)">
+          </div>
+          <div id="director-count-row" style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="control-label">Directors</span>
+              <span class="control-value" id="director-count-display">5</span>
+            </div>
+            <input type="range" class="count-slider" id="director-count-slider"
+                   min="1" max="15" value="5" step="1"
+                   oninput="onDirectorSlide(this.value)">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── POSTER STAGE ── -->
+  <div class="builder-stage">
+    <div class="poster-wrap" id="posterWrap">
+      <div class="poster-canvas" id="posterCanvas">
+        <div class="poster-loading" id="posterLoading" style="display:none;">
+          <div class="loading-spinner"></div>
+          <span>Loading posters…</span>
+        </div>
+      </div>
+    </div>
+    <div class="zoom-bar">
+      <button class="zoom-btn" onclick="adjustZoom(-0.05)">−</button>
+      <span class="zoom-label" id="zoom-display">15%</span>
+      <button class="zoom-btn" onclick="adjustZoom(+0.05)">+</button>
+      <button class="zoom-btn zoom-fit" onclick="resetZoom()">Fit</button>
+    </div>
+    <div class="stage-actions">
+      <button class="download-btn" onclick="downloadPoster()">↓ Download PNG</button>
+    </div>
+  </div>
+
+</div>
+
+<input type="file" id="custom-image-input" accept="image/*" style="display:none;">
+{% endblock %}
+
+{% block scripts %}
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+const TOTAL = {{ total }};
+
+// Canvas is rendered at 2800×4200px (2× original) — displayed scaled down, downloaded at scale:2 = 5600×8400px
+const CW = 2800, CH = 4200;
+
+const state = {
+  order: 'ranked', mode: 'text', count: 25, cols: 0,
+  labelMode: 'numbers', dateFormat: 'DD/MM/YY',
+  yearBreaks: false,
+  fontScale: 1.0, lineSpacing: 64,
+  castEnabled: false, castType: 'both',
+  actorCount: 5, directorCount: 5,
+  colors: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
+  cache: {},
+  posterOffsets: {},
+  customImages: {},
+  editedTexts: {},
+};
+
+let currentZoom = 0.15;
+let renderTimer  = null;
+let _pan         = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  applyZoom(0.15);
+  render();
+  setupEditHandler();
+  setupPanHandler();
+});
+
+// ── zoom ──
+function applyZoom(z) {
+  currentZoom = Math.max(0.05, Math.min(2.0, z));
+  document.getElementById('posterCanvas').style.transform = `scale(${currentZoom})`;
+  document.getElementById('posterWrap').style.width  = Math.round(CW * currentZoom) + 'px';
+  document.getElementById('posterWrap').style.height = Math.round(CH * currentZoom) + 'px';
+  document.getElementById('zoom-display').textContent = Math.round(currentZoom * 100) + '%';
+}
+function adjustZoom(d) { applyZoom(currentZoom + d); }
+function resetZoom()   { applyZoom(0.15); }
+
+// ── control visibility ──
+function updateControlVis() {
+  const t = state.mode === 'text';
+  const c = state.order === 'chrono';
+  const d = state.labelMode === 'dates';
+  document.getElementById('cols-row').style.display          = t        ? ''     : 'none';
+  document.getElementById('numbering-row').style.display     = t        ? ''     : 'none';
+  document.getElementById('font-scale-row').style.display    = t        ? ''     : 'none';
+  document.getElementById('line-spacing-row').style.display  = t        ? ''     : 'none';
+  document.getElementById('year-breaks-row').style.display   = (t && c) ? ''     : 'none';
+  document.getElementById('date-format-row').style.display   = (t && d) ? 'flex' : 'none';
+}
+
+// ── order / mode ──
+function setOrder(v) {
+  state.order = v;
+  document.getElementById('btn-ranked').className = 'toggle-btn' + (v === 'ranked' ? ' active' : '');
+  document.getElementById('btn-chrono').className = 'toggle-btn' + (v === 'chrono' ? ' active' : '');
+  updateControlVis(); render();
+}
+function setMode(v) {
+  state.mode = v;
+  document.getElementById('btn-text').className   = 'toggle-btn' + (v === 'text'   ? ' active' : '');
+  document.getElementById('btn-images').className = 'toggle-btn' + (v === 'images' ? ' active' : '');
+  updateControlVis(); render();
+}
+
+// ── labels ──
+function setLabelMode(v) {
+  state.labelMode = v;
+  document.getElementById('btn-lbl-num').className  = 'toggle-btn' + (v === 'numbers' ? ' active' : '');
+  document.getElementById('btn-lbl-date').className = 'toggle-btn' + (v === 'dates'   ? ' active' : '');
+  document.getElementById('btn-lbl-off').className  = 'toggle-btn' + (v === 'off'     ? ' active' : '');
+  updateControlVis(); render();
+}
+function setDateFormat(v) {
+  state.dateFormat = v;
+  document.getElementById('btn-dfmt-0').className = 'toggle-btn' + (v === 'DD/MM/YY' ? ' active' : '');
+  document.getElementById('btn-dfmt-1').className = 'toggle-btn' + (v === 'MM/YY'    ? ' active' : '');
+  document.getElementById('btn-dfmt-2').className = 'toggle-btn' + (v === 'DD/MM'    ? ' active' : '');
+  render();
+}
+function setYearBreaks(v) {
+  state.yearBreaks = v;
+  document.getElementById('btn-yb-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-yb-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  render();
+}
+
+// ── columns / count ──
+function onColsSlide(v) {
+  state.cols = parseInt(v);
+  document.getElementById('cols-display').textContent = v === '0' ? 'Auto' : v;
+  scheduleRender();
+}
+function setCount(n) {
+  n = Math.max(5, Math.min(TOTAL, n));
+  state.count = n;
+  document.getElementById('count-slider').value = n;
+  document.getElementById('count-display').textContent = n;
+  scheduleRender();
+}
+function onCountSlide(v) {
+  state.count = parseInt(v);
+  document.getElementById('count-display').textContent = v;
+  scheduleRender();
+}
+function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
+
+// ── font scale / line spacing ──
+function onFontScaleSlide(v) {
+  state.fontScale = parseInt(v) / 100;
+  document.getElementById('font-scale-display').textContent = state.fontScale.toFixed(2) + '×';
+  scheduleRender();
+}
+function onLineSpacingSlide(v) {
+  state.lineSpacing = parseInt(v);
+  document.getElementById('line-spacing-display').textContent = v;
+  scheduleRender();
+}
+
+// ── colours ──
+const PRESETS = {
+  letterboxd: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
+  midnight:   { bg: '#07071a', accent: '#7b6cff', text: '#e8e8ff' },
+  paper:      { bg: '#f0ead8', accent: '#1a1a2e', text: '#1a1a2e' },
+  sepia:      { bg: '#2c1f14', accent: '#d4a853', text: '#f0e0c0' },
+};
+function setColor(key, val) { state.colors[key] = val; render(); }
+function applyPreset(name) {
+  const p = PRESETS[name]; if (!p) return;
+  Object.assign(state.colors, p);
+  document.getElementById('color-bg').value     = p.bg;
+  document.getElementById('color-accent').value = p.accent;
+  document.getElementById('color-text').value   = p.text;
+  render();
+}
+
+// ── cast ──
+function setCastEnabled(v) {
+  state.castEnabled = v;
+  document.getElementById('btn-cast-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-cast-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  document.getElementById('cast-options').style.display = v ? 'flex' : 'none';
+  render();
+}
+function setCastType(v) {
+  state.castType = v;
+  document.getElementById('btn-cast-both').className = 'toggle-btn' + (v === 'both'      ? ' active' : '');
+  document.getElementById('btn-cast-act').className  = 'toggle-btn' + (v === 'actors'    ? ' active' : '');
+  document.getElementById('btn-cast-dir').className  = 'toggle-btn' + (v === 'directors' ? ' active' : '');
+  document.getElementById('actor-count-row').style.display    = v !== 'directors' ? 'flex' : 'none';
+  document.getElementById('director-count-row').style.display = v !== 'actors'    ? 'flex' : 'none';
+  render();
+}
+function onActorSlide(v) {
+  state.actorCount = parseInt(v);
+  document.getElementById('actor-count-display').textContent = v;
+  scheduleRender();
+}
+function onDirectorSlide(v) {
+  state.directorCount = parseInt(v);
+  document.getElementById('director-count-display').textContent = v;
+  scheduleRender();
+}
+
+// ── fetch ──
+async function getFilms() {
+  return (await fetch(`/api/films?view=${state.order}&limit=${state.count}`)).json();
+}
+async function fetchPosterUrl(title, year) {
+  const key = `${title}|${year}`;
+  if (key in state.cache) return state.cache[key];
+  try {
+    const d = await (await fetch(`/api/poster?title=${encodeURIComponent(title)}&year=${encodeURIComponent(year)}`)).json();
+    state.cache[key] = d.url || null;
+  } catch(e) { state.cache[key] = null; }
+  return state.cache[key];
+}
+async function fetchAllPosters(films) {
+  const B = 8;
+  for (let i = 0; i < films.length; i += B)
+    await Promise.all(films.slice(i, i + B).map(f => fetchPosterUrl(f.title, f.year)));
+}
+
+// ── date helpers ──
+function parseDate(s) {
+  if (!s) return { d: '??', mo: '??', y: '????' };
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return { y: m[1], mo: m[2], d: m[3] };
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return { y: m[3], mo: m[2], d: m[1] };
+  m = s.match(/^(\d{4})$/);
+  if (m) return { y: m[1], mo: '??', d: '??' };
+  return { d: '??', mo: '??', y: '????' };
+}
+function formatDate(s) {
+  const { d, mo, y } = parseDate(s);
+  const y2 = (y || '????').slice(-2);
+  if (state.dateFormat === 'DD/MM/YY') return `${d}/${mo}/${y2}`;
+  if (state.dateFormat === 'MM/YY')    return `${mo}/${y2}`;
+  if (state.dateFormat === 'DD/MM')    return `${d}/${mo}`;
+  return s;
+}
+function getYear(s) { return parseDate(s).y || 'Unknown'; }
+function filmLabel(f, idx) {
+  if (state.labelMode === 'off')   return '';
+  if (state.labelMode === 'dates') return formatDate(f.date);
+  return String(idx + 1);
+}
+
+// ── HTML escape ──
+const _ea = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const _et = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ── cast height (canvas units) ──
+function castHeight() {
+  if (!state.castEnabled) return 0;
+  const secs = (state.castType !== 'directors' ? 1 : 0) + (state.castType !== 'actors' ? 1 : 0);
+  return 100 + secs * 180;
+}
+
+// ── render ──
+async function render() {
+  const films = await getFilms();
+  let castData = { actors: [], directors: [] };
+  if (state.castEnabled) {
+    try {
+      const r = await fetch(`/api/cast-stats?view=${state.order}&limit=${state.count}`);
+      if (r.ok) castData = await r.json();
+    } catch(e) {}
+  }
+  if (state.mode === 'text') renderText(films, castData);
+  else await renderImages(films, castData);
+}
+
+// ── TEXT RENDER ──
+function renderText(films, castData) {
+  const n = films.length;
+  const PAD      = 160;
+  const HEADER_H = 500;
+  const CAST_H   = castHeight();
+  const availW   = CW - PAD * 2;
+  const availH   = CH - PAD * 2 - HEADER_H - CAST_H - (CAST_H ? 60 : 0);
+
+  // Build render items with optional year separators
+  const items = [];
+  if (state.yearBreaks && state.order === 'chrono') {
+    let lastYear = null;
+    films.forEach((f, i) => {
+      const yr = getYear(f.date);
+      if (yr !== lastYear) { items.push({ type: 'yr', year: yr }); lastYear = yr; }
+      items.push({ type: 'f', film: f, idx: i });
+    });
+  } else {
+    films.forEach((f, i) => items.push({ type: 'f', film: f, idx: i }));
+  }
+
+  const numCols = state.cols > 0 ? state.cols
+    : (n > 350 ? 7 : n > 250 ? 6 : n > 200 ? 5 : n > 100 ? 4 : n > 70 ? 3 : n > 30 ? 2 : 1);
+  const rows  = Math.ceil(items.length / numCols);
+  const itemH = availH / rows;
+  const colGap = state.lineSpacing;
+
+  // Size font to fit column width so titles aren't cut short
+  const colW = (availW - colGap * (numCols - 1)) / numCols;
+  const numMultiplier = state.labelMode === 'off' ? 0
+    : state.labelMode === 'dates' ? (state.dateFormat === 'DD/MM/YY' ? 4.5 : 3.2) : 2.5;
+  const charBudget  = numMultiplier + 9.0;
+  const fsFromWidth = Math.floor(colW / charBudget);
+  const rawFs = Math.min(Math.floor(itemH * 0.55), fsFromWidth);
+  const fs    = Math.round(Math.max(16, rawFs) * state.fontScale);
+  const numW      = Math.round(fs * numMultiplier);
+  const twoLine   = itemH > fs * 2.5;
+  const rowLineH  = 1.2;   // 1.2 on both spans — gives descenders room below the em box
+  const titleMaxH = Math.round(fs * rowLineH * 2);
+  const topPad    = twoLine ? Math.max(4, Math.round((itemH - titleMaxH) / 2)) : 0;
+
+  const titleFs = Math.round(CW * 0.052);
+  const labelFs = Math.round(CW * 0.012);
+  const ruleH   = Math.round(CH * 0.003);
+  const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
+  const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
+
+  const hTitle    = _et(state.editedTexts['hdr:title']    || `${countLbl} FILMS`);
+  const hSubtitle = _et(state.editedTexts['hdr:subtitle'] || orderLbl);
+
+  const columns = Array.from({ length: numCols }, (_, c) => items.slice(c * rows, (c + 1) * rows));
+
+  const colsHtml = columns.map(col => {
+    const rowsHtml = col.map(item => {
+      if (item.type === 'yr') {
+        return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:center;gap:16px;overflow:hidden;min-width:0;">
+          <div style="flex:1;height:2px;background:${state.colors.accent};opacity:0.45;"></div>
+          <span style="font-size:${Math.round(fs*0.85)}px;color:${state.colors.accent};font-weight:700;letter-spacing:0.12em;flex-shrink:0;white-space:nowrap;">${_et(item.year)}</span>
+          <div style="flex:1;height:2px;background:${state.colors.accent};opacity:0.45;"></div>
+        </div>`;
+      }
+      const { film: f, idx } = item;
+      const label    = filmLabel(f, idx);
+      const editKey  = `film:${f.title}`;
+      const display  = _et(state.editedTexts[editKey] || f.title);
+      // Fixed-width number/date column so every label is perfectly aligned
+      const labelHtml = label
+        ? `<span style="width:${numW}px;flex-shrink:0;flex-grow:0;font-size:${fs}px;color:${state.colors.accent};font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:${rowLineH};">${_et(label)}</span>`
+        : '';
+      const titleStyle = twoLine
+        ? `font-size:${fs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:normal;max-height:${titleMaxH}px;`
+        : `font-size:${fs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;`;
+      return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:${twoLine ? 'flex-start' : 'center'};padding-top:${topPad}px;gap:20px;min-height:0;min-width:0;overflow:hidden;">
+        ${labelHtml}
+        <span data-edit="title" data-edit-key="${_ea(editKey)}" data-orig="${_ea(f.title)}"
+              style="${titleStyle}">${display}</span>
+      </div>`;
+    }).join('');
+    return `<div style="flex:1;display:flex;flex-direction:column;height:${availH}px;min-width:0;">${rowsHtml}</div>`;
+  }).join('');
+
+  const castHtml = state.castEnabled ? buildCastHtml(castData, fs) : '';
+
+  document.getElementById('posterCanvas').innerHTML = `
+    <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
+      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.009)}px;">
+        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"
+             style="font-size:${labelFs}px;letter-spacing:0.22em;color:${state.colors.accent};text-transform:uppercase;margin-bottom:16px;">${hSubtitle}</div>
+        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(countLbl + ' FILMS')}"
+             style="font-size:${titleFs}px;font-weight:800;color:${state.colors.text};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
+        <div style="height:${ruleH}px;background:${state.colors.accent};margin-top:${Math.round(CH*0.009)}px;border-radius:2px;"></div>
+      </div>
+      <div style="display:flex;gap:${colGap}px;flex:1;min-height:0;">${colsHtml}</div>
+      ${castHtml}
+    </div>`;
+}
+
+// ── CAST SECTION ──
+function buildCastHtml(castData, listFs) {
+  const { actors = [], directors = [] } = castData;
+  const showAct = state.castType !== 'directors';
+  const showDir = state.castType !== 'actors';
+  const castFs  = Math.round(listFs * 0.9);
+  const hdrFs   = Math.round(castFs * 0.75);
+  const dot     = `<span style="color:${state.colors.accent};margin:0 20px;opacity:0.6;">·</span>`;
+
+  const sections = [];
+  if (showAct && actors.length) {
+    const names = actors.slice(0, state.actorCount)
+      .map(([nm]) => `<span data-edit="cast" style="color:${state.colors.text};font-size:${castFs}px;font-weight:500;">${_et(nm)}</span>`)
+      .join(dot);
+    sections.push(`<div>
+      <div style="font-size:${hdrFs}px;color:${state.colors.accent};letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;">Actors</div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;line-height:1.8;">${names}</div>
+    </div>`);
+  }
+  if (showDir && directors.length) {
+    const names = directors.slice(0, state.directorCount)
+      .map(([nm]) => `<span data-edit="cast" style="color:${state.colors.text};font-size:${castFs}px;font-weight:500;">${_et(nm)}</span>`)
+      .join(dot);
+    sections.push(`<div>
+      <div style="font-size:${hdrFs}px;color:${state.colors.accent};letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px;">Directors</div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;line-height:1.8;">${names}</div>
+    </div>`);
+  }
+  if (!sections.length) return '';
+  return `<div style="flex-shrink:0;margin-top:40px;">
+    <div style="height:2px;background:${state.colors.accent};opacity:0.35;margin-bottom:36px;"></div>
+    <div style="display:flex;gap:120px;flex-wrap:wrap;">${sections.join('')}</div>
+  </div>`;
+}
+
+// ── IMAGE RENDER ──
+async function renderImages(films, castData) {
+  const canvas = document.getElementById('posterCanvas');
+  canvas.insertAdjacentHTML('beforeend',
+    `<div class="poster-loading" id="tmpLoading" style="display:flex;">` +
+    `<div class="loading-spinner"></div><span>Loading posters…</span></div>`);
+  await fetchAllPosters(films);
+
+  const n       = films.length;
+  const PAD      = 112;
+  const HEADER_H = 260;
+  const CAST_H   = castHeight();
+  const availW   = CW - PAD * 2;
+  const availH   = CH - PAD * 2 - HEADER_H - CAST_H - (CAST_H ? 60 : 0);
+  const gap      = 10;
+
+  let cols = 2;
+  for (let c = 2; c <= 12; c++) {
+    cols = c;
+    const rows  = Math.ceil(n / c);
+    const cellW = (availW - gap * (c - 1)) / c;
+    if (rows * cellW * 1.5 + (rows - 1) * gap <= availH) break;
+  }
+  const rows  = Math.ceil(n / cols);
+  const cellW = Math.floor((availW - gap * (cols - 1)) / cols);
+  const cellH = Math.floor((availH - gap * (rows - 1)) / rows);
+
+  const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
+  const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
+  const titleFs  = Math.round(CW * 0.030);
+  const labelFs  = Math.round(CW * 0.011);
+  const hTitle    = _et(state.editedTexts['hdr:title']    || `${countLbl} FILMS`);
+  const hSubtitle = _et(state.editedTexts['hdr:subtitle'] || orderLbl);
+
+  // Absolute positioning — more reliable than flex-wrap in html2canvas
+  const gridW = cols * cellW + (cols - 1) * gap;
+  const gridH = rows * cellH + (rows - 1) * gap;
+  const lastRowCount  = n - (rows - 1) * cols;
+  const lastRowOffset = lastRowCount < cols
+    ? Math.round((gridW - lastRowCount * cellW - (lastRowCount - 1) * gap) / 2)
+    : 0;
+
+  const cells = films.map((f, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x   = col * (cellW + gap) + (row === rows - 1 ? lastRowOffset : 0);
+    const y   = row * (cellH + gap);
+    const key = `${f.title}|${f.year}`;
+    const url = state.customImages[key] || state.cache[key];
+    const off = state.posterOffsets[key] || { x: 50, y: 50 };
+    const inner = url
+      ? `<div data-film-key="${_ea(key)}" data-bg-img="${_ea(url)}"
+              style="width:100%;height:100%;background-image:url('${url.replace(/'/g, '%27')}');background-size:cover;background-position:${off.x}% ${off.y}%;"></div>`
+      : `<div class="poster-upload-zone" data-film-key="${_ea(key)}" title="Click to upload image"
+              style="width:100%;height:100%;background:${titleColor(f.title)};display:flex;align-items:center;justify-content:center;padding:12px;cursor:pointer;">
+           <span style="font-size:${Math.max(20,Math.round(cellW*0.09))}px;color:rgba(255,255,255,0.55);text-align:center;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;">${_et(f.title)}</span>
+         </div>`;
+    return `<div style="position:absolute;left:${x}px;top:${y}px;width:${cellW}px;height:${cellH}px;border-radius:4px;overflow:hidden;">${inner}</div>`;
+  }).join('');
+
+  const castFs   = Math.round(CW * 0.018);
+  const castHtml = state.castEnabled ? buildCastHtml(castData, castFs) : '';
+
+  canvas.innerHTML = `
+    <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
+      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;">
+        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"
+             style="font-size:${labelFs}px;letter-spacing:0.2em;color:${state.colors.accent};text-transform:uppercase;margin-bottom:12px;">${hSubtitle}</div>
+        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(countLbl + ' FILMS')}"
+             style="font-size:${titleFs}px;font-weight:800;color:${state.colors.text};line-height:1;">${hTitle}</div>
+      </div>
+      <div style="position:relative;width:${gridW}px;height:${gridH}px;flex-shrink:0;">${cells}</div>
+      ${castHtml}
+    </div>`;
+}
+
+// ── CLICK-TO-EDIT ──
+function setupEditHandler() {
+  document.getElementById('posterCanvas').addEventListener('click', e => {
+    const el = e.target.closest('[data-edit]');
+    if (!el || el.contentEditable === 'true') return;
+    e.stopPropagation();
+    el.contentEditable = 'true';
+    el.style.outline = 'none'; el.style.cursor = 'text';
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    el.addEventListener('blur', () => {
+      el.contentEditable = 'false'; el.style.cursor = '';
+      const key = el.dataset.editKey;
+      if (key) state.editedTexts[key] = el.textContent.trim() || (el.dataset.orig || '');
+    }, { once: true });
+    el.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); el.blur(); }
+    }, { once: true });
+  });
+}
+
+// ── IMAGE PAN + UPLOAD ──
+function setupPanHandler() {
+  const canvas = document.getElementById('posterCanvas');
+
+  canvas.addEventListener('mousedown', e => {
+    const el = e.target.closest('[data-bg-img][data-film-key]');
+    if (!el) return;
+    e.preventDefault();
+    const key = el.dataset.filmKey;
+    const off = state.posterOffsets[key] || { x: 50, y: 50 };
+    _pan = { el, key, sx: e.clientX, sy: e.clientY, ox: off.x, oy: off.y };
+    el.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!_pan) return;
+    const { el, key, sx, sy, ox, oy } = _pan;
+    const rect = el.getBoundingClientRect();
+    const cw = rect.width  / currentZoom;
+    const ch = rect.height / currentZoom;
+    const nx = Math.max(0, Math.min(100, ox - (e.clientX - sx) / cw * 50));
+    const ny = Math.max(0, Math.min(100, oy - (e.clientY - sy) / ch * 50));
+    state.posterOffsets[key] = { x: nx, y: ny };
+    el.style.backgroundPosition = `${nx}% ${ny}%`;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (_pan) { _pan.el.style.cursor = 'grab'; _pan = null; }
+  });
+
+  canvas.addEventListener('click', e => {
+    const zone = e.target.closest('.poster-upload-zone');
+    if (!zone) return;
+    const key = zone.dataset.filmKey;
+    const input = document.getElementById('custom-image-input');
+    input.onchange = () => {
+      const file = input.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => { state.customImages[key] = ev.target.result; render(); };
+      reader.readAsDataURL(file);
+      input.value = '';
+    };
+    input.click();
+  });
+}
+
+// ── CLICK-TO-TYPE CONTROL VALUES ──
+function editValue(id, type) {
+  const span = document.getElementById(id);
+  if (!span || span.querySelector('input')) return;
+
+  const origText = span.textContent;
+  const cur = origText.replace(/[^\d.]/g, '') || '0';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = cur;
+  input.style.cssText = 'width:4em;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.45);color:inherit;font:inherit;text-align:right;outline:none;padding:0;margin:0;';
+
+  span.textContent = '';
+  span.appendChild(input);
+  input.focus();
+  input.select();
+
+  function applyVal() {
+    const v = parseFloat(input.value);
+    if (isNaN(v)) { span.textContent = origText; return; }
+    if (type === 'cols') {
+      const s = String(Math.round(Math.max(0, Math.min(7, v))));
+      document.getElementById('cols-slider').value = s;
+      onColsSlide(s);
+    } else if (type === 'count') {
+      setCount(Math.round(v));
+    } else if (type === 'font') {
+      const s = String(Math.round(Math.max(80, Math.min(120, v))));
+      document.getElementById('font-scale-slider').value = s;
+      onFontScaleSlide(s);
+    } else {
+      const s = String(Math.round(Math.max(20, Math.min(200, v))));
+      document.getElementById('line-spacing-slider').value = s;
+      onLineSpacingSlide(s);
+    }
+  }
+
+  let done = false;
+  function finish(save) {
+    if (done) return; done = true;
+    if (save) applyVal(); else span.textContent = origText;
+  }
+
+  input.addEventListener('blur', () => finish(true));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { finish(false); input.blur(); }
+  });
+}
+
+// ── DOWNLOAD — 2800×4200 canvas × scale:2 = 5600×8400px output ──
+async function downloadPoster() {
+  const el   = document.getElementById('posterCanvas');
+  const wrap = document.getElementById('posterWrap');
+
+  el.querySelectorAll('.poster-loading').forEach(n => n.style.display = 'none');
+
+  // html2canvas captures at the element's *rendered* (transformed) size by default.
+  // We must remove the scale(0.15) transform and move the wrap offscreen so it captures
+  // the full 2800×4200 DOM instead of the 420×630 display clip.
+  const savedTransform = el.style.transform;
+  const savedPos       = wrap.style.position;
+  const savedWW        = wrap.style.width;
+  const savedWH        = wrap.style.height;
+  const savedOvf       = wrap.style.overflow;
+
+  wrap.style.position = 'fixed';
+  wrap.style.top      = '-9999px';
+  wrap.style.left     = '-9999px';
+  wrap.style.width    = CW + 'px';
+  wrap.style.height   = CH + 'px';
+  wrap.style.overflow = 'visible';
+  el.style.transform  = 'scale(1)';
+
+  // Convert TMDB background-image divs to data URLs so html2canvas reads them
+  // without any CORS issue (data URLs are same-origin by definition).
+  const bgDivs = [...el.querySelectorAll('[data-bg-img*="tmdb"]')];
+  const origBgs = new Map();
+  await Promise.all(bgDivs.map(div => new Promise(resolve => {
+    const url = div.dataset.bgImg;
+    origBgs.set(div, div.style.backgroundImage);
+    const tmp = new Image();
+    tmp.crossOrigin = 'anonymous';
+    tmp.onload = () => {
+      const c2 = document.createElement('canvas');
+      c2.width  = tmp.naturalWidth;
+      c2.height = tmp.naturalHeight;
+      c2.getContext('2d').drawImage(tmp, 0, 0);
+      try { div.style.backgroundImage = `url('${c2.toDataURL()}')`; } catch(e) {}
+      resolve();
+    };
+    tmp.onerror = resolve;
+    tmp.src = url + '?_cors=' + Date.now();
+  })));
+
+  try {
+    const c = await html2canvas(el, {
+      scale: 2, useCORS: true,
+      backgroundColor: state.colors.bg, logging: false,
+      width: CW, height: CH,
+    });
+    const a = document.createElement('a');
+    a.download = `flm-poster-${state.order}-top${state.count}.png`;
+    a.href = c.toDataURL('image/png');
+    a.click();
+  } finally {
+    bgDivs.forEach(div => {
+      const orig = origBgs.get(div);
+      if (orig !== undefined) div.style.backgroundImage = orig;
+    });
+    el.style.transform  = savedTransform;
+    wrap.style.position = savedPos;
+    wrap.style.top      = '';
+    wrap.style.left     = '';
+    wrap.style.width    = savedWW;
+    wrap.style.height   = savedWH;
+    wrap.style.overflow = savedOvf;
+  }
+}
+</script>
+{% endblock %}

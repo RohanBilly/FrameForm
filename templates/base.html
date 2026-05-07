@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FLM{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">FLM</a>
+      <div class="nav-links">
+        <a href="/films" class="nav-link {% if request.path.startswith('/film') %}active{% endif %}">Films</a>
+        <a href="/stats"  class="nav-link {% if request.path == '/stats' %}active{% endif %}">Stats</a>
+        <a href="/poster" class="nav-link {% if request.path == '/poster' %}active{% endif %}">Poster</a>
+      </div>
+      <form class="nav-search" action="/films" method="get">
+        <input type="hidden" name="view" value="ranked">
+        <input type="text" name="q" placeholder="Search films…" class="search-input" autocomplete="off"
+               value="{{ request.args.get('q', '') }}">
+      </form>
+    </div>
+  </nav>
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    function titleColor(title) {
+      let h = 0;
+      for (let i = 0; i < title.length; i++) h = Math.imul(31, h) + title.charCodeAt(i) | 0;
+      const c = ['#1a3a5c','#2a1a5c','#1a4a2a','#4a2a1a','#3a1a4a','#1a4c4c','#4a1a2a'];
+      return c[Math.abs(h) % c.length];
+    }
+
+    function initPosters(root) {
+      const cards = (root || document).querySelectorAll('.poster-card[data-title]');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { observer.unobserve(e.target); loadPoster(e.target); }
+        });
+      }, { rootMargin: '200px' });
+
+      cards.forEach(card => {
+        const ph = card.querySelector('.poster-placeholder');
+        if (ph) ph.style.background = titleColor(card.dataset.title);
+        observer.observe(card);
+      });
+    }
+
+    function loadPoster(card) {
+      const title = card.dataset.title;
+      const year  = card.dataset.year || '';
+      const img   = card.querySelector('.poster-img img');
+      const ph    = card.querySelector('.poster-placeholder');
+      if (!img) return;
+      fetch(`/api/poster?title=${encodeURIComponent(title)}&year=${encodeURIComponent(year)}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.url) {
+            img.src = d.url;
+            img.onload = () => { img.classList.add('loaded'); if (ph) ph.style.opacity = '0'; };
+          }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => initPosters());
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

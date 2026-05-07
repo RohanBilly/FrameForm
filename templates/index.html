@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}FLM — Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="stats-strip">
+  <div class="stat-card">
+    <div class="stat-number">{{ total }}</div>
+    <div class="stat-label">Films Watched</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ "{:,}".format(hours) }}</div>
+    <div class="stat-label">Hours Watched</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ this_year }}</div>
+    <div class="stat-label">This Year</div>
+  </div>
+  {% if top_directors %}
+  <div class="stat-card">
+    <div class="stat-number" style="font-size:18px; padding-top:4px;">{{ top_directors[0][0].split()[-1] }}</div>
+    <div class="stat-label">Top Director</div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recent Films -->
+<div class="section-header">
+  <span class="section-title">Recently Watched</span>
+  <a href="/films?view=chrono" class="section-link">View all →</a>
+</div>
+<div class="poster-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); margin-bottom:40px;">
+  {% for film in recent %}
+  <a href="/film/{{ film.title | urlencode }}" class="poster-card" data-title="{{ film.title }}" data-year="{{ film.year }}">
+    <div class="poster-img">
+      <div class="poster-placeholder"><span>{{ film.title }}</span></div>
+      <img src="" alt="{{ film.title }}">
+    </div>
+    <div class="poster-title">{{ film.title }}</div>
+    <div class="poster-year">{{ film.year }}</div>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Top 5 + Top Directors -->
+<div class="two-col" style="margin-bottom:40px;">
+  <div>
+    <div class="section-header">
+      <span class="section-title">Your Top 5</span>
+      <a href="/films?view=ranked" class="section-link">Full ranking →</a>
+    </div>
+    <ul class="top-list">
+      {% for film in top5 %}
+      <li>
+        <span class="rank-num">{{ loop.index }}</span>
+        <a href="/film/{{ film.title | urlencode }}" class="name" style="color:var(--text-bright);text-decoration:none;">{{ film.title }}</a>
+        <span style="color:var(--text-muted);font-size:11px;">{{ film.year }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div>
+    <div class="section-header">
+      <span class="section-title">Top Directors</span>
+      <a href="/stats" class="section-link">Full stats →</a>
+    </div>
+    <ul class="top-list">
+      {% for name, count in top_directors %}
+      <li>
+        <span class="rank-num">{{ loop.index }}</span>
+        <span class="name">{{ name }}</span>
+        <span class="count">{{ count }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- Top Actors + Genres -->
+<div class="two-col">
+  <div>
+    <div class="section-header">
+      <span class="section-title">Top Actors</span>
+      <a href="/stats" class="section-link">Full stats →</a>
+    </div>
+    <ul class="top-list">
+      {% for name, count in top_actors %}
+      <li>
+        <span class="rank-num">{{ loop.index }}</span>
+        <span class="name">{{ name }}</span>
+        <span class="count">{{ count }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div>
+    <div class="section-header">
+      <span class="section-title">Top Genres</span>
+    </div>
+    <div class="genre-bar-list">
+      {% set max_g = top_genres[0][1] if top_genres else 1 %}
+      {% for genre, count in top_genres %}
+      <div class="genre-bar-item">
+        <div class="genre-bar-label">
+          <span>{{ genre }}</span>
+          <span style="color:var(--text-muted)">{{ count }}</span>
+        </div>
+        <div class="genre-bar-track">
+          <div class="genre-bar-fill" style="width:{{ (count / max_g * 100)|round }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

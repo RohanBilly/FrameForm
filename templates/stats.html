@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}FLM — Stats{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title">Stats</div>
+  <div class="page-subtitle">{{ total }} films · {{ "{:,}".format(hours) }} hours watched</div>
+</div>
+
+<div class="stats-grid" style="margin-bottom:48px;">
+  <div>
+    <div class="section-header"><span class="section-title">Top Directors</span></div>
+    <table class="stats-table">
+      <thead><tr><th>#</th><th>Name</th><th style="text-align:right;">Films</th></tr></thead>
+      <tbody>
+        {% for name, count in directors %}
+        <tr>
+          <td class="rank-col">{{ loop.index }}</td>
+          <td class="name-col">{{ name }}</td>
+          <td class="count-col">{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <div class="section-header"><span class="section-title">Top Actors</span></div>
+    <table class="stats-table">
+      <thead><tr><th>#</th><th>Name</th><th style="text-align:right;">Films</th></tr></thead>
+      <tbody>
+        {% for name, count in actors %}
+        <tr>
+          <td class="rank-col">{{ loop.index }}</td>
+          <td class="name-col">{{ name }}</td>
+          <td class="count-col">{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="section-header"><span class="section-title">Genres</span></div>
+    <div class="genre-bar-list" style="margin-top:8px;">
+      {% for genre, count in genres %}
+      <div class="genre-bar-item">
+        <div class="genre-bar-label">
+          <span>{{ genre }}</span>
+          <span style="color:var(--text-muted)">{{ count }}</span>
+        </div>
+        <div class="genre-bar-track">
+          <div class="genre-bar-fill" style="width:{{ (count / top_genre_max * 100)|round }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if composers %}
+  <div>
+    <div class="section-header"><span class="section-title">Top Composers</span></div>
+    <table class="stats-table">
+      <thead><tr><th>#</th><th>Name</th><th style="text-align:right;">Films</th></tr></thead>
+      <tbody>
+        {% for name, count in composers %}
+        <tr>
+          <td class="rank-col">{{ loop.index }}</td>
+          <td class="name-col">{{ name }}</td>
+          <td class="count-col">{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
