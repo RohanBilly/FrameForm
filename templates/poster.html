@@ -79,17 +79,6 @@
           <div class="slider-hints"><span>80%</span><span>100%</span><span>120%</span></div>
         </div>
 
-        <!-- column gap — text mode only -->
-        <div class="control-row" id="line-spacing-row" style="flex-direction:column; align-items:stretch; gap:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="control-label">Col gap</span>
-            <span class="control-value" id="line-spacing-display" onclick="editValue('line-spacing-display','gap')" style="cursor:pointer;" title="Click to type value">64</span>
-          </div>
-          <input type="range" class="count-slider" id="line-spacing-slider"
-                 min="20" max="200" value="64" step="4"
-                 oninput="onLineSpacingSlide(this.value)">
-          <div class="slider-hints"><span>Tight</span><span></span><span>Wide</span></div>
-        </div>
 
         <div class="control-row" style="flex-direction:column; align-items:stretch; gap:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -234,6 +223,7 @@ const state = {
 let currentZoom = 0.15;
 let renderTimer  = null;
 let _pan         = null;
+const _mctx = (() => { const c = document.createElement('canvas'); return c.getContext('2d'); })();
 
 window.addEventListener('DOMContentLoaded', () => {
   applyZoom(0.15);
@@ -261,7 +251,6 @@ function updateControlVis() {
   document.getElementById('cols-row').style.display          = t        ? ''     : 'none';
   document.getElementById('numbering-row').style.display     = t        ? ''     : 'none';
   document.getElementById('font-scale-row').style.display    = t        ? ''     : 'none';
-  document.getElementById('line-spacing-row').style.display  = t        ? ''     : 'none';
   document.getElementById('year-breaks-row').style.display   = (t && c) ? ''     : 'none';
   document.getElementById('date-format-row').style.display   = (t && d) ? 'flex' : 'none';
 }
@@ -428,6 +417,20 @@ function filmLabel(f, idx) {
 const _ea = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const _et = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+// ── shared loading overlay (appended to posterWrap or clone, scrolls with poster) ──
+function _makeFetchOverlay(msg) {
+  const d = document.createElement('div');
+  d.style.cssText =
+    'position:absolute;inset:0;z-index:20;pointer-events:none;' +
+    'display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;' +
+    'background:radial-gradient(ellipse at center,rgba(8,8,8,0.88) 0%,rgba(8,8,8,0.55) 40%,transparent 70%);';
+  d.innerHTML = '<div class="loading-spinner"></div>' +
+    `<span style="color:rgba(255,255,255,0.65);font-size:12px;` +
+    `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;` +
+    `letter-spacing:0.1em;text-transform:uppercase;">${msg}</span>`;
+  return d;
+}
+
 // ── cast height (canvas units) ──
 function castHeight() {
   if (!state.castEnabled) return 0;
@@ -475,19 +478,19 @@ function renderText(films, castData) {
     : (n > 350 ? 7 : n > 250 ? 6 : n > 200 ? 5 : n > 100 ? 4 : n > 70 ? 3 : n > 30 ? 2 : 1);
   const rows  = Math.ceil(items.length / numCols);
   const itemH = availH / rows;
-  const colGap = state.lineSpacing;
+  const colGap = 20;
 
   // Size font to fit column width so titles aren't cut short
   const colW = (availW - colGap * (numCols - 1)) / numCols;
   const numMultiplier = state.labelMode === 'off' ? 0
-    : state.labelMode === 'dates' ? (state.dateFormat === 'DD/MM/YY' ? 4.5 : 3.2) : 2.5;
+    : state.labelMode === 'dates' ? (state.dateFormat === 'DD/MM/YY' ? 4.5 : 3.2) : 2.2;
   const charBudget  = numMultiplier + 9.0;
   const fsFromWidth = Math.floor(colW / charBudget);
   const rawFs = Math.min(Math.floor(itemH * 0.55), fsFromWidth);
   const fs    = Math.round(Math.max(16, rawFs) * state.fontScale);
   const numW      = Math.round(fs * numMultiplier);
   const twoLine   = itemH > fs * 2.5;
-  const rowLineH  = 1.2;   // 1.2 on both spans — gives descenders room below the em box
+  const rowLineH  = 1.4;   // 1.4 ensures descenders (g,p,y…) clear the span's overflow clip
   const titleMaxH = Math.round(fs * rowLineH * 2);
   const topPad    = twoLine ? Math.max(4, Math.round((itemH - titleMaxH) / 2)) : 0;
 
@@ -514,15 +517,26 @@ function renderText(films, castData) {
       const { film: f, idx } = item;
       const label    = filmLabel(f, idx);
       const editKey  = `film:${f.title}`;
-      const display  = _et(state.editedTexts[editKey] || f.title);
+      const rawTitle = state.editedTexts[editKey] || f.title;
+      const display  = _et(rawTitle);
+      // Near-fit scaling: if a title almost fits, shrink its font just enough to show it whole
+      let itemTitleFs = fs;
+      if (!twoLine) {
+        const titleSpanW = colW - numW - 20;
+        _mctx.font = `500 ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
+        const measured = _mctx.measureText(rawTitle).width;
+        if (measured > titleSpanW && measured < titleSpanW + fs * 2) {
+          itemTitleFs = Math.max(Math.floor(fs * titleSpanW / measured), Math.round(fs * 0.85));
+        }
+      }
       // Fixed-width number/date column so every label is perfectly aligned
       const labelHtml = label
         ? `<span style="width:${numW}px;flex-shrink:0;flex-grow:0;font-size:${fs}px;color:${state.colors.accent};font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:${rowLineH};">${_et(label)}</span>`
         : '';
       const titleStyle = twoLine
         ? `font-size:${fs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:normal;max-height:${titleMaxH}px;`
-        : `font-size:${fs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;`;
-      return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:${twoLine ? 'flex-start' : 'center'};padding-top:${topPad}px;gap:20px;min-height:0;min-width:0;overflow:hidden;">
+        : `font-size:${itemTitleFs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;`;
+      return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:${twoLine ? 'flex-start' : 'center'};padding-top:${topPad}px;gap:20px;min-height:0;min-width:0;${twoLine ? '' : 'overflow:hidden;'}">
         ${labelHtml}
         <span data-edit="title" data-edit-key="${_ea(editKey)}" data-orig="${_ea(f.title)}"
               style="${titleStyle}">${display}</span>
@@ -586,10 +600,11 @@ function buildCastHtml(castData, listFs) {
 // ── IMAGE RENDER ──
 async function renderImages(films, castData) {
   const canvas = document.getElementById('posterCanvas');
-  canvas.insertAdjacentHTML('beforeend',
-    `<div class="poster-loading" id="tmpLoading" style="display:flex;">` +
-    `<div class="loading-spinner"></div><span>Loading posters…</span></div>`);
+  const wrap   = document.getElementById('posterWrap');
+  const fetchOverlay = _makeFetchOverlay('Fetching Posters…');
+  wrap.appendChild(fetchOverlay);
   await fetchAllPosters(films);
+  fetchOverlay.remove();
 
   const n       = films.length;
   const PAD      = 112;
@@ -788,6 +803,15 @@ async function downloadPoster() {
 
   el.querySelectorAll('.poster-loading').forEach(n => n.style.display = 'none');
 
+  // Keep the poster visible by inserting a clone in the layout before moving the
+  // original offscreen for html2canvas capture.
+  const visualClone = wrap.cloneNode(true);
+  wrap.insertAdjacentElement('afterend', visualClone);
+
+  // Spinner overlay appended to the clone so it scrolls with the poster, not the viewport
+  const dlOverlay = _makeFetchOverlay('Generating PNG…');
+  visualClone.appendChild(dlOverlay);
+
   // html2canvas captures at the element's *rendered* (transformed) size by default.
   // We must remove the scale(0.15) transform and move the wrap offscreen so it captures
   // the full 2800×4200 DOM instead of the 420×630 display clip.
@@ -848,6 +872,7 @@ async function downloadPoster() {
     wrap.style.width    = savedWW;
     wrap.style.height   = savedWH;
     wrap.style.overflow = savedOvf;
+    visualClone.remove();
   }
 }
 </script>
