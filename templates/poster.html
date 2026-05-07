@@ -12,7 +12,7 @@
       <div class="control-section">
         <div class="control-section-title">LIST</div>
 
-        <div class="control-row">
+        <div class="control-row" id="order-row">
           <span class="control-label">Order</span>
           <div class="toggle-group">
             <button class="toggle-btn active" id="btn-ranked" onclick="setOrder('ranked')">Ranked</button>
@@ -223,7 +223,7 @@
   <div class="builder-stage">
     <div class="zoom-bar">
       <button class="zoom-btn" onclick="adjustZoom(-0.05)">−</button>
-      <span class="zoom-label" id="zoom-display">25%</span>
+      <span class="zoom-label" id="zoom-display">15%</span>
       <button class="zoom-btn" onclick="adjustZoom(+0.05)">+</button>
       <button class="zoom-btn zoom-fit" onclick="resetZoom()">Fit</button>
     </div>
@@ -248,12 +248,13 @@
 {% block scripts %}
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-const TOTAL    = {{ total }};
-const MIN_YEAR = {{ min_year }};
-const MAX_YEAR = {{ max_year }};
+const TOTAL      = {{ total }};
+const MIN_YEAR   = {{ min_year }};
+const MAX_YEAR   = {{ max_year }};
+const IS_PREVIEW = {{ 'true' if is_preview else 'false' }};
 
-// Canvas is rendered at 2800×4200px (2× original) — displayed scaled down, downloaded at scale:2 = 5600×8400px
-const CW = 2800, CH = 4200;
+// Canvas is A2 at 300 DPI: 4961×7016px — displayed scaled down, downloaded at scale:1 = 4961×7016px
+const CW = 4961, CH = 7016;
 
 const state = {
   order: 'ranked', mode: 'text', count: 25, cols: 0,
@@ -270,7 +271,7 @@ const state = {
   editedTexts: {},
 };
 
-let currentZoom = 0.25;
+let currentZoom = 0.15;
 let renderTimer  = null;
 let _pan         = null;
 const _mctx = (() => { const c = document.createElement('canvas'); return c.getContext('2d'); })();
@@ -307,8 +308,22 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-yb-on').className  = 'toggle-btn' + (initYearBreaks  ? ' active' : '');
   document.getElementById('btn-yb-off').className = 'toggle-btn' + (!initYearBreaks ? ' active' : '');
 
+  if (IS_PREVIEW) {
+    state.mode  = 'images';
+    state.order = 'chrono';
+    state.count = TOTAL;
+    document.getElementById('btn-text').className   = 'toggle-btn';
+    document.getElementById('btn-images').className = 'toggle-btn active';
+    document.getElementById('btn-ranked').className = 'toggle-btn';
+    document.getElementById('btn-chrono').className = 'toggle-btn active';
+    document.getElementById('count-slider').value        = TOTAL;
+    document.getElementById('count-display').textContent = TOTAL;
+    document.getElementById('order-row').style.display   = 'none';
+    document.body.classList.add('preview-mode');
+  }
+
   updateControlVis();
-  applyZoom(0.25);
+  applyZoom(0.15);
   render();
   setupEditHandler();
   setupPanHandler();
@@ -323,7 +338,7 @@ function applyZoom(z) {
   document.getElementById('zoom-display').textContent = Math.round(currentZoom * 100) + '%';
 }
 function adjustZoom(d) { applyZoom(currentZoom + d); }
-function resetZoom()   { applyZoom(0.25); }
+function resetZoom()   { applyZoom(0.15); }
 
 // ── control visibility ──
 function updateControlVis() {
@@ -576,8 +591,8 @@ async function render() {
 // ── TEXT RENDER ──
 function renderText(films, castData) {
   const n = films.length;
-  const PAD     = 160;
-  const PAD_B   = PAD - 10;
+  const PAD     = 284;
+  const PAD_B   = PAD - 18;
   const availW  = CW - PAD * 2;
 
   // Header font constants (don't depend on grid layout — compute first so HEADER_H is accurate)
@@ -604,7 +619,7 @@ function renderText(films, castData) {
   const numCols = state.cols > 0 ? state.cols
     : (n > 350 ? 7 : n > 250 ? 6 : n > 200 ? 5 : n > 100 ? 4 : n > 70 ? 3 : n > 30 ? 2 : 1);
   const rows  = Math.ceil(items.length / numCols);
-  const colGap = 20;
+  const colGap = 35;
 
   // Size font to fit column width so titles aren't cut short
   const colW = (availW - colGap * (numCols - 1)) / numCols;
@@ -768,7 +783,7 @@ async function renderImages(films, castData) {
   fetchOverlay.remove();
 
   const n       = films.length;
-  const PAD      = 112;
+  const PAD      = 198;
   const HEADER_H = 260;
   const CAST_H   = castHeight();
   const availW   = CW - PAD * 2;
@@ -1013,7 +1028,7 @@ async function downloadPoster() {
 
   try {
     const c = await html2canvas(el, {
-      scale: 2, useCORS: true,
+      scale: 1, useCORS: true,
       backgroundColor: state.colors.bg, logging: false,
       width: CW, height: CH,
     });

@@ -23,6 +23,253 @@
     </div>
   </nav>
 
+  {% if not data_loaded %}
+  <div class="onboarding-overlay" id="onboardingOverlay">
+    <div class="onboarding-card">
+      <div class="onboarding-logo">FLM</div>
+      <p class="onboarding-sub">Load your film data to get started.</p>
+
+      <div class="onboarding-actions">
+
+        <!-- PRIMARY: CSV upload -->
+        <div class="onboarding-section">
+          <p class="onboarding-section-label">Full library <span class="onboarding-badge">Recommended</span></p>
+          <p class="onboarding-hint" style="text-align:left;margin-bottom:8px">
+            Go to <strong style="color:var(--text-bright)">letterboxd.com/settings/data</strong>,
+            export your data, then upload <strong style="color:var(--text-bright)">watched.csv</strong>
+            from the ZIP. Gets all your films + star ratings.
+          </p>
+          <label class="onboarding-btn onboarding-btn--lb" id="csvLabel">
+            Upload watched.csv
+            <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="uploadCsv(this)">
+          </label>
+        </div>
+
+        <!-- IMDb CSV -->
+        <div class="onboarding-section" style="margin-top:10px">
+          <p class="onboarding-section-label">IMDb <span class="onboarding-badge onboarding-badge--dim">ratings export</span></p>
+          <p class="onboarding-hint" style="text-align:left;margin-bottom:8px">
+            Your IMDb <strong style="color:var(--text-bright)">Ratings</strong> are your watch history —
+            not your Watchlist (that's films to watch, not watched).
+            On <a href="https://www.imdb.com" target="_blank" rel="noopener" class="onboarding-link">imdb.com</a>,
+            open your profile menu → <strong style="color:var(--text-bright)">Your ratings</strong>,
+            then click the three-dot menu → <strong style="color:var(--text-bright)">Export</strong>.
+          </p>
+          <label class="onboarding-btn onboarding-btn--imdb" id="imdbCsvLabel">
+            Upload IMDb ratings.csv
+            <input type="file" id="imdbCsvInput" accept=".csv" style="display:none" onchange="uploadImdbCsv(this)">
+          </label>
+          <div class="onboarding-progress" id="imdbProgress" style="display:none;margin-top:8px">
+            <div class="onboarding-progress-bar-track">
+              <div class="onboarding-progress-bar-fill" id="imdbFill"></div>
+            </div>
+            <p class="onboarding-progress-msg" id="imdbMsg">Starting…</p>
+          </div>
+        </div>
+
+        <div class="onboarding-divider"><span>or</span></div>
+
+        <!-- SECONDARY: Letterboxd username -->
+        <div class="onboarding-section">
+          <p class="onboarding-section-label">Recent films only <span class="onboarding-badge onboarding-badge--dim">~30–100 from RSS</span></p>
+          <div class="onboarding-lb-row">
+            <input type="text" id="lbUsername" class="onboarding-input"
+                   placeholder="Letterboxd username" autocomplete="off" autocapitalize="none"
+                   onkeydown="if(event.key==='Enter')scrapeLetterboxd()">
+            <button class="onboarding-btn onboarding-btn--secondary" id="lbBtn" onclick="scrapeLetterboxd()">
+              Load from Letterboxd
+            </button>
+          </div>
+          <!-- Progress (hidden until scrape starts) -->
+          <div class="onboarding-progress" id="lbProgress" style="display:none;margin-top:8px">
+            <div class="onboarding-progress-bar-track">
+              <div class="onboarding-progress-bar-fill" id="lbFill"></div>
+            </div>
+            <p class="onboarding-progress-msg" id="lbMsg">Starting…</p>
+          </div>
+        </div>
+
+        <div class="onboarding-divider"><span>or</span></div>
+
+        <!-- Demo data -->
+        <button class="onboarding-btn onboarding-btn--demo" id="loadDemoBtn" onclick="loadDemoData()">
+          Load Demo Data
+        </button>
+        <p class="onboarding-hint">Loads the bundled sample film list.</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function loadDemoData() {
+      const btn = document.getElementById('loadDemoBtn');
+      btn.textContent = 'Loading…';
+      btn.disabled = true;
+      try {
+        const r = await fetch('/api/load-demo');
+        const d = await r.json();
+        if (d.loaded) window.location.reload();
+      } catch(e) {
+        btn.textContent = 'Error — try again';
+        btn.disabled = false;
+      }
+    }
+
+    async function uploadImdbCsv(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const label    = document.getElementById('imdbCsvLabel');
+      const demoBtn  = document.getElementById('loadDemoBtn');
+      const lbBtn    = document.getElementById('lbBtn');
+      const lbLabel  = document.getElementById('csvLabel');
+      const progress = document.getElementById('imdbProgress');
+      const fill     = document.getElementById('imdbFill');
+      const msg      = document.getElementById('imdbMsg');
+
+      function resetImdb() {
+        label.style.pointerEvents = '';
+        demoBtn.disabled = false;
+        lbBtn.disabled   = false;
+        lbLabel.style.pointerEvents = '';
+      }
+
+      label.textContent = 'Uploading…';
+      label.style.pointerEvents = 'none';
+      demoBtn.disabled = true;
+      lbBtn.disabled   = true;
+      lbLabel.style.pointerEvents = 'none';
+
+      const fd = new FormData();
+      fd.append('csv', file);
+      try {
+        const r = await fetch('/api/upload-imdb-csv', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (!d.staged) {
+          label.textContent = 'Error: ' + (d.error || 'unknown');
+          resetImdb(); return;
+        }
+        label.textContent = `Parsed ${d.count} films`;
+        progress.style.display = 'block';
+
+        const es = new EventSource('/api/enrich-imdb-films');
+        es.onmessage = e => {
+          const ev = JSON.parse(e.data);
+          if (ev.type === 'status') {
+            msg.textContent = ev.message;
+          } else if (ev.type === 'progress') {
+            const pct = Math.round((ev.current / ev.total) * 100);
+            fill.style.width = pct + '%';
+            msg.textContent = `(${ev.current}/${ev.total}) ${ev.film}`;
+          } else if (ev.type === 'done') {
+            es.close();
+            msg.textContent = `Done — ${ev.count} films loaded!`;
+            fill.style.width = '100%';
+            setTimeout(() => window.location.reload(), 800);
+          } else if (ev.type === 'error') {
+            es.close();
+            msg.textContent = 'Error: ' + ev.message;
+            resetImdb();
+          }
+        };
+        es.onerror = () => {
+          es.close();
+          msg.textContent = 'Connection lost — try again.';
+          resetImdb();
+        };
+      } catch(e) {
+        label.textContent = 'Upload failed — try again';
+        resetImdb();
+      }
+    }
+
+    async function uploadCsv(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const label   = document.getElementById('csvLabel');
+      const demoBtn = document.getElementById('loadDemoBtn');
+      const lbBtn   = document.getElementById('lbBtn');
+      label.textContent = 'Uploading…';
+      label.style.pointerEvents = 'none';
+      demoBtn.disabled = true;
+      lbBtn.disabled   = true;
+      const fd = new FormData();
+      fd.append('csv', file);
+      try {
+        const r = await fetch('/api/upload-letterboxd-csv', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (d.loaded) {
+          label.textContent = `Loaded ${d.count} films!`;
+          setTimeout(() => window.location.reload(), 600);
+        } else {
+          label.textContent = 'Error: ' + (d.error || 'unknown');
+          label.style.pointerEvents = '';
+          demoBtn.disabled = false;
+          lbBtn.disabled   = false;
+        }
+      } catch(e) {
+        label.textContent = 'Upload failed — try again';
+        label.style.pointerEvents = '';
+        demoBtn.disabled = false;
+        lbBtn.disabled   = false;
+      }
+    }
+
+    function scrapeLetterboxd() {
+      const username = document.getElementById('lbUsername').value.trim();
+      if (!username) { document.getElementById('lbUsername').focus(); return; }
+
+      const btn      = document.getElementById('lbBtn');
+      const demoBtn  = document.getElementById('loadDemoBtn');
+      const progress = document.getElementById('lbProgress');
+      const fill     = document.getElementById('lbFill');
+      const msg      = document.getElementById('lbMsg');
+
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
+      demoBtn.disabled = true;
+      progress.style.display = 'block';
+
+      const es = new EventSource(`/api/scrape-letterboxd?username=${encodeURIComponent(username)}`);
+
+      es.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'status') {
+          msg.textContent = d.message;
+        } else if (d.type === 'progress') {
+          const pct = Math.round((d.current / d.total) * 100);
+          fill.style.width = pct + '%';
+          msg.textContent = `(${d.current}/${d.total}) ${d.film}`;
+        } else if (d.type === 'done') {
+          es.close();
+          msg.textContent = `Done — ${d.count} films loaded!`;
+          fill.style.width = '100%';
+          setTimeout(() => window.location.reload(), 800);
+        } else if (d.type === 'error') {
+          es.close();
+          msg.textContent = 'Error: ' + d.message;
+          btn.disabled = false;
+          btn.textContent = 'Load from Letterboxd';
+          demoBtn.disabled = false;
+        }
+      };
+
+      es.onerror = () => {
+        es.close();
+        msg.textContent = 'Connection lost — try again.';
+        btn.disabled = false;
+        btn.textContent = 'Load from Letterboxd';
+        demoBtn.disabled = false;
+      };
+    }
+  </script>
+  {% endif %}
+
+  {% if is_preview %}
+  <div class="preview-banner">
+    <span>Previewing <strong>{{ preview_count }}</strong> films from your Letterboxd RSS feed</span>
+    <a href="https://letterboxd.com/settings/data/" target="_blank" rel="noopener" class="preview-banner-link">Export full library →</a>
+  </div>
+  {% endif %}
+
   <main class="main">
     {% block content %}{% endblock %}
   </main>

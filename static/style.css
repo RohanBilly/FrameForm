@@ -13,6 +13,197 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── ONBOARDING OVERLAY ── */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.onboarding-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  max-width: 420px;
+  padding: 48px 40px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.onboarding-logo {
+  color: var(--green);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+.onboarding-sub {
+  font-size: 15px;
+  color: var(--text);
+}
+.onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.onboarding-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--green);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.onboarding-btn:hover   { opacity: 0.85; }
+.onboarding-btn:disabled { opacity: 0.5; cursor: default; }
+.onboarding-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.onboarding-lb-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.onboarding-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-bright);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.onboarding-input:focus { border-color: var(--green); }
+.onboarding-input::placeholder { color: var(--text-muted); }
+.onboarding-btn--lb        { background: #f97316; color: #fff; cursor: pointer; display: block; }
+.onboarding-btn--imdb      { background: #f5c518; color: #000; cursor: pointer; display: block; }
+.onboarding-link           { color: var(--green); text-decoration: underline; }
+.onboarding-btn--secondary { background: var(--bg-card); color: var(--text-bright); }
+.onboarding-btn--secondary:hover { background: var(--bg-card-hover); opacity: 1; }
+.onboarding-btn--demo      { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.onboarding-btn--demo:hover { background: var(--bg-card); opacity: 1; }
+.onboarding-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.onboarding-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.onboarding-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #f97316;
+  color: #fff;
+  text-transform: uppercase;
+}
+.onboarding-badge--dim {
+  background: var(--bg-card);
+  color: var(--text-muted);
+}
+
+/* ── PREVIEW MODE — banner is outside <main>, so only sticky offsets need updating ── */
+body.preview-mode .builder-controls {
+  top:        94px;                   /* 54px navbar + 40px banner */
+  min-height: calc(100vh - 94px);
+}
+body.preview-mode .builder-layout {
+  min-height: calc(100vh - 94px);
+}
+
+/* ── PREVIEW BANNER ── */
+.preview-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 9px 20px;
+  background: #f97316;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  position: sticky;
+  top: 54px;                          /* sticks just below the navbar */
+  z-index: 90;                        /* above content, below navbar (100) */
+}
+.preview-banner-link {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.onboarding-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.onboarding-divider::before,
+.onboarding-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.onboarding-progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.onboarding-progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.onboarding-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: #f97316;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.onboarding-progress-msg {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -512,20 +703,20 @@ body {
 .poster-wrap {
   filter: drop-shadow(0 8px 40px rgba(0,0,0,0.7));
   /* clips the scaled-up canvas down to display size */
-  width: 700px;
-  height: 1050px;
+  width: 744px;
+  height: 1052px;
   overflow: hidden;
   position: relative;
   border-radius: 4px;
 }
 
-/* ── POSTER CANVAS — rendered at full print resolution, scaled down for preview ── */
-/* Actual DOM size: 2800×4200px  →  displayed at 420×630px (scale 0.15)            */
-/* Download via html2canvas at scale:2  →  5600×8400px output                      */
+/* ── POSTER CANVAS — A2 at 300 DPI, scaled down for preview ── */
+/* Actual DOM size: 4961×7016px  →  displayed at 744×1052px (scale 0.15) */
+/* Download via html2canvas at scale:1  →  4961×7016px output            */
 .poster-canvas {
-  width: 2800px;
-  height: 4200px;
-  transform: scale(0.25);
+  width: 4961px;
+  height: 7016px;
+  transform: scale(0.15);
   transform-origin: top left;
   position: absolute;
   top: 0; left: 0;
