@@ -140,6 +140,16 @@ def _inject_globals():
     }
 
 
+@app.route("/api/reset")
+def api_reset():
+    global manager, _data_loaded, _is_preview, _pending_imdb_films
+    manager = _EmptyManager()
+    _data_loaded = False
+    _is_preview = False
+    _pending_imdb_films = []
+    return jsonify({"reset": True})
+
+
 @app.route("/api/load-demo")
 def api_load_demo():
     global manager, _data_loaded, _is_preview

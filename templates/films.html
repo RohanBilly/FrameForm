@@ -22,6 +22,7 @@
   {% if query %}
   <a href="/films?view={{ view }}" class="section-link" style="margin-left:auto;">Clear search ✕</a>
   {% endif %}
+  <button class="toggle-btn start-fresh-btn" onclick="startFresh()" style="margin-left:auto;">Start Fresh</button>
 </div>
 
 <!-- POSTER GRID -->
@@ -76,6 +77,12 @@
 
 {% block scripts %}
 <script>
+  async function startFresh() {
+    if (!confirm('Remove all film data and return to the start screen?')) return;
+    await fetch('/api/reset');
+    window.location.href = '/poster';
+  }
+
   function setLayout(mode) {
     document.getElementById('view-grid').style.display = mode === 'grid' ? '' : 'none';
     document.getElementById('view-list').style.display = mode === 'list' ? '' : 'none';

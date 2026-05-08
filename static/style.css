@@ -456,6 +456,8 @@ body {
 }
 .toggle-btn:hover { color: var(--text-bright); }
 .toggle-btn.active { background: var(--green); color: #000; }
+.start-fresh-btn { color: var(--text-muted); flex: none; }
+.start-fresh-btn:hover { color: #e05050; }
 
 /* ── GENRE TAGS ── */
 .tag {
