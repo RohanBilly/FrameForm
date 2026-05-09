@@ -43,6 +43,7 @@ class ScrapedFilm:
         self.date_watched = date_watched
         self.rank_idx     = rank_idx
         self.runtime      = ""
+        self.release_date = ""
         self.directors    = []
         self.actors       = []
         self.genres       = []
@@ -121,7 +122,8 @@ def _tmdb_enrich(film, tmdb_id="", imdb_id=""):
             params={"api_key": flm.TMDB_API_KEY, "append_to_response": "credits"},
             timeout=5,
         ).json()
-        film.runtime   = film.runtime or str(details.get("runtime") or "")
+        film.runtime      = film.runtime      or str(details.get("runtime") or "")
+        film.release_date = film.release_date or details.get("release_date", "")
         film.genres    = film.genres  or [g["name"] for g in details.get("genres", [])]
         crew = details.get("credits", {}).get("crew", [])
         film.directors = film.directors or [p["name"] for p in crew if p.get("job") == "Director"]
@@ -375,6 +377,26 @@ def home():
     )
 
 
+@app.route("/welcome")
+def welcome():
+    if not _data_loaded:
+        return redirect(url_for("poster"))
+    total = len(manager.films)
+    top_n = 100 if total >= 100 else (50 if total >= 50 else 10 if total >= 10 else total)
+
+    from datetime import date as _date
+    current_year = _date.today().year
+    years_in_data = {y for f in manager.films if (y := _watch_year(f)) is not None}
+    past_years = sorted([y for y in years_in_data if y < current_year], reverse=True)
+    last_year = past_years[0] if past_years else (max(years_in_data) if years_in_data else current_year - 1)
+    last_year_count = sum(1 for f in manager.films if _watch_year(f) == last_year)
+
+    return render_template("welcome.html",
+        total=total, top_n=top_n,
+        last_year=last_year, last_year_count=last_year_count,
+    )
+
+
 @app.route("/poster")
 def poster():
     import re as _re
@@ -387,8 +409,13 @@ def poster():
                 years.add(int(m.group(1)))
     min_year = min(years) if years else 2000
     max_year = max(years) if years else 2025
+    has_cast = any(
+        (getattr(f, 'directors', None) and any(d.strip() and d.upper() != 'N/A' for d in f.directors)) or
+        (getattr(f, 'actors',    None) and any(a.strip() and a.upper() != 'N/A' for a in f.actors))
+        for f in manager.films
+    )
     return render_template("poster.html", total=len(manager.films),
-                           min_year=min_year, max_year=max_year)
+                           min_year=min_year, max_year=max_year, has_cast=has_cast)
 
 
 def _watch_year(f):
@@ -416,29 +443,59 @@ def _chrono_key(f):
 
 @app.route("/api/films")
 def api_films():
-    view      = request.args.get("view", "ranked")
+    view      = request.args.get("view",      "ranked")
     limit     = request.args.get("limit",     type=int, default=None)
     from_year = request.args.get("from_year", type=int, default=None)
     to_year   = request.args.get("to_year",   type=int, default=None)
+    year_type = request.args.get("year_type", "watch")  # 'watch' or 'release'
     films_list = (
         sorted(manager.films, key=_chrono_key) if view == "chrono"
         else sorted(manager.films, key=lambda f: f.rank_idx)
     )
     if from_year is not None or to_year is not None:
-        films_list = [
-            f for f in films_list
-            if (y := _watch_year(f)) is not None
-            and (from_year is None or y >= from_year)
-            and (to_year   is None or y <= to_year)
-        ]
+        if year_type == "release":
+            films_list = [
+                f for f in films_list
+                if f.year and f.year.isdigit()
+                and (from_year is None or int(f.year) >= from_year)
+                and (to_year   is None or int(f.year) <= to_year)
+            ]
+        else:
+            films_list = [
+                f for f in films_list
+                if (y := _watch_year(f)) is not None
+                and (from_year is None or y >= from_year)
+                and (to_year   is None or y <= to_year)
+            ]
     elif limit:
         films_list = films_list[:limit]
     return jsonify([{
-        "title": f.title,
-        "year":  f.year or "",
-        "rank":  f.rank_idx + 1,
-        "date":  f.date_watched or "",
+        "title":        f.title,
+        "year":         f.year or "",
+        "rank":         f.rank_idx + 1,
+        "date":         f.date_watched or "",
+        "release_date": getattr(f, "release_date", "") or "",
     } for f in films_list])
+
+
+@app.route("/api/reorder", methods=["POST"])
+def api_reorder():
+    data   = request.get_json(silent=True) or {}
+    titles = data.get("titles", [])
+    if not titles:
+        return jsonify({"error": "No titles"}), 400
+    title_map = {f.title: f for f in manager.films}
+    for idx, title in enumerate(titles):
+        if title in title_map:
+            title_map[title].rank_idx = idx
+    # Films absent from the submitted list (e.g. filtered out) keep relative order at the end
+    in_list = set(titles)
+    tail = sorted((f for f in manager.films if f.title not in in_list), key=lambda f: f.rank_idx)
+    for i, f in enumerate(tail):
+        f.rank_idx = len(titles) + i
+    if hasattr(manager, "save_data"):
+        manager.save_data()
+    return jsonify({"ok": True})
 
 
 @app.route("/films")
@@ -552,6 +609,17 @@ def api_poster():
 
 
 if __name__ == "__main__":
-    import webbrowser, threading
-    threading.Timer(1.0, lambda: webbrowser.open("http://localhost:5000")).start()
+    import webbrowser, threading, os
+    def _open():
+        ff_paths = [
+            r"C:\Program Files\Mozilla Firefox\firefox.exe",
+            r"C:\Program Files (x86)\Mozilla Firefox\firefox.exe",
+        ]
+        ff = next((p for p in ff_paths if os.path.exists(p)), None)
+        if ff:
+            webbrowser.register("firefox", None, webbrowser.BackgroundBrowser(ff))
+            webbrowser.get("firefox").open("http://localhost:5000")
+        else:
+            webbrowser.open("http://localhost:5000")
+    threading.Timer(1.0, _open).start()
     app.run(debug=False, port=5000)

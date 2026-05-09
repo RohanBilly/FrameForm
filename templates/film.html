@@ -61,6 +61,21 @@
       </div>
       {% endif %}
 
+      {% if film.release_date %}
+      {% set rd = film.release_date.split('-') %}
+      {% set month_names = ['January','February','March','April','May','June','July','August','September','October','November','December'] %}
+      <div class="detail-row">
+        <span class="detail-label">Released</span>
+        <span class="detail-value">
+          {%- if rd|length == 3 -%}
+            {{ rd[2]|int }} {{ month_names[rd[1]|int - 1] }} {{ rd[0] }}
+          {%- else -%}
+            {{ film.release_date }}
+          {%- endif -%}
+        </span>
+      </div>
+      {% endif %}
+
       <div class="detail-row">
         <span class="detail-label">First Watched</span>
         <span class="detail-value">{{ film.date_watched or '—' }}</span>

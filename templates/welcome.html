@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}FLM — Choose a Template{% endblock %}
+
+{% block content %}
+<div class="welcome-page">
+
+  <div class="welcome-header">
+    <div class="welcome-eyebrow">{{ total }} film{{ 's' if total != 1 else '' }} loaded</div>
+    <div class="welcome-title">Choose a template</div>
+    <div class="welcome-sub">Each template pre-configures the poster builder. You can adjust everything after selecting one.</div>
+  </div>
+
+  <!-- Row 1: portrait templates -->
+  <div class="welcome-row welcome-row--portrait">
+
+    <a href="/poster?template=top300" class="tmpl-card {% if total < 300 %}tmpl-card--disabled{% endif %}">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='top300-preview.jpg') }}" alt="Top 300 preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">Top 300 Films</div>
+        <div class="tmpl-sub">
+          {% if total >= 300 %}
+            Numbered list · 6 columns · text layout
+          {% else %}
+            Needs {{ 300 - total }} more film{{ 's' if 300 - total != 1 else '' }}
+          {% endif %}
+        </div>
+      </div>
+    </a>
+
+    <a href="/poster?template=top_posters&n={{ top_n }}" class="tmpl-card">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='top100-preview.jpg') }}" alt="Top 100 preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">All Time Top {{ top_n }}</div>
+        <div class="tmpl-sub">Poster grid · image layout</div>
+      </div>
+    </a>
+
+    <a href="/poster?template=year_watchlist&year={{ last_year }}" class="tmpl-card {% if last_year_count == 0 %}tmpl-card--disabled{% endif %}">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='year-watchlist-preview.jpg') }}" alt="Year Watchlist preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge tmpl-badge--year">{{ last_year }}</div>
+        <div class="tmpl-title">{{ last_year }} Watchlist</div>
+        <div class="tmpl-sub">
+          {% if last_year_count > 0 %}
+            {{ last_year_count }} film{{ 's' if last_year_count != 1 else '' }} · DD/MM dates · text layout
+          {% else %}
+            No films watched in {{ last_year }}
+          {% endif %}
+        </div>
+      </div>
+    </a>
+
+    <a href="/poster?template=year_review" class="tmpl-card">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='year-review-preview.jpg') }}" alt="Year Review preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">Year Review</div>
+        <div class="tmpl-sub">Poster grid · release year · paper layout</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Row 2: landscape templates + build your own -->
+  <div class="welcome-row welcome-row--landscape">
+
+    <a href="/poster?template=top250" class="tmpl-card {% if total < 250 %}tmpl-card--disabled{% endif %}">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='top250-preview.jpg') }}" alt="Top 250 preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">Top 250 Films</div>
+        <div class="tmpl-sub">
+          {% if total >= 250 %}
+            Poster grid · landscape · image layout
+          {% else %}
+            Needs {{ 250 - total }} more film{{ 's' if 250 - total != 1 else '' }}
+          {% endif %}
+        </div>
+      </div>
+    </a>
+
+    <a href="/poster?template=top500" class="tmpl-card {% if total < 500 %}tmpl-card--disabled{% endif %}">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='top500-preview.jpg') }}" alt="Top 500 preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">Top 500 Films</div>
+        <div class="tmpl-sub">
+          {% if total >= 500 %}
+            Landscape · 10 columns · text layout
+          {% else %}
+            Needs {{ 500 - total }} more film{{ 's' if 500 - total != 1 else '' }}
+          {% endif %}
+        </div>
+      </div>
+    </a>
+
+    <!-- Decade Review — Landscape Poster Grid -->
+    <a href="/poster?template=decade_review" class="tmpl-card">
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='decade-review-preview.jpg') }}" alt="Decade Review preview">
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Ranked</div>
+        <div class="tmpl-title">Decade Review</div>
+        <div class="tmpl-sub">Poster grid · landscape · release year range</div>
+      </div>
+    </a>
+
+    <a href="/poster?template=byo" class="tmpl-card tmpl-card--byo">
+      <div class="tmpl-preview tmpl-preview--byo">
+        <div class="tmpl-byo-icon">+</div>
+      </div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge tmpl-badge--dim">Custom</div>
+        <div class="tmpl-title">Build your own</div>
+        <div class="tmpl-sub">Start from scratch with full controls</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Experimental -->
+  <div class="welcome-experimental">
+    <div class="welcome-exp-label">Experimental</div>
+    <div class="welcome-row welcome-row--portrait welcome-row--exp">
+
+      <a href="/poster?template=colour_grade" class="tmpl-card tmpl-card--exp">
+        <div class="tmpl-preview tmpl-preview--colour-grade"></div>
+        <div class="tmpl-info">
+          <div class="tmpl-badge tmpl-badge--exp">Colour</div>
+          <div class="tmpl-title">Colour Grade</div>
+          <div class="tmpl-sub">Posters sorted by average colour · portrait · all films</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

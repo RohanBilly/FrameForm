@@ -25,9 +25,13 @@
   <button class="toggle-btn start-fresh-btn" onclick="startFresh()" style="margin-left:auto;">Start Fresh</button>
 </div>
 
+{% if view == 'ranked' and not query %}
+<div class="drag-hint">Drag to reorder</div>
+{% endif %}
+
 <!-- POSTER GRID -->
 <div id="view-grid">
-  <div class="poster-grid">
+  <div class="poster-grid" id="grid-sortable">
     {% for film in films %}
     <a href="/film/{{ film.title | urlencode }}" class="poster-card" data-title="{{ film.title }}" data-year="{{ film.year }}">
       <div class="poster-img">
@@ -49,6 +53,7 @@
   <table class="film-table">
     <thead>
       <tr>
+        {% if view == 'ranked' and not query %}<th class="drag-col"></th>{% endif %}
         <th>#</th>
         <th>Title</th>
         <th>Year</th>
@@ -56,9 +61,10 @@
         <th>{% if view == 'chrono' %}Watched{% else %}Rank{% endif %}</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="list-sortable">
       {% for film in films %}
-      <tr>
+      <tr data-title="{{ film.title }}">
+        {% if view == 'ranked' and not query %}<td class="drag-handle" title="Drag to reorder">⠿</td>{% endif %}
         <td class="rank">{{ loop.index }}</td>
         <td class="title-cell"><a href="/film/{{ film.title | urlencode }}">{{ film.title }}</a></td>
         <td class="year-cell">{{ film.year }}</td>
@@ -76,6 +82,9 @@
 {% endblock %}
 
 {% block scripts %}
+{% if view == 'ranked' and not query %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+{% endif %}
 <script>
   async function startFresh() {
     if (!confirm('Remove all film data and return to the start screen?')) return;
@@ -92,5 +101,94 @@
   }
   const saved = localStorage.getItem('flm-layout');
   if (saved === 'list') setLayout('list');
+
+{% if view == 'ranked' and not query %}
+  let _dragging = false;
+
+  function _titles(container, sel) {
+    return [...container.querySelectorAll(sel)].map(el => el.dataset.title);
+  }
+
+  function _updateRankNums(container, rowSel, rankSel) {
+    container.querySelectorAll(rowSel).forEach((el, i) => {
+      const r = el.querySelector(rankSel);
+      if (r) r.textContent = i + 1;
+    });
+  }
+
+  function _syncGrid(titles) {
+    const grid = document.getElementById('grid-sortable');
+    const cards = Object.fromEntries([...grid.querySelectorAll('.poster-card')].map(c => [c.dataset.title, c]));
+    titles.forEach(t => { if (cards[t]) grid.appendChild(cards[t]); });
+    _updateRankNums(grid, '.poster-card', '.poster-rank');
+  }
+
+  function _syncList(titles) {
+    const tbody = document.getElementById('list-sortable');
+    const rows = Object.fromEntries([...tbody.querySelectorAll('tr')].map(r => [r.dataset.title, r]));
+    titles.forEach(t => { if (rows[t]) tbody.appendChild(rows[t]); });
+    _updateRankNums(tbody, 'tr', '.rank');
+  }
+
+  function _showToast(msg) {
+    let t = document.getElementById('save-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'save-toast';
+      t.className = 'save-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  async function _persist(titles) {
+    try {
+      const r = await fetch('/api/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titles }),
+      });
+      if (r.ok) _showToast('Saved');
+    } catch(e) { _showToast('Error saving'); }
+  }
+
+  // Grid sortable
+  const gridEl = document.getElementById('grid-sortable');
+  Sortable.create(gridEl, {
+    animation: 150,
+    ghostClass: 'drag-ghost',
+    chosenClass: 'drag-chosen',
+    onStart() { _dragging = true; },
+    onEnd() {
+      setTimeout(() => { _dragging = false; }, 50);
+      const titles = _titles(gridEl, '.poster-card');
+      _updateRankNums(gridEl, '.poster-card', '.poster-rank');
+      _syncList(titles);
+      _persist(titles);
+    },
+  });
+
+  // Prevent anchor navigation if it was a drag
+  gridEl.addEventListener('click', e => {
+    if (_dragging) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  // List sortable (handle-based)
+  const listEl = document.getElementById('list-sortable');
+  Sortable.create(listEl, {
+    handle: '.drag-handle',
+    animation: 150,
+    ghostClass: 'drag-ghost',
+    onEnd() {
+      const titles = _titles(listEl, 'tr');
+      _updateRankNums(listEl, 'tr', '.rank');
+      _syncGrid(titles);
+      _persist(titles);
+    },
+  });
+{% endif %}
 </script>
 {% endblock %}

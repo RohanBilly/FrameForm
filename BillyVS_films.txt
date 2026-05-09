@@ -533,28 +533,27 @@ The Northman
 
     RANKED LIST OF FILMS SEEN
 The Lighthouse
-Whiplash
-Reservoir Dogs
-Birdman
-The Hateful Eight
 Training Day
-Fight Club
+Reservoir Dogs
 Spider-Man: Into the Spider-Verse
+The Hateful Eight
+Whiplash
+Fight Club
 The Dark Knight Rises
 Joker
 Se7en
-Parasite
 1917
 Get Out
+Parasite
+Boiling Point
+Birdman
 Nightcrawler
 Green Book
 Star Wars: Revenge of the Sith
-Boiling Point
+The Thing (1982)
 Saving Private Ryan
-Pearl
 The Wolf of Wall Street
 The Dark Knight
-The Thing (1982)
 Once Upon a Time... In Hollywood
 Us
 The Batman
@@ -562,6 +561,7 @@ The Iron Claw
 The Social Network
 Pulp Fiction
 Django Unchained
+Pearl
 Mid90s
 Straight Outta Compton
 Marriage Story

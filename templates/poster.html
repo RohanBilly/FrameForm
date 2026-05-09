@@ -28,6 +28,14 @@
           </div>
         </div>
 
+        <div class="control-row">
+          <span class="control-label">Format</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-orient-portrait"  onclick="setOrientation('portrait')">Portrait</button>
+            <button class="toggle-btn"        id="btn-orient-landscape" onclick="setOrientation('landscape')">Landscape</button>
+          </div>
+        </div>
+
         <div class="control-row" id="numbering-row" style="flex-direction:column; align-items:stretch; gap:8px;">
           <span class="control-label">Labels</span>
           <div class="toggle-group">
@@ -54,6 +62,14 @@
           </div>
         </div>
 
+        <div class="control-row" id="month-breaks-row" style="display:none;">
+          <span class="control-label">Month breaks</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-mb-on"  onclick="setMonthBreaks(true)">On</button>
+            <button class="toggle-btn active" id="btn-mb-off" onclick="setMonthBreaks(false)">Off</button>
+          </div>
+        </div>
+
         <div class="control-row" id="cols-row" style="flex-direction:column; align-items:stretch; gap:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span class="control-label">Columns</span>
@@ -62,7 +78,7 @@
           <input type="range" class="count-slider" id="cols-slider"
                  min="0" max="7" value="0" step="1"
                  oninput="onColsSlide(this.value)">
-          <div class="slider-hints">
+          <div class="slider-hints" id="cols-hints">
             <span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
           </div>
         </div>
@@ -84,7 +100,8 @@
           <span class="control-label">Films</span>
           <div class="toggle-group">
             <button class="toggle-btn active" id="btn-sel-count" onclick="setSelectionMode('count')">Count</button>
-            <button class="toggle-btn"        id="btn-sel-years" onclick="setSelectionMode('years')">Years</button>
+            <button class="toggle-btn"        id="btn-sel-year"  onclick="setSelectionMode('year')">Year</button>
+            <button class="toggle-btn"        id="btn-sel-range" onclick="setSelectionMode('range')">Range</button>
           </div>
         </div>
 
@@ -109,25 +126,72 @@
           </div>
         </div>
 
-        <!-- years mode -->
-        <div id="years-mode-row" style="display:none; flex-direction:column; gap:10px;">
+        <!-- watch vs release year filter -->
+        <div class="control-row" id="year-type-row" style="display:none;">
+          <span class="control-label">Filter by</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-yt-watch"   onclick="setYearType('watch')">Watch year</button>
+            <button class="toggle-btn"        id="btn-yt-release" onclick="setYearType('release')">Release year</button>
+          </div>
+        </div>
+
+        <!-- single year mode -->
+        <div id="year-single-row" style="display:none; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="control-label" style="flex-shrink:0;">Year</span>
+            <input type="number" id="year-single-input" class="year-input"
+                   min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year }}"
+                   oninput="onSingleYearChange()">
+          </div>
+        </div>
+
+        <!-- date range mode -->
+        <div id="year-range-row" style="display:none; flex-direction:column; gap:10px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="control-label" style="flex-shrink:0;">From</span>
             <input type="number" id="year-from-input" class="year-input"
-                   min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year }}"
+                   min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year - 4 }}"
                    oninput="onYearRangeChange()">
             <span class="control-label" style="flex-shrink:0;">To</span>
             <input type="number" id="year-to-input" class="year-input"
                    min="{{ min_year }}" max="{{ max_year }}" value="{{ max_year }}"
                    oninput="onYearRangeChange()">
           </div>
-          <div class="quick-counts">
-            <button class="quick-btn" onclick="setYearRange({{ max_year }},{{ max_year }})">This yr</button>
-            <button class="quick-btn" onclick="setYearRange({{ max_year - 2 }},{{ max_year }})">3 yrs</button>
-            <button class="quick-btn" onclick="setYearRange({{ max_year - 4 }},{{ max_year }})">5 yrs</button>
-            <button class="quick-btn" onclick="setYearRange({{ min_year }},{{ max_year }})">All</button>
+        </div>
+
+        <!-- image mode: columns -->
+        <div class="control-row" id="img-cols-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Columns</span>
+            <span class="control-value" id="img-cols-display" onclick="editValue('img-cols-display','img-cols')" style="cursor:pointer;" title="Click to type value">Auto</span>
+          </div>
+          <input type="range" class="count-slider" id="img-cols-slider"
+                 min="0" max="25" value="0" step="1"
+                 oninput="onImgColsSlide(this.value)">
+          <div class="slider-hints"><span>Auto</span><span>5</span><span>10</span><span>15</span><span>25</span></div>
+        </div>
+
+        <!-- image mode: rows -->
+        <div class="control-row" id="img-rows-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Rows</span>
+            <span class="control-value" id="img-rows-display" onclick="editValue('img-rows-display','img-rows')" style="cursor:pointer;" title="Click to type value">Auto</span>
+          </div>
+          <input type="range" class="count-slider" id="img-rows-slider"
+                 min="0" max="25" value="0" step="1"
+                 oninput="onImgRowsSlide(this.value)">
+          <div class="slider-hints"><span>Auto</span><span>5</span><span>10</span><span>15</span><span>25</span></div>
+        </div>
+
+        <!-- image mode: aspect ratio -->
+        <div class="control-row" id="img-aspect-row" style="display:none;">
+          <span class="control-label">Fit mode</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-aspect-on"  onclick="setKeepAspect(true)">2∶3 Ratio</button>
+            <button class="toggle-btn active" id="btn-aspect-off" onclick="setKeepAspect(false)">Fill</button>
           </div>
         </div>
+
       </div>
 
       <!-- COLOUR -->
@@ -151,14 +215,83 @@
         <div class="control-row" style="flex-direction:column; align-items:stretch; gap:8px;">
           <span class="control-label">Presets</span>
           <div class="quick-counts">
-            <button class="quick-btn" onclick="applyPreset('letterboxd')">Letterboxd</button>
+            <button class="quick-btn" onclick="applyPreset('matrix')">Matrix</button>
             <button class="quick-btn" onclick="applyPreset('midnight')">Midnight</button>
             <button class="quick-btn" onclick="applyPreset('paper')">Paper</button>
             <button class="quick-btn" onclick="applyPreset('sepia')">Sepia</button>
+            <button class="quick-btn" onclick="applyPreset('crimson')">Crimson</button>
+            <button class="quick-btn" onclick="applyPreset('ocean')">Ocean</button>
+            <button class="quick-btn" onclick="applyPreset('dusk')">Dusk</button>
+            <button class="quick-btn" onclick="applyPreset('gold')">Gold</button>
           </div>
         </div>
       </div>
 
+      <!-- TITLE -->
+      <div class="control-section">
+        <div class="control-section-title">TITLE</div>
+
+        <div class="control-row">
+          <span class="control-label">Subtitle</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-subtitle-on"  onclick="setShowSubtitle(true)">On</button>
+            <button class="toggle-btn active" id="btn-subtitle-off" onclick="setShowSubtitle(false)">Off</button>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <span class="control-label">Align</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-title-left"   onclick="setTitleAlign('left')">Left</button>
+            <button class="toggle-btn"        id="btn-title-center" onclick="setTitleAlign('center')">Centre</button>
+            <button class="toggle-btn"        id="btn-title-right"  onclick="setTitleAlign('right')">Right</button>
+          </div>
+        </div>
+
+        <div class="control-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Title size</span>
+            <span class="control-value" id="title-size-display">1.00×</span>
+          </div>
+          <input type="range" class="count-slider" id="title-size-slider"
+                 min="50" max="200" value="100" step="1"
+                 oninput="onTitleSizeSlide(this.value)">
+          <div class="slider-hints"><span>50%</span><span>100%</span><span>200%</span></div>
+        </div>
+
+        <div class="control-row">
+          <span class="control-label">Title colour</span>
+          <input type="color" class="color-input" id="color-title-text" value="#ffffff"
+                 oninput="setTitleColor(this.value)">
+        </div>
+
+        <div class="control-row" id="subtitle-color-row" style="display:none;">
+          <span class="control-label">Sub colour</span>
+          <input type="color" class="color-input" id="color-subtitle-text" value="#00e054"
+                 oninput="setSubtitleColor(this.value)">
+        </div>
+
+        <div class="control-row" id="subtitle-size-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Sub size</span>
+            <span class="control-value" id="subtitle-size-display">1.00×</span>
+          </div>
+          <input type="range" class="count-slider" id="subtitle-size-slider"
+                 min="50" max="200" value="100" step="1"
+                 oninput="onSubtitleSizeSlide(this.value)">
+          <div class="slider-hints"><span>50%</span><span>100%</span><span>200%</span></div>
+        </div>
+
+        <div class="control-row" id="subtitle-case-row" style="display:none;">
+          <span class="control-label">Sub case</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-sub-upper" onclick="setSubtitleCase(true)">Upper</button>
+            <button class="toggle-btn"        id="btn-sub-lower" onclick="setSubtitleCase(false)">Lower</button>
+          </div>
+        </div>
+      </div>
+
+      {% if has_cast %}
       <!-- CAST -->
       <div class="control-section">
         <div class="control-section-title">CAST</div>
@@ -215,6 +348,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
 
     </div>
   </aside>
@@ -237,6 +371,7 @@
     </div>
     <div class="stage-actions">
       <button class="download-btn" onclick="downloadPoster()">↓ Download PNG</button>
+      <button class="start-over-btn" onclick="confirmStartOver()">Start over</button>
     </div>
   </div>
 
@@ -254,16 +389,22 @@ const MAX_YEAR   = {{ max_year }};
 const IS_PREVIEW = {{ 'true' if is_preview else 'false' }};
 
 // Canvas is A2 at 300 DPI: 4961×7016px — displayed scaled down, downloaded at scale:1 = 4961×7016px
-const CW = 4961, CH = 7016;
+const BASE_W = 4961, BASE_H = 7016;
+let CW = BASE_W, CH = BASE_H;
 
 const state = {
+  orientation: 'portrait',
   order: 'ranked', mode: 'text', count: 25, cols: 0,
   labelMode: 'numbers', dateFormat: 'DD/MM/YY',
-  yearBreaks: false,
+  yearBreaks: false, monthBreaks: false,
   fontScale: 1.0, lineSpacing: 64,
-  selectionMode: 'count', yearFrom: MAX_YEAR, yearTo: MAX_YEAR,
+  selectionMode: 'count', yearType: 'watch', yearFrom: MAX_YEAR, yearTo: MAX_YEAR,
   castEnabled: false, castType: 'both', castAlign: 'left',
   actorCount: 5, directorCount: 5, castFontScale: 1.0,
+  imageCols: 0, imageRows: 0, keepAspect: false,
+  colourGrade: false,
+  showSubtitle: false, titleAlign: 'left', titleSize: 1.0, subtitleSize: 1.0, subtitleUppercase: true,
+  titleColor: '#ffffff', subtitleColor: '#00e054',
   colors: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
   cache: {},
   posterOffsets: {},
@@ -273,10 +414,108 @@ const state = {
 
 let currentZoom = 0.15;
 let renderTimer = null;
+let _renderGen  = 0;
 let _pan         = null;
 const _mctx = (() => { const c = document.createElement('canvas'); return c.getContext('2d'); })();
 
+// ── state persistence ──
+const _STATE_KEY = 'flm_poster_state';
+
+function _saveState() {
+  try {
+    const toSave = Object.assign({}, state);
+    delete toSave.customImages; // skip base64 uploads — could overflow storage quota
+    localStorage.setItem(_STATE_KEY, JSON.stringify({ s: toSave, CW, CH, zoom: currentZoom }));
+  } catch(e) {}
+}
+
+function _restoreState() {
+  if (IS_PREVIEW) return false;
+  if (new URLSearchParams(window.location.search).get('template')) return false;
+  try {
+    const raw = localStorage.getItem(_STATE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.s) return false;
+    Object.assign(state, saved.s);
+    state.customImages = {};
+    CW = saved.CW || BASE_W;
+    CH = saved.CH || BASE_H;
+    currentZoom = saved.zoom || 0.15;
+    return true;
+  } catch(e) { return false; }
+}
+
+function _syncControlsFromState() {
+  const s = state;
+  const _tb = (id, active) => { const el = document.getElementById(id); if (el) el.className = 'toggle-btn' + (active ? ' active' : ''); };
+
+  _tb('btn-ranked', s.order === 'ranked'); _tb('btn-chrono', s.order === 'chrono');
+  _tb('btn-text',   s.mode  === 'text');   _tb('btn-images', s.mode  === 'images');
+  _tb('btn-orient-portrait',  s.orientation === 'portrait');
+  _tb('btn-orient-landscape', s.orientation === 'landscape');
+
+  // cols slider bounds differ by orientation
+  const _cs = document.getElementById('cols-slider');
+  const _ch = document.getElementById('cols-hints');
+  if (s.orientation === 'landscape') {
+    _cs.min = 0; _cs.max = 10;
+    _ch.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>';
+  } else {
+    _cs.min = 0; _cs.max = 7;
+    _ch.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>';
+  }
+  _cs.value = s.cols;
+  document.getElementById('cols-display').textContent = s.cols === 0 ? 'Auto' : String(s.cols);
+
+  _tb('btn-lbl-num',  s.labelMode === 'numbers'); _tb('btn-lbl-date', s.labelMode === 'dates'); _tb('btn-lbl-off', s.labelMode === 'off');
+  _tb('btn-dfmt-0',   s.dateFormat === 'DD/MM/YY'); _tb('btn-dfmt-1', s.dateFormat === 'MM/YY'); _tb('btn-dfmt-2', s.dateFormat === 'DD/MM');
+  _tb('btn-yb-on',  s.yearBreaks);   _tb('btn-yb-off',  !s.yearBreaks);
+  _tb('btn-mb-on',  s.monthBreaks);  _tb('btn-mb-off',  !s.monthBreaks);
+  _tb('btn-sel-count', s.selectionMode === 'count'); _tb('btn-sel-year', s.selectionMode === 'year'); _tb('btn-sel-range', s.selectionMode === 'range');
+  _tb('btn-yt-watch',   s.yearType === 'watch');   _tb('btn-yt-release', s.yearType === 'release');
+  _tb('btn-aspect-on',  s.keepAspect);  _tb('btn-aspect-off', !s.keepAspect);
+  _tb('btn-subtitle-on', s.showSubtitle); _tb('btn-subtitle-off', !s.showSubtitle);
+  _tb('btn-title-left',   s.titleAlign === 'left'); _tb('btn-title-center', s.titleAlign === 'center'); _tb('btn-title-right', s.titleAlign === 'right');
+  _tb('btn-sub-upper', s.subtitleUppercase); _tb('btn-sub-lower', !s.subtitleUppercase);
+
+  const _sl = (id, val, disp, fmt) => {
+    const el = document.getElementById(id); if (el) el.value = val;
+    const d  = document.getElementById(disp); if (d)  d.textContent = fmt(val);
+  };
+  _sl('count-slider',        s.count,                    'count-display',        v => v);
+  _sl('font-scale-slider',   Math.round(s.fontScale*100),'font-scale-display',   v => (v/100).toFixed(2)+'×');
+  _sl('img-cols-slider',     s.imageCols,                'img-cols-display',     v => v==0?'Auto':v);
+  _sl('img-rows-slider',     s.imageRows,                'img-rows-display',     v => v==0?'Auto':v);
+  _sl('title-size-slider',   Math.round(s.titleSize*100),'title-size-display',   v => (v/100).toFixed(2)+'×');
+  _sl('subtitle-size-slider',Math.round(s.subtitleSize*100),'subtitle-size-display',v => (v/100).toFixed(2)+'×');
+
+  document.getElementById('year-single-input').value = s.yearFrom;
+  document.getElementById('year-from-input').value   = s.yearFrom;
+  document.getElementById('year-to-input').value     = s.yearTo;
+
+  document.getElementById('color-bg').value            = s.colors.bg;
+  document.getElementById('color-accent').value        = s.colors.accent;
+  document.getElementById('color-text').value          = s.colors.text;
+  document.getElementById('color-title-text').value    = s.titleColor;
+  document.getElementById('color-subtitle-text').value = s.subtitleColor;
+
+  // cast section is conditionally rendered
+  if (document.getElementById('btn-cast-on')) {
+    _tb('btn-cast-on',  s.castEnabled); _tb('btn-cast-off', !s.castEnabled);
+    document.getElementById('cast-options').style.display = s.castEnabled ? 'flex' : 'none';
+    _tb('btn-cast-left', s.castAlign==='left'); _tb('btn-cast-center', s.castAlign==='center');
+    _tb('btn-cast-dir',  s.castType==='directors'); _tb('btn-cast-act', s.castType==='actors'); _tb('btn-cast-both', s.castType==='both');
+    _sl('actor-count-slider',    s.actorCount,                'actor-count-display',    v => v);
+    _sl('director-count-slider', s.directorCount,             'director-count-display', v => v);
+    _sl('cast-font-slider',      Math.round(s.castFontScale*100),'cast-font-display',   v => (v/100).toFixed(2)+'×');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  if (_restoreState()) {
+    _syncControlsFromState();
+  } else {
   // Smart defaults based on library size
   let initCount, initCols, initYearBreaks;
   if (TOTAL > 400) {
@@ -308,6 +547,305 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-yb-on').className  = 'toggle-btn' + (initYearBreaks  ? ' active' : '');
   document.getElementById('btn-yb-off').className = 'toggle-btn' + (!initYearBreaks ? ' active' : '');
 
+  // Template pre-configuration from /welcome selection
+  const _tplP = new URLSearchParams(window.location.search);
+  const _tpl  = _tplP.get('template');
+  if (_tpl) {
+    state.colourGrade = false; // reset for all templates; colour_grade re-enables below
+    const _tplN    = Math.min(parseInt(_tplP.get('n'))    || TOTAL, TOTAL);
+    const _tplYear = parseInt(_tplP.get('year')) || MAX_YEAR;
+    if (_tpl === 'top_list') {
+      state.order = 'ranked'; state.mode = 'text'; state.count = _tplN;
+      const _tc = _tplN > 200 ? 5 : _tplN > 100 ? 4 : _tplN > 70 ? 3 : _tplN > 30 ? 2 : 1;
+      state.cols = _tc;
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn active';
+      document.getElementById('btn-images').className = 'toggle-btn';
+      document.getElementById('count-slider').value        = _tplN;
+      document.getElementById('count-display').textContent = _tplN;
+      document.getElementById('cols-slider').value         = _tc;
+      document.getElementById('cols-display').textContent  = String(_tc);
+    } else if (_tpl === 'top_posters') {
+      state.order = 'ranked'; state.mode = 'images'; state.count = _tplN;
+      state.imageCols = 10; state.imageRows = 10;
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn';
+      document.getElementById('btn-images').className = 'toggle-btn active';
+      document.getElementById('count-slider').value        = _tplN;
+      document.getElementById('count-display').textContent = _tplN;
+      document.getElementById('img-cols-slider').value        = 10;
+      document.getElementById('img-cols-display').textContent = '10';
+      document.getElementById('img-rows-slider').value        = 10;
+      document.getElementById('img-rows-display').textContent = '10';
+    } else if (_tpl === 'year_watchlist') {
+      const _watchlistYear = new Date().getFullYear() - 1;
+      state.order = 'chrono'; state.mode = 'text'; state.cols = 0;
+      state.labelMode = 'dates'; state.dateFormat = 'DD/MM';
+      state.monthBreaks = true;
+      state.selectionMode = 'year'; state.yearFrom = _watchlistYear; state.yearTo = _watchlistYear;
+      Object.assign(state.colors, PRESETS.crimson);
+      state.titleColor    = PRESETS.crimson.text;
+      state.subtitleColor = PRESETS.crimson.accent;
+      document.getElementById('btn-ranked').className    = 'toggle-btn';
+      document.getElementById('btn-chrono').className    = 'toggle-btn active';
+      document.getElementById('btn-text').className      = 'toggle-btn active';
+      document.getElementById('btn-images').className    = 'toggle-btn';
+      document.getElementById('btn-lbl-num').className   = 'toggle-btn';
+      document.getElementById('btn-lbl-date').className  = 'toggle-btn active';
+      document.getElementById('btn-lbl-off').className   = 'toggle-btn';
+      document.getElementById('btn-dfmt-0').className    = 'toggle-btn';
+      document.getElementById('btn-dfmt-1').className    = 'toggle-btn';
+      document.getElementById('btn-dfmt-2').className    = 'toggle-btn active';
+      document.getElementById('btn-mb-on').className     = 'toggle-btn active';
+      document.getElementById('btn-mb-off').className    = 'toggle-btn';
+      document.getElementById('btn-sel-count').className = 'toggle-btn';
+      document.getElementById('btn-sel-year').className  = 'toggle-btn active';
+      document.getElementById('btn-sel-range').className = 'toggle-btn';
+      document.getElementById('count-mode-row').style.display  = 'none';
+      document.getElementById('year-single-row').style.display = 'flex';
+      document.getElementById('year-range-row').style.display  = 'none';
+      document.getElementById('year-single-input').value = _watchlistYear;
+      document.getElementById('cols-slider').value         = 0;
+      document.getElementById('cols-display').textContent  = 'Auto';
+      document.getElementById('color-bg').value            = PRESETS.crimson.bg;
+      document.getElementById('color-accent').value        = PRESETS.crimson.accent;
+      document.getElementById('color-text').value          = PRESETS.crimson.text;
+      document.getElementById('color-title-text').value    = PRESETS.crimson.text;
+      document.getElementById('color-subtitle-text').value = PRESETS.crimson.accent;
+    } else if (_tpl === 'year_review') {
+      const _reviewYear = new Date().getFullYear() - 1;
+      state.order = 'ranked'; state.mode = 'images';
+      state.orientation = 'portrait';
+      CW = BASE_W; CH = BASE_H;
+      state.selectionMode = 'year'; state.yearType = 'release';
+      state.yearFrom = _reviewYear; state.yearTo = _reviewYear;
+      state.imageCols = 0; state.imageRows = 0; state.keepAspect = false;
+      state.titleSize = 1.5; state.subtitleSize = 1.5; state.showSubtitle = true;
+      Object.assign(state.colors, PRESETS.paper);
+      state.titleColor    = PRESETS.paper.text;
+      state.subtitleColor = PRESETS.paper.accent;
+      state.editedTexts['hdr:title']    = `${_reviewYear} Review`;
+      state.editedTexts['hdr:subtitle'] = 'Ranked Titles';
+      document.getElementById('btn-ranked').className           = 'toggle-btn active';
+      document.getElementById('btn-chrono').className           = 'toggle-btn';
+      document.getElementById('btn-text').className             = 'toggle-btn';
+      document.getElementById('btn-images').className           = 'toggle-btn active';
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn active';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn';
+      document.getElementById('btn-sel-count').className        = 'toggle-btn';
+      document.getElementById('btn-sel-year').className         = 'toggle-btn active';
+      document.getElementById('btn-sel-range').className        = 'toggle-btn';
+      document.getElementById('btn-yt-watch').className         = 'toggle-btn';
+      document.getElementById('btn-yt-release').className       = 'toggle-btn active';
+      document.getElementById('btn-aspect-on').className        = 'toggle-btn';
+      document.getElementById('btn-aspect-off').className       = 'toggle-btn active';
+      document.getElementById('btn-subtitle-on').className      = 'toggle-btn active';
+      document.getElementById('btn-subtitle-off').className     = 'toggle-btn';
+      document.getElementById('count-mode-row').style.display      = 'none';
+      document.getElementById('year-single-row').style.display     = 'flex';
+      document.getElementById('year-range-row').style.display      = 'none';
+      document.getElementById('year-type-row').style.display       = '';
+      document.getElementById('subtitle-color-row').style.display  = '';
+      document.getElementById('subtitle-size-row').style.display   = '';
+      document.getElementById('subtitle-case-row').style.display   = '';
+      document.getElementById('year-single-input').value           = _reviewYear;
+      document.getElementById('img-cols-slider').value             = 0;
+      document.getElementById('img-cols-display').textContent      = 'Auto';
+      document.getElementById('img-rows-slider').value             = 0;
+      document.getElementById('img-rows-display').textContent      = 'Auto';
+      document.getElementById('title-size-slider').value           = 150;
+      document.getElementById('title-size-display').textContent    = '1.50×';
+      document.getElementById('subtitle-size-slider').value        = 150;
+      document.getElementById('subtitle-size-display').textContent = '1.50×';
+      document.getElementById('color-bg').value                    = PRESETS.paper.bg;
+      document.getElementById('color-accent').value                = PRESETS.paper.accent;
+      document.getElementById('color-text').value                  = PRESETS.paper.text;
+      document.getElementById('color-title-text').value            = PRESETS.paper.text;
+      document.getElementById('color-subtitle-text').value         = PRESETS.paper.accent;
+      applyZoom(currentZoom);
+    } else if (_tpl === 'lastyear') {
+      state.order = 'chrono'; state.mode = 'images';
+      state.selectionMode = 'year'; state.yearFrom = _tplYear; state.yearTo = _tplYear;
+      document.getElementById('btn-ranked').className    = 'toggle-btn';
+      document.getElementById('btn-chrono').className    = 'toggle-btn active';
+      document.getElementById('btn-text').className      = 'toggle-btn';
+      document.getElementById('btn-images').className    = 'toggle-btn active';
+      document.getElementById('btn-sel-count').className = 'toggle-btn';
+      document.getElementById('btn-sel-year').className  = 'toggle-btn active';
+      document.getElementById('btn-sel-range').className = 'toggle-btn';
+      document.getElementById('count-mode-row').style.display  = 'none';
+      document.getElementById('year-single-row').style.display = 'flex';
+      document.getElementById('year-range-row').style.display  = 'none';
+      document.getElementById('year-single-input').value = _tplYear;
+    } else if (_tpl === 'top300') {
+      const _n300 = Math.min(300, TOTAL);
+      state.order = 'ranked'; state.mode = 'text'; state.count = _n300; state.cols = 6;
+      Object.assign(state.colors, PRESETS.matrix);
+      state.titleColor    = PRESETS.matrix.text;
+      state.subtitleColor = PRESETS.matrix.accent;
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn active';
+      document.getElementById('btn-images').className = 'toggle-btn';
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn active';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn';
+      document.getElementById('count-slider').value        = _n300;
+      document.getElementById('count-display').textContent = _n300;
+      document.getElementById('cols-slider').value         = 6;
+      document.getElementById('cols-display').textContent  = '6';
+      document.getElementById('color-bg').value            = PRESETS.matrix.bg;
+      document.getElementById('color-accent').value        = PRESETS.matrix.accent;
+      document.getElementById('color-text').value          = PRESETS.matrix.text;
+      document.getElementById('color-title-text').value    = PRESETS.matrix.text;
+      document.getElementById('color-subtitle-text').value = PRESETS.matrix.accent;
+    } else if (_tpl === 'top250') {
+      state.order = 'ranked'; state.mode = 'images'; state.count = Math.min(250, TOTAL);
+      state.imageCols = 25; state.imageRows = 10; state.keepAspect = true;
+      state.orientation = 'landscape';
+      CW = BASE_H; CH = BASE_W;
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn active';
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn';
+      document.getElementById('btn-images').className = 'toggle-btn active';
+      document.getElementById('btn-aspect-on').className  = 'toggle-btn active';
+      document.getElementById('btn-aspect-off').className = 'toggle-btn';
+      document.getElementById('count-slider').value        = Math.min(250, TOTAL);
+      document.getElementById('count-display').textContent = Math.min(250, TOTAL);
+      document.getElementById('img-cols-slider').value        = 25;
+      document.getElementById('img-cols-display').textContent = '25';
+      document.getElementById('img-rows-slider').value        = 10;
+      document.getElementById('img-rows-display').textContent = '10';
+      applyZoom(currentZoom);
+    } else if (_tpl === 'top500') {
+      const _n500 = Math.min(500, TOTAL);
+      state.order = 'ranked'; state.mode = 'text'; state.count = _n500; state.cols = 0;
+      state.fontScale = 1.2; state.labelMode = 'off'; state.titleAlign = 'center';
+      state.orientation = 'landscape';
+      CW = BASE_H; CH = BASE_W;
+      Object.assign(state.colors, PRESETS.sepia);
+      state.titleColor    = PRESETS.sepia.text;
+      state.subtitleColor = PRESETS.sepia.accent;
+      document.getElementById('btn-ranked').className           = 'toggle-btn active';
+      document.getElementById('btn-chrono').className           = 'toggle-btn';
+      document.getElementById('btn-text').className             = 'toggle-btn active';
+      document.getElementById('btn-images').className           = 'toggle-btn';
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn active';
+      document.getElementById('btn-lbl-num').className          = 'toggle-btn';
+      document.getElementById('btn-lbl-date').className         = 'toggle-btn';
+      document.getElementById('btn-lbl-off').className          = 'toggle-btn active';
+      document.getElementById('btn-title-left').className       = 'toggle-btn';
+      document.getElementById('btn-title-center').className     = 'toggle-btn active';
+      document.getElementById('count-slider').value             = _n500;
+      document.getElementById('count-display').textContent      = _n500;
+      document.getElementById('cols-slider').value              = 0;
+      document.getElementById('cols-display').textContent       = 'Auto';
+      document.getElementById('font-scale-slider').value        = 120;
+      document.getElementById('font-scale-display').textContent = '1.20×';
+      document.getElementById('color-bg').value                 = PRESETS.sepia.bg;
+      document.getElementById('color-accent').value             = PRESETS.sepia.accent;
+      document.getElementById('color-text').value               = PRESETS.sepia.text;
+      document.getElementById('color-title-text').value         = PRESETS.sepia.text;
+      document.getElementById('color-subtitle-text').value      = PRESETS.sepia.accent;
+      // cols slider is in landscape mode — update its range
+      const _sl = document.getElementById('cols-slider');
+      _sl.min = 0; _sl.max = 10;
+      document.getElementById('cols-hints').innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>';
+      applyZoom(currentZoom);
+    } else if (_tpl === 'decade_review') {
+      state.order = 'ranked'; state.mode = 'images';
+      state.orientation = 'landscape';
+      CW = BASE_H; CH = BASE_W;
+      state.selectionMode = 'range'; state.yearType = 'release';
+      state.yearFrom = 2010; state.yearTo = 2019;
+      state.imageCols = 0; state.imageRows = 0; state.keepAspect = false;
+      Object.assign(state.colors, PRESETS.sepia);
+      state.titleColor    = PRESETS.sepia.text;
+      state.subtitleColor = PRESETS.sepia.accent;
+      state.editedTexts['hdr:title'] = 'Decade Review — 2010s';
+      document.getElementById('btn-ranked').className           = 'toggle-btn active';
+      document.getElementById('btn-chrono').className           = 'toggle-btn';
+      document.getElementById('btn-text').className             = 'toggle-btn';
+      document.getElementById('btn-images').className           = 'toggle-btn active';
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn active';
+      document.getElementById('btn-sel-count').className        = 'toggle-btn';
+      document.getElementById('btn-sel-year').className         = 'toggle-btn';
+      document.getElementById('btn-sel-range').className        = 'toggle-btn active';
+      document.getElementById('btn-yt-watch').className         = 'toggle-btn';
+      document.getElementById('btn-yt-release').className       = 'toggle-btn active';
+      document.getElementById('btn-aspect-on').className        = 'toggle-btn';
+      document.getElementById('btn-aspect-off').className       = 'toggle-btn active';
+      document.getElementById('count-mode-row').style.display   = 'none';
+      document.getElementById('year-single-row').style.display  = 'none';
+      document.getElementById('year-range-row').style.display   = 'flex';
+      document.getElementById('year-type-row').style.display    = '';
+      document.getElementById('year-from-input').value          = 2010;
+      document.getElementById('year-to-input').value            = 2019;
+      document.getElementById('img-cols-slider').value          = 0;
+      document.getElementById('img-cols-display').textContent   = 'Auto';
+      document.getElementById('img-rows-slider').value          = 0;
+      document.getElementById('img-rows-display').textContent   = 'Auto';
+      document.getElementById('color-bg').value                 = PRESETS.sepia.bg;
+      document.getElementById('color-accent').value             = PRESETS.sepia.accent;
+      document.getElementById('color-text').value               = PRESETS.sepia.text;
+      document.getElementById('color-title-text').value         = PRESETS.sepia.text;
+      document.getElementById('color-subtitle-text').value      = PRESETS.sepia.accent;
+      applyZoom(currentZoom);
+    } else if (_tpl === 'byo') {
+      const _byoN = Math.min(100, TOTAL);
+      state.order = 'ranked'; state.mode = 'images'; state.count = _byoN;
+      state.imageCols = 0; state.imageRows = 0;
+      state.orientation = 'portrait';
+      CW = BASE_W; CH = BASE_H;
+      Object.assign(state.colors, PRESETS.matrix);
+      state.titleColor    = PRESETS.matrix.text;
+      state.subtitleColor = PRESETS.matrix.accent;
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn';
+      document.getElementById('btn-images').className = 'toggle-btn active';
+      document.getElementById('count-slider').value        = _byoN;
+      document.getElementById('count-display').textContent = _byoN;
+      document.getElementById('img-cols-slider').value        = 0;
+      document.getElementById('img-cols-display').textContent = 'Auto';
+      document.getElementById('img-rows-slider').value        = 0;
+      document.getElementById('img-rows-display').textContent = 'Auto';
+      document.getElementById('color-bg').value            = PRESETS.matrix.bg;
+      document.getElementById('color-accent').value        = PRESETS.matrix.accent;
+      document.getElementById('color-text').value          = PRESETS.matrix.text;
+      document.getElementById('color-title-text').value    = PRESETS.matrix.text;
+      document.getElementById('color-subtitle-text').value = PRESETS.matrix.accent;
+      applyZoom(currentZoom);
+    } else if (_tpl === 'colour_grade') {
+      state.order = 'ranked'; state.mode = 'images'; state.count = TOTAL;
+      state.imageCols = 0; state.imageRows = 0; state.keepAspect = false;
+      state.colourGrade = true;
+      state.orientation = 'portrait';
+      state.showSubtitle = false;
+      CW = BASE_W; CH = BASE_H;
+      Object.assign(state.colors, { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' });
+      state.titleColor    = '#ffffff';
+      state.subtitleColor = '#00e054';
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('btn-text').className   = 'toggle-btn';
+      document.getElementById('btn-images').className = 'toggle-btn active';
+      document.getElementById('count-slider').value        = TOTAL;
+      document.getElementById('count-display').textContent = TOTAL;
+      document.getElementById('img-cols-slider').value        = 0;
+      document.getElementById('img-cols-display').textContent = 'Auto';
+      document.getElementById('img-rows-slider').value        = 0;
+      document.getElementById('img-rows-display').textContent = 'Auto';
+      applyZoom(currentZoom);
+    }
+  } // end if (_tpl)
+  } // end else — no saved state / template param
+
   if (IS_PREVIEW) {
     state.mode  = 'images';
     state.order = 'chrono';
@@ -323,33 +861,47 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   updateControlVis();
-  applyZoom(0.15);
+  applyZoom(currentZoom);
   render();
   setupEditHandler();
   setupPanHandler();
+  window.addEventListener('beforeunload', _saveState);
 });
 
 // ── zoom ──
 function applyZoom(z) {
   currentZoom = Math.max(0.05, Math.min(2.0, z));
-  document.getElementById('posterCanvas').style.transform = `scale(${currentZoom})`;
+  const canvas = document.getElementById('posterCanvas');
+  canvas.style.width     = CW + 'px';
+  canvas.style.height    = CH + 'px';
+  canvas.style.transform = `scale(${currentZoom})`;
   document.getElementById('posterWrap').style.width  = Math.round(CW * currentZoom) + 'px';
   document.getElementById('posterWrap').style.height = Math.round(CH * currentZoom) + 'px';
   document.getElementById('zoom-display').textContent = Math.round(currentZoom * 100) + '%';
+  const _sepH = Math.max(4, Math.round(2 / currentZoom));
+  canvas.querySelectorAll('.sep-line').forEach(el => el.style.height = _sepH + 'px');
 }
 function adjustZoom(d) { applyZoom(currentZoom + d); }
 function resetZoom()   { applyZoom(0.15); }
 
 // ── control visibility ──
 function updateControlVis() {
-  const t = state.mode === 'text';
-  const c = state.order === 'chrono';
-  const d = state.labelMode === 'dates';
-  document.getElementById('cols-row').style.display          = t        ? ''     : 'none';
-  document.getElementById('numbering-row').style.display     = t        ? ''     : 'none';
-  document.getElementById('font-scale-row').style.display    = t        ? ''     : 'none';
-  document.getElementById('year-breaks-row').style.display   = (t && c) ? ''     : 'none';
-  document.getElementById('date-format-row').style.display   = (t && d) ? 'flex' : 'none';
+  const t  = state.mode === 'text';
+  const im = state.mode === 'images';
+  const c  = state.order === 'chrono';
+  const d  = state.labelMode === 'dates';
+  const sy = state.selectionMode === 'year';
+  document.getElementById('cols-row').style.display          = t             ? ''     : 'none';
+  document.getElementById('numbering-row').style.display     = t             ? ''     : 'none';
+  document.getElementById('font-scale-row').style.display    = t             ? ''     : 'none';
+  document.getElementById('year-breaks-row').style.display   = (t && c && !sy) ? ''   : 'none';
+  document.getElementById('month-breaks-row').style.display  = (t && c && sy)  ? ''   : 'none';
+  const yr = state.selectionMode === 'year' || state.selectionMode === 'range';
+  document.getElementById('year-type-row').style.display     = yr ? '' : 'none';
+  document.getElementById('date-format-row').style.display   = (t && d)     ? 'flex' : 'none';
+  document.getElementById('img-cols-row').style.display      = im            ? ''     : 'none';
+  document.getElementById('img-rows-row').style.display      = im            ? ''     : 'none';
+  document.getElementById('img-aspect-row').style.display    = im            ? ''     : 'none';
 }
 
 // ── order / mode ──
@@ -364,6 +916,28 @@ function setMode(v) {
   document.getElementById('btn-text').className   = 'toggle-btn' + (v === 'text'   ? ' active' : '');
   document.getElementById('btn-images').className = 'toggle-btn' + (v === 'images' ? ' active' : '');
   updateControlVis(); render();
+}
+function setOrientation(v) {
+  state.orientation = v;
+  CW = v === 'landscape' ? BASE_H : BASE_W;
+  CH = v === 'landscape' ? BASE_W : BASE_H;
+  document.getElementById('btn-orient-portrait').className  = 'toggle-btn' + (v === 'portrait'  ? ' active' : '');
+  document.getElementById('btn-orient-landscape').className = 'toggle-btn' + (v === 'landscape' ? ' active' : '');
+  const slider = document.getElementById('cols-slider');
+  const hints  = document.getElementById('cols-hints');
+  if (v === 'landscape') {
+    slider.min = 0; slider.max = 10;
+    if (parseInt(slider.value) > 10) { slider.value = 10; state.cols = 10; }
+    hints.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>';
+    document.getElementById('cols-display').textContent = state.cols === 0 ? 'Auto' : String(state.cols);
+  } else {
+    slider.min = 0; slider.max = 7;
+    if (parseInt(slider.value) > 7) { slider.value = 7; state.cols = 7; }
+    hints.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>';
+    document.getElementById('cols-display').textContent = state.cols === 0 ? 'Auto' : String(state.cols);
+  }
+  applyZoom(currentZoom);
+  render();
 }
 
 // ── labels ──
@@ -394,6 +968,59 @@ function onColsSlide(v) {
   document.getElementById('cols-display').textContent = v === '0' ? 'Auto' : v;
   scheduleRender();
 }
+function onImgColsSlide(v) {
+  state.imageCols = parseInt(v);
+  document.getElementById('img-cols-display').textContent = v === '0' ? 'Auto' : v;
+  scheduleRender();
+}
+function onImgRowsSlide(v) {
+  state.imageRows = parseInt(v);
+  document.getElementById('img-rows-display').textContent = v === '0' ? 'Auto' : v;
+  scheduleRender();
+}
+function setKeepAspect(v) {
+  state.keepAspect = v;
+  document.getElementById('btn-aspect-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-aspect-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  scheduleRender();
+}
+
+// ── title controls ──
+function setShowSubtitle(v) {
+  state.showSubtitle = v;
+  document.getElementById('btn-subtitle-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-subtitle-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  document.getElementById('subtitle-color-row').style.display = v ? '' : 'none';
+  document.getElementById('subtitle-size-row').style.display  = v ? '' : 'none';
+  document.getElementById('subtitle-case-row').style.display  = v ? '' : 'none';
+  render();
+}
+function onSubtitleSizeSlide(v) {
+  state.subtitleSize = parseInt(v) / 100;
+  document.getElementById('subtitle-size-display').textContent = state.subtitleSize.toFixed(2) + '×';
+  scheduleRender();
+}
+function setSubtitleCase(upper) {
+  state.subtitleUppercase = upper;
+  document.getElementById('btn-sub-upper').className = 'toggle-btn' + (upper  ? ' active' : '');
+  document.getElementById('btn-sub-lower').className = 'toggle-btn' + (!upper ? ' active' : '');
+  render();
+}
+function setTitleAlign(v) {
+  state.titleAlign = v;
+  document.getElementById('btn-title-left').className   = 'toggle-btn' + (v === 'left'   ? ' active' : '');
+  document.getElementById('btn-title-center').className = 'toggle-btn' + (v === 'center' ? ' active' : '');
+  document.getElementById('btn-title-right').className  = 'toggle-btn' + (v === 'right'  ? ' active' : '');
+  render();
+}
+function onTitleSizeSlide(v) {
+  state.titleSize = parseInt(v) / 100;
+  document.getElementById('title-size-display').textContent = state.titleSize.toFixed(2) + '×';
+  scheduleRender();
+}
+function setTitleColor(val)    { state.titleColor    = val; render(); }
+function setSubtitleColor(val) { state.subtitleColor = val; render(); }
+
 function setCount(n) {
   n = Math.max(5, Math.min(TOTAL, n));
   state.count = n;
@@ -408,13 +1035,45 @@ function onCountSlide(v) {
 }
 function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
 
+function setYearType(v) {
+  state.yearType = v;
+  document.getElementById('btn-yt-watch').className   = 'toggle-btn' + (v === 'watch'   ? ' active' : '');
+  document.getElementById('btn-yt-release').className = 'toggle-btn' + (v === 'release' ? ' active' : '');
+  scheduleRender();
+}
+
 // ── selection mode (count vs years) ──
 function setSelectionMode(v) {
   state.selectionMode = v;
+  if (v === 'year' && state.yearBreaks) {
+    state.yearBreaks = false;
+    document.getElementById('btn-yb-on').className  = 'toggle-btn';
+    document.getElementById('btn-yb-off').className = 'toggle-btn active';
+  }
   document.getElementById('btn-sel-count').className = 'toggle-btn' + (v === 'count' ? ' active' : '');
-  document.getElementById('btn-sel-years').className = 'toggle-btn' + (v === 'years' ? ' active' : '');
-  document.getElementById('count-mode-row').style.display  = v === 'count' ? '' : 'none';
-  document.getElementById('years-mode-row').style.display  = v === 'years' ? 'flex' : 'none';
+  document.getElementById('btn-sel-year').className  = 'toggle-btn' + (v === 'year'  ? ' active' : '');
+  document.getElementById('btn-sel-range').className = 'toggle-btn' + (v === 'range' ? ' active' : '');
+  document.getElementById('count-mode-row').style.display  = v === 'count' ? ''     : 'none';
+  document.getElementById('year-single-row').style.display = v === 'year'  ? 'flex' : 'none';
+  document.getElementById('year-range-row').style.display  = v === 'range' ? 'flex' : 'none';
+  updateControlVis();
+  scheduleRender();
+}
+function _clearAutoTitle() {
+  const t = state.editedTexts['hdr:title'];
+  if (!t || /^\d{4} Watchlist$/.test(t)) delete state.editedTexts['hdr:title'];
+}
+function onSingleYearChange() {
+  const yr = parseInt(document.getElementById('year-single-input').value) || MAX_YEAR;
+  _clearAutoTitle();
+  state.yearFrom = yr;
+  state.yearTo   = yr;
+  scheduleRender();
+}
+function setSingleYear(yr) {
+  _clearAutoTitle();
+  state.yearFrom = yr; state.yearTo = yr;
+  document.getElementById('year-single-input').value = yr;
   scheduleRender();
 }
 function onYearRangeChange() {
@@ -429,6 +1088,12 @@ function setYearRange(from, to) {
   document.getElementById('year-from-input').value = from;
   document.getElementById('year-to-input').value   = to;
   scheduleRender();
+}
+function setMonthBreaks(v) {
+  state.monthBreaks = v;
+  document.getElementById('btn-mb-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-mb-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  render();
 }
 
 // ── font scale / line spacing ──
@@ -445,10 +1110,14 @@ function onLineSpacingSlide(v) {
 
 // ── colours ──
 const PRESETS = {
-  letterboxd: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
-  midnight:   { bg: '#07071a', accent: '#7b6cff', text: '#e8e8ff' },
-  paper:      { bg: '#f0ead8', accent: '#1a1a2e', text: '#1a1a2e' },
-  sepia:      { bg: '#2c1f14', accent: '#d4a853', text: '#f0e0c0' },
+  matrix:   { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
+  midnight: { bg: '#07071a', accent: '#7b6cff', text: '#e8e8ff' },
+  paper:    { bg: '#f0ead8', accent: '#8b1a1a', text: '#1a1a2e' },
+  sepia:    { bg: '#2c1f14', accent: '#d4a853', text: '#f0e0c0' },
+  crimson:  { bg: '#0c0303', accent: '#c41a1a', text: '#ffeaea' },
+  ocean:    { bg: '#020d1a', accent: '#00b4d8', text: '#caf0f8' },
+  dusk:     { bg: '#1c0f1a', accent: '#ff7043', text: '#f5ebe0' },
+  gold:     { bg: '#0e0c00', accent: '#ffc300', text: '#fff8dc' },
 };
 function setColor(key, val) { state.colors[key] = val; render(); }
 function applyPreset(name) {
@@ -457,6 +1126,10 @@ function applyPreset(name) {
   document.getElementById('color-bg').value     = p.bg;
   document.getElementById('color-accent').value = p.accent;
   document.getElementById('color-text').value   = p.text;
+  state.titleColor    = p.text;
+  state.subtitleColor = p.accent;
+  document.getElementById('color-title-text').value    = p.text;
+  document.getElementById('color-subtitle-text').value = p.accent;
   render();
 }
 
@@ -499,11 +1172,118 @@ function onCastFontSlide(v) {
   scheduleRender();
 }
 
+// ── colour grade: extract average hue from a poster URL ──
+function _extractHue(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 12; c.height = 12;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, 12, 12);
+        const d = ctx.getImageData(0, 0, 12, 12).data;
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; count++; }
+        r = r / count / 255; g = g / count / 255; b = b / count / 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b), diff = max - min;
+        let h = 0;
+        const l = (max + min) / 2;
+        const s = diff === 0 ? 0 : diff / (1 - Math.abs(2 * l - 1));
+        if (diff > 0) {
+          if (max === r) h = ((g - b) / diff + (g < b ? 6 : 0)) / 6;
+          else if (max === g) h = ((b - r) / diff + 2) / 6;
+          else h = ((r - g) / diff + 4) / 6;
+        }
+        resolve({ h: h * 360, s, l });
+      } catch(e) { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+// ── auto layout helpers ──
+function _autoTextCols(items) {
+  const filmCount = items.filter(i => i.type === 'f').length;
+  if (filmCount === 0) return 1;
+  const n = items.length; // total items inc. separators — used for gap calc
+
+  // Lookup gives a sensible ballpark based on film count
+  let target;
+  if (state.orientation === 'landscape') {
+    if (filmCount <=  25) target = 1;
+    else if (filmCount <=  60) target = 3;
+    else if (filmCount <= 120) target = 4;
+    else if (filmCount <= 175) target = 5;
+    else if (filmCount <= 222) target = 6;
+    else if (filmCount <= 259) target = 7;
+    else if (filmCount <= 288) target = 8;
+    else if (filmCount <= 342) target = 9;
+    else target = 10;
+  } else {
+    if (filmCount <=  30) target = 1;
+    else if (filmCount <=  60) target = 2;
+    else if (filmCount <= 102) target = 3;
+    else if (filmCount <= 168) target = 4;
+    else if (filmCount <= 240) target = 5;
+    else if (filmCount <= 400) target = 6;
+    else target = 7;
+  }
+
+  const maxCols = state.orientation === 'landscape' ? 10 : 7;
+
+  // Search ±3 of target for the column count with the fewest empty trailing slots.
+  // Among equally-gapped options, prefer the count closest to the baseline target.
+  let bestCols = target, bestGap = Infinity, bestDist = Infinity;
+  for (let c = Math.max(1, target - 3); c <= Math.min(maxCols, target + 3); c++) {
+    const rows = Math.ceil(n / c);
+    const gap  = rows * c - n;
+    const dist = Math.abs(c - target);
+    if (gap < bestGap || (gap === bestGap && dist < bestDist)) {
+      bestGap = gap; bestDist = dist; bestCols = c;
+    }
+  }
+  return bestCols;
+}
+
+function _autoImageLayout(n, availW, availH, gap) {
+  if (n === 0) return { cols: 1, rows: 1 };
+  const POSTER_RATIO = 1.5; // height / width
+  // ideal cols/rows ratio so cells are poster-shaped
+  const targetRatio = (availW / availH) * POSTER_RATIO;
+  const targetCols  = Math.max(1, Math.round(Math.sqrt(n * targetRatio)));
+  const MIN_CELL_W  = Math.round(availW * 0.04); // no smaller than 4% of width
+
+  let bestCols = targetCols, bestScore = Infinity;
+  const lo = Math.max(1, targetCols - 6);
+  const hi = targetCols + 6;
+  for (let c = lo; c <= hi; c++) {
+    const r       = Math.ceil(n / c);
+    const cellW   = (availW - gap * (c - 1)) / c;
+    const cellH   = (availH - gap * (r - 1)) / r;
+    if (cellW < MIN_CELL_W || cellH <= 0) continue;
+    const aspect   = cellH / cellW;
+    const aspectDev = Math.abs(aspect - POSTER_RATIO) / POSTER_RATIO;
+    const emptyFrac = (c * r - n) / Math.max(1, n); // 0 = perfect rectangle
+    const score    = aspectDev * 1.2 + emptyFrac * 2.5;
+    if (score < bestScore) { bestScore = score; bestCols = c; }
+  }
+  return { cols: bestCols, rows: Math.ceil(n / bestCols) };
+}
+
 // ── fetch ──
 async function getFilms() {
-  if (state.selectionMode === 'years') {
+  const yt = state.yearType === 'release' ? '&year_type=release' : '';
+  if (state.selectionMode === 'year') {
     return (await fetch(
-      `/api/films?view=${state.order}&from_year=${state.yearFrom}&to_year=${state.yearTo}`
+      `/api/films?view=${state.order}&from_year=${state.yearFrom}&to_year=${state.yearFrom}${yt}`
+    )).json();
+  }
+  if (state.selectionMode === 'range') {
+    return (await fetch(
+      `/api/films?view=${state.order}&from_year=${state.yearFrom}&to_year=${state.yearTo}${yt}`
     )).json();
   }
   return (await fetch(`/api/films?view=${state.order}&limit=${state.count}`)).json();
@@ -552,6 +1332,11 @@ function formatDate(s) {
   return s;
 }
 function getYear(s) { return parseDate(s).y || 'Unknown'; }
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function getMonthLabel(s) {
+  const idx = parseInt(parseDate(s).mo, 10) - 1;
+  return idx >= 0 && idx < 12 ? MONTH_NAMES[idx] : 'Unknown';
+}
 function filmLabel(f, idx) {
   if (state.labelMode === 'off')   return '';
   if (state.labelMode === 'dates') return formatDate(f.date);
@@ -585,7 +1370,9 @@ function castHeight() {
 
 // ── render ──
 async function render() {
+  const myGen = ++_renderGen;
   const films = await getFilms();
+  if (myGen !== _renderGen) return;
   let castData = { actors: [], directors: [] };
   if (state.castEnabled) {
     try {
@@ -593,8 +1380,9 @@ async function render() {
       if (r.ok) castData = await r.json();
     } catch(e) {}
   }
+  if (myGen !== _renderGen) return;
   if (state.mode === 'text') renderText(films, castData);
-  else await renderImages(films, castData);
+  else await renderImages(films, castData, myGen);
 }
 
 // ── TEXT RENDER ──
@@ -605,16 +1393,23 @@ function renderText(films, castData) {
   const availW  = CW - PAD * 2;
 
   // Header font constants (don't depend on grid layout — compute first so HEADER_H is accurate)
-  const titleFs = Math.round(CW * 0.052);
+  const titleFs = Math.round(CW * 0.052 * state.titleSize);
   const labelFs = Math.round(CW * 0.012);
   const ruleH   = Math.round(CH * 0.003);
   const hdrMgn  = Math.round(CH * 0.009);
-  // Actual rendered header height: subtitle line + gap + title + rule margin + rule + container margin
-  const HEADER_H = Math.ceil(labelFs * 1.2) + 16 + titleFs + hdrMgn + ruleH + hdrMgn;
+  const subtitleLineH = state.showSubtitle ? Math.ceil(labelFs * state.subtitleSize * 1.2) + 16 : 0;
+  const HEADER_H = subtitleLineH + titleFs + hdrMgn + ruleH + hdrMgn;
 
-  // Build render items with optional year separators
+  // Build render items with optional month/year separators
   const items = [];
-  if (state.yearBreaks && state.order === 'chrono') {
+  if (state.monthBreaks && state.order === 'chrono' && state.selectionMode === 'year') {
+    let lastMo = null;
+    films.forEach((f, i) => {
+      const mo = parseDate(f.date).mo;
+      if (mo !== lastMo) { items.push({ type: 'mo', label: getMonthLabel(f.date) }); lastMo = mo; }
+      items.push({ type: 'f', film: f, idx: i });
+    });
+  } else if (state.yearBreaks && state.order === 'chrono' && state.selectionMode !== 'year') {
     let lastYear = null;
     films.forEach((f, i) => {
       const yr = getYear(f.date);
@@ -625,8 +1420,7 @@ function renderText(films, castData) {
     films.forEach((f, i) => items.push({ type: 'f', film: f, idx: i }));
   }
 
-  const numCols = state.cols > 0 ? state.cols
-    : (n > 350 ? 7 : n > 250 ? 6 : n > 200 ? 5 : n > 100 ? 4 : n > 70 ? 3 : n > 30 ? 2 : 1);
+  const numCols = state.cols > 0 ? state.cols : _autoTextCols(items);
   const rows  = Math.ceil(items.length / numCols);
   const colGap = 35;
 
@@ -669,18 +1463,21 @@ function renderText(films, castData) {
   const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
   const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
 
-  const hTitle    = _et(state.editedTexts['hdr:title']    || `${countLbl} FILMS`);
-  const hSubtitle = _et(state.editedTexts['hdr:subtitle'] || orderLbl);
+  const defaultTitle = state.selectionMode === 'year' ? `${state.yearFrom} Watchlist` : `${countLbl} FILMS`;
+  const hTitle    = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : defaultTitle);
+  const hSubtitle = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : orderLbl);
 
   const columns = Array.from({ length: numCols }, (_, c) => items.slice(c * rows, (c + 1) * rows));
 
   const colsHtml = columns.map(col => {
     const rowsHtml = col.map(item => {
-      if (item.type === 'yr') {
-        return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:center;gap:16px;overflow:hidden;min-width:0;">
-          <div style="flex:1;height:2px;background:${state.colors.accent};opacity:0.45;"></div>
-          <span style="font-size:${Math.round(fs*0.85)}px;color:${state.colors.accent};font-weight:700;letter-spacing:0.12em;flex-shrink:0;white-space:nowrap;">${_et(item.year)}</span>
-          <div style="flex:1;height:2px;background:${state.colors.accent};opacity:0.45;"></div>
+      if (item.type === 'yr' || item.type === 'mo') {
+        const sepLabel = item.type === 'yr' ? item.year : item.label;
+        const _lw = Math.round(colW);
+        return `<div style="height:${Math.round(itemH)}px;width:${_lw}px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;">
+          <div class="sep-line" style="height:3px;background:${state.colors.accent};opacity:0.6;border-radius:2px;"></div>
+          <span style="font-size:${Math.round(fs*0.85)}px;color:${state.colors.accent};font-weight:700;letter-spacing:0.12em;white-space:nowrap;">${_et(sepLabel)}</span>
+          <div class="sep-line" style="height:3px;background:${state.colors.accent};opacity:0.6;border-radius:2px;"></div>
         </div>`;
       }
       const { film: f, idx } = item;
@@ -719,16 +1516,18 @@ function renderText(films, castData) {
   document.getElementById('posterCanvas').innerHTML = `
     <div style="padding:${PAD}px ${PAD}px ${PAD_B}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
-      <div style="flex-shrink:0;margin-bottom:${hdrMgn}px;">
-        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"
-             style="font-size:${labelFs}px;letter-spacing:0.22em;color:${state.colors.accent};text-transform:uppercase;margin-bottom:16px;">${hSubtitle}</div>
-        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(countLbl + ' FILMS')}"
-             style="font-size:${titleFs}px;font-weight:800;color:${state.colors.text};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
+      <div style="flex-shrink:0;margin-bottom:${hdrMgn}px;text-align:${state.titleAlign};">
+        ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.22em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:16px;">${hSubtitle}</div>` : ''}
+        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+             style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
         <div style="height:${ruleH}px;background:${state.colors.accent};margin-top:${hdrMgn}px;border-radius:2px;"></div>
       </div>
       <div style="display:flex;gap:${colGap}px;flex-shrink:0;height:${Math.round(availH)}px;">${colsHtml}</div>
       ${castHtml}
     </div>`;
+  // Scale sep-lines so they're visible at current zoom (3px at full-res = invisible at 15%)
+  const _sepH = Math.max(4, Math.round(2 / currentZoom));
+  document.getElementById('posterCanvas').querySelectorAll('.sep-line').forEach(el => el.style.height = _sepH + 'px');
 }
 
 // ── CAST FONT SIZE ──
@@ -783,7 +1582,7 @@ function buildCastHtml(castData, listFs, maxH = 0) {
 }
 
 // ── IMAGE RENDER ──
-async function renderImages(films, castData) {
+async function renderImages(films, castData, myGen) {
   const canvas = document.getElementById('posterCanvas');
   const wrap   = document.getElementById('posterWrap');
   const fetchOverlay = document.createElement('div');
@@ -809,45 +1608,97 @@ async function renderImages(films, castData) {
     _plCount.textContent   = `${done} / ${total}`;
   });
   fetchOverlay.remove();
+  if (myGen !== _renderGen) return;
 
-  const n       = films.length;
-  const PAD      = 198;
-  const HEADER_H = 260;
-  const CAST_H   = castHeight();
-  const availW   = CW - PAD * 2;
-  const availH   = CH - PAD * 2 - HEADER_H - CAST_H;
-  const gap      = 10;
+  // ── colour grade: sort films by average poster hue ──
+  let renderFilms = films;
+  if (state.colourGrade) {
+    const gradeOverlay = document.createElement('div');
+    gradeOverlay.style.cssText =
+      'position:absolute;inset:0;z-index:20;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;' +
+      'background:radial-gradient(ellipse at center,rgba(8,8,8,0.88) 0%,rgba(8,8,8,0.55) 40%,transparent 70%);';
+    gradeOverlay.innerHTML =
+      `<div class="loading-spinner"></div>` +
+      `<span style="color:rgba(255,255,255,0.65);font-size:12px;font-family:-apple-system,sans-serif;letter-spacing:0.1em;text-transform:uppercase;">Sorting by colour…</span>`;
+    wrap.appendChild(gradeOverlay);
 
-  let cols = 2;
-  for (let c = 2; c <= 12; c++) {
-    cols = c;
-    const rows  = Math.ceil(n / c);
-    const cellW = (availW - gap * (c - 1)) / c;
-    if (rows * cellW * 1.5 + (rows - 1) * gap <= availH) break;
+    const entries = await Promise.all(films.map(async f => {
+      const key = `${f.title}|${f.year}`;
+      const url = state.customImages[key] || state.cache[key];
+      const hsl = url ? await _extractHue(url) : null;
+      return { f, hsl };
+    }));
+    gradeOverlay.remove();
+    if (myGen !== _renderGen) return;
+
+    entries.sort((a, b) => {
+      const ha = a.hsl, hb = b.hsl;
+      if (!ha && !hb) return 0;
+      if (!ha) return 1;
+      if (!hb) return -1;
+      // Low saturation or very dark → send to end, sorted by lightness
+      const aFlat = ha.s < 0.12 || ha.l < 0.10;
+      const bFlat = hb.s < 0.12 || hb.l < 0.10;
+      if (aFlat && !bFlat) return 1;
+      if (bFlat && !aFlat) return -1;
+      if (aFlat && bFlat) return ha.l - hb.l;
+      return ha.h - hb.h;
+    });
+    renderFilms = entries.map(e => e.f);
   }
-  const rows  = Math.ceil(n / cols);
-  const cellW = Math.floor((availW - gap * (cols - 1)) / cols);
-  const cellH = Math.floor((availH - gap * (rows - 1)) / rows);
 
-  const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
-  const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
-  const titleFs  = Math.round(CW * 0.030);
-  const labelFs  = Math.round(CW * 0.011);
-  const hTitle    = _et(state.editedTexts['hdr:title']    || `${countLbl} FILMS`);
-  const hSubtitle = _et(state.editedTexts['hdr:subtitle'] || orderLbl);
+  const n        = renderFilms.length;
+  const PAD       = 198;
+  const titleFs   = Math.round(CW * 0.030 * state.titleSize);
+  const labelFs   = Math.round(CW * 0.011);
+  const subtitleLineH = state.showSubtitle ? Math.ceil(labelFs * 1.2) + 12 : 0;
+  const HEADER_H  = subtitleLineH + Math.ceil(titleFs * 1.1) + Math.round(CH * 0.010) + 20;
+  const CAST_H    = castHeight();
+  const availW    = CW - PAD * 2;
+  const availH    = CH - PAD * 2 - HEADER_H - CAST_H;
+  const gap       = 10;
+
+  let cols, rows;
+  if (state.imageCols > 0 && state.imageRows > 0) {
+    cols = state.imageCols;
+    rows = state.imageRows;
+  } else if (state.imageCols > 0) {
+    cols = state.imageCols;
+    rows = Math.ceil(n / cols);
+  } else if (state.imageRows > 0) {
+    rows = state.imageRows;
+    cols = Math.ceil(n / rows);
+  } else {
+    const _auto = _autoImageLayout(n, availW, availH, gap);
+    cols = _auto.cols;
+    rows = _auto.rows;
+  }
+  const cellW = Math.floor((availW - gap * (cols - 1)) / cols);
+  const cellH = state.keepAspect
+    ? Math.round(cellW * 1.5)
+    : Math.floor((availH - gap * (rows - 1)) / rows);
+
+  const orderLbl  = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
+  const countLbl  = n === TOTAL ? 'ALL' : `TOP ${n}`;
+  const defaultTitle = state.selectionMode === 'year' ? `${state.yearFrom} Watchlist` : `${countLbl} FILMS`;
+  const hTitle    = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : defaultTitle);
+  const hSubtitle = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : orderLbl);
 
   // Absolute positioning — more reliable than flex-wrap in html2canvas
   const gridW = cols * cellW + (cols - 1) * gap;
   const gridH = rows * cellH + (rows - 1) * gap;
-  const lastRowCount  = n - (rows - 1) * cols;
+  const actualLastRow = Math.floor((n - 1) / cols);
+  const lastRowCount  = n - actualLastRow * cols;
+  const fullRowOffset = Math.round((availW - gridW) / 2);
   const lastRowOffset = lastRowCount < cols
-    ? Math.round((gridW - lastRowCount * cellW - (lastRowCount - 1) * gap) / 2)
-    : 0;
+    ? Math.round((availW - lastRowCount * cellW - (lastRowCount - 1) * gap) / 2)
+    : fullRowOffset;
 
-  const cells = films.map((f, i) => {
+  const cells = renderFilms.map((f, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
-    const x   = col * (cellW + gap) + (row === rows - 1 ? lastRowOffset : 0);
+    const rowOffset = row === actualLastRow ? lastRowOffset : fullRowOffset;
+    const x   = col * (cellW + gap) + rowOffset;
     const y   = row * (cellH + gap);
     const key = `${f.title}|${f.year}`;
     const url = state.customImages[key] || state.cache[key];
@@ -868,13 +1719,12 @@ async function renderImages(films, castData) {
   canvas.innerHTML = `
     <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
-      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;">
-        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}"
-             style="font-size:${labelFs}px;letter-spacing:0.2em;color:${state.colors.accent};text-transform:uppercase;margin-bottom:12px;">${hSubtitle}</div>
-        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(countLbl + ' FILMS')}"
-             style="font-size:${titleFs}px;font-weight:800;color:${state.colors.text};line-height:1;">${hTitle}</div>
+      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;text-align:${state.titleAlign};">
+        ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.2em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:12px;">${hSubtitle}</div>` : ''}
+        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+             style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;">${hTitle}</div>
       </div>
-      <div style="position:relative;width:${gridW}px;height:${gridH}px;flex-shrink:0;">${cells}</div>
+      <div style="position:relative;width:${availW}px;height:${gridH}px;flex-shrink:0;">${cells}</div>
       ${castHtml}
     </div>`;
 }
@@ -895,10 +1745,14 @@ function setupEditHandler() {
     el.addEventListener('blur', () => {
       el.contentEditable = 'false'; el.style.cursor = '';
       const key = el.dataset.editKey;
-      if (key) state.editedTexts[key] = el.textContent.trim() || (el.dataset.orig || '');
+      if (key) {
+        state.editedTexts[key] = el.textContent.trim();
+        render();
+      }
     }, { once: true });
     el.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); el.blur(); }
+      if (ev.key === 'Delete' && el.textContent.trim() === '') el.blur();
     }, { once: true });
   });
 }
@@ -971,7 +1825,9 @@ function editValue(id, type) {
     const v = parseFloat(input.value);
     if (isNaN(v)) { span.textContent = origText; return; }
     if (type === 'cols') {
-      const s = String(Math.round(Math.max(0, Math.min(7, v))));
+      const _colsMax = state.orientation === 'landscape' ? 10 : 7;
+      const _colsMin = 0;
+      const s = String(Math.round(Math.max(_colsMin, Math.min(_colsMax, v))));
       document.getElementById('cols-slider').value = s;
       onColsSlide(s);
     } else if (type === 'count') {
@@ -980,6 +1836,14 @@ function editValue(id, type) {
       const s = String(Math.round(Math.max(80, Math.min(120, v))));
       document.getElementById('font-scale-slider').value = s;
       onFontScaleSlide(s);
+    } else if (type === 'img-cols') {
+      const s = String(Math.round(Math.max(0, Math.min(25, v))));
+      document.getElementById('img-cols-slider').value = s;
+      onImgColsSlide(s);
+    } else if (type === 'img-rows') {
+      const s = String(Math.round(Math.max(0, Math.min(25, v))));
+      document.getElementById('img-rows-slider').value = s;
+      onImgRowsSlide(s);
     } else {
       const s = String(Math.round(Math.max(20, Math.min(200, v))));
       document.getElementById('line-spacing-slider').value = s;
@@ -998,6 +1862,14 @@ function editValue(id, type) {
     if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
     if (e.key === 'Escape') { finish(false); input.blur(); }
   });
+}
+
+// ── start over ──
+function confirmStartOver() {
+  if (confirm('Start over? This will clear your current poster and take you back to the template screen.')) {
+    localStorage.removeItem(_STATE_KEY);
+    window.location.href = '/welcome';
+  }
 }
 
 // ── DOWNLOAD — 2800×4200 canvas × scale:2 = 5600×8400px output ──
@@ -1032,6 +1904,10 @@ async function downloadPoster() {
   wrap.style.height   = CH + 'px';
   wrap.style.overflow = 'visible';
   el.style.transform  = 'scale(1)';
+
+  // Reset sep-lines to a fixed thickness for the full-res capture
+  const sepLines = [...el.querySelectorAll('.sep-line')];
+  sepLines.forEach(sl => sl.style.height = '4px');
 
   // Convert TMDB background-image divs to data URLs so html2canvas reads them
   // without any CORS issue (data URLs are same-origin by definition).
@@ -1069,6 +1945,8 @@ async function downloadPoster() {
       const orig = origBgs.get(div);
       if (orig !== undefined) div.style.backgroundImage = orig;
     });
+    const _restoreSepH = Math.max(4, Math.round(2 / currentZoom));
+    sepLines.forEach(sl => sl.style.height = _restoreSepH + 'px');
     el.style.transform  = savedTransform;
     wrap.style.position = savedPos;
     wrap.style.top      = '';

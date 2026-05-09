@@ -107,7 +107,7 @@
       try {
         const r = await fetch('/api/load-demo');
         const d = await r.json();
-        if (d.loaded) window.location.reload();
+        if (d.loaded) window.location.href = '/welcome';
       } catch(e) {
         btn.textContent = 'Error — try again';
         btn.disabled = false;
@@ -163,7 +163,7 @@
             es.close();
             msg.textContent = `Done — ${ev.count} films loaded!`;
             fill.style.width = '100%';
-            setTimeout(() => window.location.reload(), 800);
+            setTimeout(() => window.location.href = '/welcome', 800);
           } else if (ev.type === 'error') {
             es.close();
             msg.textContent = 'Error: ' + ev.message;
@@ -198,7 +198,7 @@
         const d = await r.json();
         if (d.loaded) {
           label.textContent = `Loaded ${d.count} films!`;
-          setTimeout(() => window.location.reload(), 600);
+          setTimeout(() => window.location.href = '/welcome', 600);
         } else {
           label.textContent = 'Error: ' + (d.error || 'unknown');
           label.style.pointerEvents = '';
@@ -242,7 +242,7 @@
           es.close();
           msg.textContent = `Done — ${d.count} films loaded!`;
           fill.style.width = '100%';
-          setTimeout(() => window.location.reload(), 800);
+          setTimeout(() => window.location.href = '/welcome', 800);
         } else if (d.type === 'error') {
           es.close();
           msg.textContent = 'Error: ' + d.message;
