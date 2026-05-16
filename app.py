@@ -6,7 +6,12 @@ import sys
 import json
 import csv
 import io
+import re
+import hashlib
 import requests as http_req
+
+_POSTER_CACHE_DIR = Path(__file__).parent / "static" / "poster_cache"
+_POSTER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 sys.path.insert(0, str(Path(__file__).parent))
 import FLM as flm
@@ -29,6 +34,8 @@ def _find_data_file():
 _data_loaded  = False
 _is_preview   = False   # True when loaded via RSS (limited film count)
 _pending_imdb_films = []  # staged after CSV parse, before TMDB enrichment
+_lb_username  = ""
+_lb_avatar    = ""      # cached Letterboxd avatar URL (fetched on demand)
 
 class _EmptyManager:
     films = []
@@ -144,11 +151,13 @@ def _inject_globals():
 
 @app.route("/api/reset")
 def api_reset():
-    global manager, _data_loaded, _is_preview, _pending_imdb_films
+    global manager, _data_loaded, _is_preview, _pending_imdb_films, _lb_username, _lb_avatar
     manager = _EmptyManager()
     _data_loaded = False
     _is_preview = False
     _pending_imdb_films = []
+    _lb_username = ""
+    _lb_avatar = ""
     return jsonify({"reset": True})
 
 
@@ -164,9 +173,12 @@ def api_load_demo():
 
 @app.route("/api/scrape-letterboxd")
 def api_scrape_letterboxd():
+    global _lb_username, _lb_avatar
     username = request.args.get("username", "").strip().lower()
     if not username:
         return jsonify({"error": "No username"}), 400
+    _lb_username = username
+    _lb_avatar   = ""  # reset so it's refetched next time /api/user-info is called
 
     def generate():
         global manager, _data_loaded, _is_preview
@@ -478,6 +490,63 @@ def api_films():
     } for f in films_list])
 
 
+@app.route("/api/user-info")
+def api_user_info():
+    global _lb_avatar
+    if not _lb_username:
+        return jsonify({"username": "", "avatar": ""})
+    if not _lb_avatar:
+        try:
+            r = http_req.get(
+                f"https://letterboxd.com/{_lb_username}/",
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+                timeout=6,
+            )
+            # Try the avatar <img> element first (class contains "avatar")
+            m = re.search(r'<img[^>]+class="[^"]*\bavatar\b[^"]*"[^>]+src="([^"]+)"', r.text)
+            if not m:
+                m = re.search(r'<img[^>]+src="([^"]+)"[^>]+class="[^"]*\bavatar\b[^"]*"', r.text)
+            if m:
+                url = m.group(1)
+                if url.startswith("//"):
+                    url = "https:" + url
+                _lb_avatar = url
+            else:
+                # Fallback: og:image (only accept if it looks like a real avatar)
+                m2 = re.search(r'<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']', r.text)
+                if not m2:
+                    m2 = re.search(r'<meta\s+content=["\']([^"\']+)["\']\s+property=["\']og:image["\']', r.text)
+                if m2:
+                    url = m2.group(1)
+                    if "a.ltrbxd.com" in url or "resized" in url:
+                        _lb_avatar = url
+        except Exception:
+            pass
+    avatar_proxy = "/api/proxy/avatar" if _lb_avatar else ""
+    return jsonify({"username": _lb_username, "avatar": avatar_proxy})
+
+
+@app.route("/api/proxy/avatar")
+def api_proxy_avatar():
+    if not _lb_avatar:
+        return "Not found", 404
+    try:
+        r = http_req.get(
+            _lb_avatar,
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=6,
+            stream=True,
+        )
+        from flask import make_response
+        resp = make_response(r.content)
+        resp.headers["Content-Type"] = r.headers.get("Content-Type", "image/jpeg")
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Cache-Control"] = "public, max-age=3600"
+        return resp
+    except Exception:
+        return "Error", 500
+
+
 @app.route("/api/reorder", methods=["POST"])
 def api_reorder():
     data   = request.get_json(silent=True) or {}
@@ -592,6 +661,15 @@ def api_poster():
     key = f"{title}|{year}"
     if key in _poster_cache:
         return jsonify({"url": _poster_cache[key]})
+
+    # Check disk cache — persists across server restarts
+    fname = hashlib.md5(key.encode()).hexdigest() + ".jpg"
+    local = _POSTER_CACHE_DIR / fname
+    if local.exists() and local.stat().st_size > 0:
+        url = f"/static/poster_cache/{fname}"
+        _poster_cache[key] = url
+        return jsonify({"url": url})
+
     try:
         params = {"api_key": flm.TMDB_API_KEY, "query": title}
         if year:
@@ -601,7 +679,13 @@ def api_poster():
         ).json().get("results", [])
         url = None
         if results and results[0].get("poster_path"):
-            url = f"https://image.tmdb.org/t/p/w185{results[0]['poster_path']}"
+            tmdb_url = f"https://image.tmdb.org/t/p/w185{results[0]['poster_path']}"
+            img = http_req.get(tmdb_url, timeout=8)
+            if img.status_code == 200:
+                local.write_bytes(img.content)
+                url = f"/static/poster_cache/{fname}"
+            else:
+                url = tmdb_url  # fallback to remote if download fails
         _poster_cache[key] = url
         return jsonify({"url": url})
     except Exception:

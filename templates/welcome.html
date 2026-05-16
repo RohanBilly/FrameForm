@@ -147,6 +147,21 @@
         </div>
       </a>
 
+      <a href="/poster?template=scratch_100" class="tmpl-card tmpl-card--exp {% if total < 100 %}tmpl-card--disabled{% endif %}">
+        <div class="tmpl-preview tmpl-preview--scratch"></div>
+        <div class="tmpl-info">
+          <div class="tmpl-badge tmpl-badge--exp">Grid</div>
+          <div class="tmpl-title">Top 100 Grid</div>
+          <div class="tmpl-sub">
+            {% if total >= 100 %}
+              10×10 poster grid · gold &amp; black · scratch-off style
+            {% else %}
+              Needs {{ 100 - total }} more film{{ 's' if 100 - total != 1 else '' }}
+            {% endif %}
+          </div>
+        </div>
+      </a>
+
     </div>
   </div>
 

@@ -227,6 +227,107 @@
         </div>
       </div>
 
+      <!-- GRADIENT -->
+      <div class="control-section">
+        <div class="control-section-title">GRADIENT</div>
+        <div class="control-row">
+          <span class="control-label">Gradient</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-grad-on"  onclick="setGradientEnabled(true)">On</button>
+            <button class="toggle-btn active" id="btn-grad-off" onclick="setGradientEnabled(false)">Off</button>
+          </div>
+        </div>
+        <div id="gradient-options" style="display:none; flex-direction:column; gap:16px;">
+
+          <!-- Type -->
+          <div class="control-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <span class="control-label">Type</span>
+            <div class="toggle-group">
+              <button class="toggle-btn"        id="btn-grad-sides"  onclick="setGradientType('sides')">Sides</button>
+              <button class="toggle-btn active" id="btn-grad-glow"   onclick="setGradientType('glow')">Glow</button>
+              <button class="toggle-btn"        id="btn-grad-sweep"  onclick="setGradientType('sweep')">Sweep</button>
+            </div>
+          </div>
+
+          <!-- Colour + reset -->
+          <div class="control-row">
+            <span class="control-label">Colour</span>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="color" class="color-input" id="grad-color" oninput="setGradientColor(this.value)">
+              <button class="toggle-btn" style="font-size:11px;padding:3px 8px;" onclick="resetGradientColor()" title="Reset to accent colour">↺</button>
+            </div>
+          </div>
+
+          <!-- Strength (shared) -->
+          <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="control-label">Strength</span>
+              <span class="control-value" id="grad-strength-display">10%</span>
+            </div>
+            <input type="range" class="count-slider" id="grad-strength-slider"
+                   min="1" max="100" value="10" step="1"
+                   oninput="onGradientStrengthSlide(this.value)">
+            <div class="slider-hints"><span>5%</span><span>50%</span><span>100%</span></div>
+          </div>
+
+          <!-- Glow options -->
+          <div id="grad-glow-opts" style="display:flex; flex-direction:column; gap:12px;">
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">X</span><span class="control-value" id="grad-glow-x-display">50%</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-glow-x-slider" min="0" max="100" value="50" step="1" oninput="onGlowX(this.value)">
+              <div class="slider-hints"><span>Left</span><span>Centre</span><span>Right</span></div>
+            </div>
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">Y</span><span class="control-value" id="grad-glow-y-display">45%</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-glow-y-slider" min="0" max="100" value="45" step="1" oninput="onGlowY(this.value)">
+              <div class="slider-hints"><span>Top</span><span>Centre</span><span>Bottom</span></div>
+            </div>
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">Area</span><span class="control-value" id="grad-glow-area-display">45%</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-glow-area-slider" min="10" max="90" value="45" step="5" oninput="onGlowArea(this.value)">
+              <div class="slider-hints"><span>Small</span><span>Large</span></div>
+            </div>
+          </div>
+
+          <!-- Sweep options -->
+          <div id="grad-sweep-opts" style="display:none; flex-direction:column; gap:12px;">
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">Angle</span><span class="control-value" id="grad-sweep-angle-display">135°</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-sweep-angle-slider" min="0" max="360" value="135" step="5" oninput="onSweepAngle(this.value)">
+              <div class="slider-hints"><span>0°</span><span>180°</span><span>360°</span></div>
+            </div>
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">Area</span><span class="control-value" id="grad-sweep-area-display">50%</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-sweep-area-slider" min="10" max="90" value="50" step="5" oninput="onSweepArea(this.value)">
+              <div class="slider-hints"><span>Small</span><span>Large</span></div>
+            </div>
+          </div>
+
+
+          <!-- Sides options -->
+          <div id="grad-sides-opts" style="display:none; flex-direction:column; gap:12px;">
+            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="control-label">Area</span><span class="control-value" id="grad-sides-area-display">35%</span>
+              </div>
+              <input type="range" class="count-slider" id="grad-sides-area-slider" min="10" max="60" value="35" step="5" oninput="onSidesArea(this.value)">
+              <div class="slider-hints"><span>Narrow</span><span>Wide</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- TITLE -->
       <div class="control-section">
         <div class="control-section-title">TITLE</div>
@@ -287,6 +388,26 @@
           <div class="toggle-group">
             <button class="toggle-btn active" id="btn-sub-upper" onclick="setSubtitleCase(true)">Upper</button>
             <button class="toggle-btn"        id="btn-sub-lower" onclick="setSubtitleCase(false)">Lower</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PHOTO -->
+      <div class="control-section" id="avatar-section" style="display:none;">
+        <div class="control-section-title">PROFILE</div>
+        <div class="control-row">
+          <span class="control-label">Photo</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-avatar-on"  onclick="setAvatarShow(true)">On</button>
+            <button class="toggle-btn active" id="btn-avatar-off" onclick="setAvatarShow(false)">Off</button>
+          </div>
+        </div>
+        <div class="control-row" id="avatar-align-row" style="display:none;">
+          <span class="control-label">Align</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-avatar-left"   onclick="setAvatarAlign('left')">Left</button>
+            <button class="toggle-btn"        id="btn-avatar-center" onclick="setAvatarAlign('center')">Center</button>
+            <button class="toggle-btn active" id="btn-avatar-right"  onclick="setAvatarAlign('right')">Right</button>
           </div>
         </div>
       </div>
@@ -403,6 +524,14 @@ const state = {
   actorCount: 5, directorCount: 5, castFontScale: 1.0,
   imageCols: 0, imageRows: 0, keepAspect: false,
   colourGrade: false,
+  scratchMode: false,
+  posterSaliency: {},
+  gradientEnabled: false, gradientType: 'glow', gradientStrength: 10,
+  gradientColor: '',
+  gradientGlowX: 50, gradientGlowY: 45, gradientGlowArea: 45,
+  gradientSweepAngle: 135, gradientSweepArea: 50,
+gradientSidesArea: 35,
+  showAvatar: false, avatarAlign: 'right', avatarUrl: '',
   showSubtitle: false, titleAlign: 'left', titleSize: 1.0, subtitleSize: 1.0, subtitleUppercase: true,
   titleColor: '#ffffff', subtitleColor: '#00e054',
   colors: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
@@ -500,6 +629,38 @@ function _syncControlsFromState() {
   document.getElementById('color-title-text').value    = s.titleColor;
   document.getElementById('color-subtitle-text').value = s.subtitleColor;
 
+  // gradient
+  document.getElementById('btn-grad-on').className  = 'toggle-btn' + (s.gradientEnabled  ? ' active' : '');
+  document.getElementById('btn-grad-off').className = 'toggle-btn' + (!s.gradientEnabled ? ' active' : '');
+  document.getElementById('gradient-options').style.display = s.gradientEnabled ? 'flex' : 'none';
+  ['sides','glow','sweep'].forEach(t => {
+    document.getElementById('btn-grad-' + t).className = 'toggle-btn' + (t === s.gradientType ? ' active' : '');
+    document.getElementById('grad-' + t + '-opts').style.display = (s.gradientEnabled && t === s.gradientType) ? 'flex' : 'none';
+  });
+  document.getElementById('grad-strength-slider').value        = s.gradientStrength;
+  document.getElementById('grad-strength-display').textContent = s.gradientStrength + '%';
+  document.getElementById('grad-color').value = s.gradientColor || s.colors.accent;
+  document.getElementById('grad-glow-x-slider').value             = s.gradientGlowX;
+  document.getElementById('grad-glow-x-display').textContent      = s.gradientGlowX + '%';
+  document.getElementById('grad-glow-y-slider').value             = s.gradientGlowY;
+  document.getElementById('grad-glow-y-display').textContent      = s.gradientGlowY + '%';
+  document.getElementById('grad-glow-area-slider').value          = s.gradientGlowArea;
+  document.getElementById('grad-glow-area-display').textContent   = s.gradientGlowArea + '%';
+  document.getElementById('grad-sweep-angle-slider').value        = s.gradientSweepAngle;
+  document.getElementById('grad-sweep-angle-display').textContent = s.gradientSweepAngle + '°';
+  document.getElementById('grad-sweep-area-slider').value         = s.gradientSweepArea;
+  document.getElementById('grad-sweep-area-display').textContent  = s.gradientSweepArea + '%';
+document.getElementById('grad-sides-area-slider').value         = s.gradientSidesArea;
+  document.getElementById('grad-sides-area-display').textContent  = s.gradientSidesArea + '%';
+
+  // avatar section
+  document.getElementById('avatar-section').style.display   = s.avatarUrl ? '' : 'none';
+  _tb('btn-avatar-on',     s.showAvatar);   _tb('btn-avatar-off',    !s.showAvatar);
+  _tb('btn-avatar-left',   s.avatarAlign === 'left');
+  _tb('btn-avatar-center', s.avatarAlign === 'center');
+  _tb('btn-avatar-right',  s.avatarAlign === 'right');
+  document.getElementById('avatar-align-row').style.display = (s.avatarUrl && s.showAvatar) ? '' : 'none';
+
   // cast section is conditionally rendered
   if (document.getElementById('btn-cast-on')) {
     _tb('btn-cast-on',  s.castEnabled); _tb('btn-cast-off', !s.castEnabled);
@@ -551,7 +712,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const _tplP = new URLSearchParams(window.location.search);
   const _tpl  = _tplP.get('template');
   if (_tpl) {
-    state.colourGrade = false; // reset for all templates; colour_grade re-enables below
+    state.colourGrade = false; state.scratchMode = false; // reset for all templates
     const _tplN    = Math.min(parseInt(_tplP.get('n'))    || TOTAL, TOTAL);
     const _tplYear = parseInt(_tplP.get('year')) || MAX_YEAR;
     if (_tpl === 'top_list') {
@@ -842,6 +1003,18 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('img-rows-slider').value        = 0;
       document.getElementById('img-rows-display').textContent = 'Auto';
       applyZoom(currentZoom);
+    } else if (_tpl === 'scratch_100') {
+      state.scratchMode = true;
+      state.order = 'ranked'; state.count = Math.min(100, TOTAL);
+      state.orientation = 'portrait';
+      CW = BASE_W; CH = BASE_H;
+      Object.assign(state.colors, { bg: '#0d0d0d', accent: '#c9963e', text: '#ffffff' });
+      state.titleColor = '#c9963e'; state.subtitleColor = '#c9963e';
+      document.getElementById('btn-ranked').className = 'toggle-btn active';
+      document.getElementById('btn-chrono').className = 'toggle-btn';
+      document.getElementById('count-slider').value        = state.count;
+      document.getElementById('count-display').textContent = state.count;
+      applyZoom(currentZoom);
     }
   } // end if (_tpl)
   } // end else — no saved state / template param
@@ -862,10 +1035,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
   updateControlVis();
   applyZoom(currentZoom);
+  // Initialise gradient colour picker — must run on every load path (restored or fresh)
+  document.getElementById('grad-color').value = state.gradientColor || state.colors.accent;
   render();
   setupEditHandler();
   setupPanHandler();
   window.addEventListener('beforeunload', _saveState);
+
+  // Fetch Letterboxd avatar if the user loaded data via scrape
+  if (!state.avatarUrl) {
+    fetch('/api/user-info').then(r => r.json()).then(d => {
+      if (d.avatar) {
+        state.avatarUrl = d.avatar;
+        document.getElementById('avatar-section').style.display = '';
+      }
+    }).catch(() => {});
+  }
 });
 
 // ── zoom ──
@@ -902,6 +1087,8 @@ function updateControlVis() {
   document.getElementById('img-cols-row').style.display      = im            ? ''     : 'none';
   document.getElementById('img-rows-row').style.display      = im            ? ''     : 'none';
   document.getElementById('img-aspect-row').style.display    = im            ? ''     : 'none';
+  document.getElementById('avatar-section').style.display    = state.avatarUrl ? ''   : 'none';
+  document.getElementById('avatar-align-row').style.display  = (state.avatarUrl && state.showAvatar) ? '' : 'none';
 }
 
 // ── order / mode ──
@@ -999,6 +1186,21 @@ function onSubtitleSizeSlide(v) {
   state.subtitleSize = parseInt(v) / 100;
   document.getElementById('subtitle-size-display').textContent = state.subtitleSize.toFixed(2) + '×';
   scheduleRender();
+}
+// ── profile avatar ──
+function setAvatarShow(v) {
+  state.showAvatar = v;
+  document.getElementById('btn-avatar-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-avatar-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  document.getElementById('avatar-align-row').style.display = v ? '' : 'none';
+  render();
+}
+function setAvatarAlign(v) {
+  state.avatarAlign = v;
+  document.getElementById('btn-avatar-left').className   = 'toggle-btn' + (v === 'left'   ? ' active' : '');
+  document.getElementById('btn-avatar-center').className = 'toggle-btn' + (v === 'center' ? ' active' : '');
+  document.getElementById('btn-avatar-right').className  = 'toggle-btn' + (v === 'right'  ? ' active' : '');
+  render();
 }
 function setSubtitleCase(upper) {
   state.subtitleUppercase = upper;
@@ -1119,7 +1321,48 @@ const PRESETS = {
   dusk:     { bg: '#1c0f1a', accent: '#ff7043', text: '#f5ebe0' },
   gold:     { bg: '#0e0c00', accent: '#ffc300', text: '#fff8dc' },
 };
-function setColor(key, val) { state.colors[key] = val; render(); }
+function setColor(key, val) {
+  state.colors[key] = val;
+  if (key === 'accent' && !state.gradientColor) {
+    document.getElementById('grad-color').value = val;
+  }
+  render();
+}
+
+// ── gradient ──
+function setGradientEnabled(v) {
+  state.gradientEnabled = v;
+  document.getElementById('btn-grad-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-grad-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  document.getElementById('gradient-options').style.display = v ? 'flex' : 'none';
+  if (v) {
+    ['sides','glow','sweep'].forEach(t =>
+      document.getElementById('grad-' + t + '-opts').style.display = (t === state.gradientType) ? 'flex' : 'none');
+  }
+  render();
+}
+function setGradientType(v) {
+  state.gradientType = v;
+  ['sides','glow','sweep'].forEach(t => {
+    document.getElementById('btn-grad-' + t).className = 'toggle-btn' + (t === v ? ' active' : '');
+    document.getElementById('grad-' + t + '-opts').style.display = (t === v) ? 'flex' : 'none';
+  });
+  render();
+}
+function onGradientStrengthSlide(v) {
+  state.gradientStrength = parseInt(v);
+  document.getElementById('grad-strength-display').textContent = v + '%';
+  scheduleRender();
+}
+function onGlowX(v)    { state.gradientGlowX    = parseInt(v); document.getElementById('grad-glow-x-display').textContent    = v + '%'; scheduleRender(); }
+function onGlowY(v)    { state.gradientGlowY    = parseInt(v); document.getElementById('grad-glow-y-display').textContent    = v + '%'; scheduleRender(); }
+function onGlowArea(v) { state.gradientGlowArea = parseInt(v); document.getElementById('grad-glow-area-display').textContent = v + '%'; scheduleRender(); }
+function onSweepAngle(v) { state.gradientSweepAngle = parseInt(v); document.getElementById('grad-sweep-angle-display').textContent = v + '°'; scheduleRender(); }
+function onSweepArea(v)  { state.gradientSweepArea  = parseInt(v); document.getElementById('grad-sweep-area-display').textContent  = v + '%'; scheduleRender(); }
+function onSidesArea(v)  { state.gradientSidesArea  = parseInt(v); document.getElementById('grad-sides-area-display').textContent  = v + '%'; scheduleRender(); }
+function setGradientColor(val) { state.gradientColor = val; scheduleRender(); }
+function resetGradientColor()  { state.gradientColor = ''; document.getElementById('grad-color').value = state.colors.accent; scheduleRender(); }
+
 function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
   Object.assign(state.colors, p);
@@ -1130,6 +1373,7 @@ function applyPreset(name) {
   state.subtitleColor = p.accent;
   document.getElementById('color-title-text').value    = p.text;
   document.getElementById('color-subtitle-text').value = p.accent;
+  if (!state.gradientColor) document.getElementById('grad-color').value = p.accent;
   render();
 }
 
@@ -1172,36 +1416,189 @@ function onCastFontSlide(v) {
   scheduleRender();
 }
 
-// ── colour grade: extract average hue from a poster URL ──
+// ── colour grade: extract dominant hue from a poster via saturation-weighted histogram ──
+const _HUE_BINS = 36;  // 10° per bin
 function _extractHue(url) {
   return new Promise(resolve => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
+        const SIZE = 24;
         const c = document.createElement('canvas');
-        c.width = 12; c.height = 12;
+        c.width = SIZE; c.height = SIZE;
         const ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0, 12, 12);
-        const d = ctx.getImageData(0, 0, 12, 12).data;
-        let r = 0, g = 0, b = 0, count = 0;
-        for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; count++; }
-        r = r / count / 255; g = g / count / 255; b = b / count / 255;
-        const max = Math.max(r, g, b), min = Math.min(r, g, b), diff = max - min;
-        let h = 0;
-        const l = (max + min) / 2;
-        const s = diff === 0 ? 0 : diff / (1 - Math.abs(2 * l - 1));
-        if (diff > 0) {
-          if (max === r) h = ((g - b) / diff + (g < b ? 6 : 0)) / 6;
-          else if (max === g) h = ((b - r) / diff + 2) / 6;
-          else h = ((r - g) / diff + 4) / 6;
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        const d = ctx.getImageData(0, 0, SIZE, SIZE).data;
+        const hist = new Float32Array(_HUE_BINS);
+        let lSum = 0, sSum = 0, saturated = 0;
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i]/255, g = d[i+1]/255, b = d[i+2]/255;
+          const max = Math.max(r,g,b), min = Math.min(r,g,b), diff = max - min;
+          const l = (max + min) / 2;
+          const s = diff === 0 ? 0 : diff / (1 - Math.abs(2*l - 1));
+          lSum += l;
+          if (s < 0.15 || l < 0.10 || l > 0.92) continue;  // skip grey/black/white
+          let h = 0;
+          if (diff > 0) {
+            if      (max === r) h = ((g - b) / diff + (g < b ? 6 : 0)) / 6;
+            else if (max === g) h = ((b - r) / diff + 2) / 6;
+            else                h = ((r - g) / diff + 4) / 6;
+          }
+          hist[Math.floor(h * _HUE_BINS) % _HUE_BINS] += s;
+          sSum += s; saturated++;
         }
-        resolve({ h: h * 360, s, l });
+        const totalPx = d.length / 4;
+        if (saturated === 0) {
+          resolve({ h: 0, s: 0, l: lSum / totalPx, hist });
+          return;
+        }
+        // Dominant hue = centre of the heaviest bin
+        let peak = 0;
+        for (let i = 1; i < _HUE_BINS; i++) if (hist[i] > hist[peak]) peak = i;
+        resolve({ h: (peak + 0.5) / _HUE_BINS * 360, s: sSum / saturated, l: lSum / totalPx, hist });
       } catch(e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
     img.src = url;
   });
+}
+
+// ── smart crop: analyse poster to find best vertical crop position ──
+function _analyzeSaliency(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        // W=40 → H≈60 for 2:3 poster. More rows = finer zone detection.
+        const W = 40, H = Math.round(W * img.naturalHeight / img.naturalWidth);
+        const c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, W, H);
+        const d = ctx.getImageData(0, 0, W, H).data;
+
+        // Per-row COLOR std-dev (R,G,B distances from row mean).
+        // Color distance catches strongly-coloured title text (e.g. red on black)
+        // that grayscale variance misses.
+        const raw = new Float32Array(H);
+        for (let row = 0; row < H; row++) {
+          let rS = 0, gS = 0, bS = 0;
+          for (let col = 0; col < W; col++) {
+            const k = (row * W + col) * 4;
+            rS += d[k]; gS += d[k+1]; bS += d[k+2];
+          }
+          const rM = rS/W, gM = gS/W, bM = bS/W;
+          let sq = 0;
+          for (let col = 0; col < W; col++) {
+            const k = (row * W + col) * 4;
+            const dr = d[k]-rM, dg = d[k+1]-gM, db = d[k+2]-bM;
+            sq += (dr*dr + dg*dg + db*db) / 3;
+          }
+          raw[row] = Math.sqrt(sq / W);
+        }
+        // Inter-row transition boost
+        for (let row = 1; row < H - 1; row++)
+          raw[row] += Math.abs(raw[row+1] - raw[row-1]) * 0.3;
+
+        // ── Title zone detection ──
+        const iFrom = Math.floor(H * 0.30), iTo = Math.ceil(H * 0.70);
+        let iSum = 0;
+        for (let r = iFrom; r < iTo; r++) iSum += raw[r];
+        const innerMean = iSum / Math.max(1, iTo - iFrom);
+        const maxR = Math.max(...raw) || 1;
+        const THRESH   = Math.max(innerMean * 0.35, maxR * 0.06);
+        const ZONE_MAX = 0.40;
+        // GAP_TOL=5 lets the walk bridge the black margin rows that sit between
+        // poster image content and the title text without cutting off too early.
+        const GAP_TOL  = 5;
+        // Extra buffer added to every detected zone to cover margins not caught
+        // by the energy walk (typically 2–4 rows of plain background above/below text).
+        const ZONE_PAD = 0.06;
+
+        // Top zone: walk inward from row 0
+        let topEnd = -1;
+        for (let row = 0; row < Math.floor(H * ZONE_MAX); row++) {
+          if (raw[row] >= THRESH) topEnd = row;
+          else if (topEnd >= 0 && row - topEnd > GAP_TOL) break;
+        }
+        const topZone = topEnd >= 0
+          ? Math.min(ZONE_MAX, (topEnd + 2) / H + ZONE_PAD) : 0;
+
+        // Bottom zone: walk inward from row H-1
+        let botStart = H;
+        for (let row = H - 1; row >= Math.ceil(H * (1 - ZONE_MAX)); row--) {
+          if (raw[row] >= THRESH) botStart = row;
+          else if (botStart < H && botStart - row > GAP_TOL) break;
+        }
+        const bottomZone = botStart < H
+          ? Math.min(ZONE_MAX, (H - botStart + 1) / H + ZONE_PAD) : 0;
+
+        // ── Subject saliency ──
+        // Hard-zero title zone rows so title text energy never biases salientY.
+        // The prior is centred on the middle of the content (non-title) area.
+        const aTop = topZone, aBot = 1 - bottomZone;
+        const aMid = (aTop + aBot) / 2;
+        const aSig = Math.max(0.14, (aBot - aTop) * 0.30);
+        let tE = 0, wY = 0;
+        for (let row = 0; row < H; row++) {
+          const t = row / H;
+          if (t < topZone || t > 1 - bottomZone) continue;  // exclude title zones
+          const e = raw[row] * (0.35 + 0.65 * Math.exp(-0.5 * ((t - aMid) / aSig) ** 2));
+          tE += e; wY += e * row;
+        }
+        const salientY = tE > 0 ? (wY / tE) / H : aMid;
+
+        resolve({ salientY, aspect: img.naturalHeight / img.naturalWidth, topZone, bottomZone });
+      } catch(e) { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+// Convert saliency data into a CSS background-position {x,y} for a display cell.
+// Priority 1 (preferred): hide ALL title zones, centre subject in the free zone.
+// Priority 2 (fallback):  no title-free zone fits — show one full title, keeping
+//                         the subject as central as possible within that crop.
+// Priority 3 (no data):   fall back to y=50 and let the user drag.
+function _smartOffset(key, dispH, dispW) {
+  if (key in state.posterOffsets) return state.posterOffsets[key];
+  const sal = state.posterSaliency[key];
+  if (!sal) return { x: 50, y: 50 };  // Priority 3
+
+  const r = (dispH / dispW) / sal.aspect;
+  if (r >= 1) return { x: 50, y: 50 };
+
+  const TZ = sal.topZone    || 0;
+  const BZ = sal.bottomZone || 0;
+  const sy = sal.salientY;
+
+  // Priority 1: hide all titles — free zone [TZ, 1−BZ−r] must be at least MIN_FREE wide.
+  // A zone narrower than MIN_FREE gives a barely-constrained crop that still risks
+  // partial title bleed; in that case Priority 2 (full title) is cleaner.
+  const MIN_FREE = 0.05;
+  const freeMin = TZ;
+  const freeMax = 1 - BZ - r;
+  if (freeMax - freeMin >= MIN_FREE) {
+    // Place subject at 55% from top of display (biases faces/heads toward upper half).
+    const p = Math.max(freeMin, Math.min(freeMax, sy - r * 0.55));
+    return { x: 50, y: Math.round(p / (1 - r) * 100) };
+  }
+
+  // Priority 2: free zone too small — show one full title.
+  // Pick whichever title crop places the subject closest to the visible centre.
+  let p;
+  if (BZ === 0) {
+    p = 0;      // only top title — show it
+  } else if (TZ === 0) {
+    p = 1 - r;  // only bottom title — show it
+  } else {
+    // both titles: top crop centres at r/2, bottom crop centres at 1−r/2
+    p = Math.abs(sy - r / 2) <= Math.abs(sy - (1 - r / 2)) ? 0 : 1 - r;
+  }
+  return { x: 50, y: Math.round(Math.max(0, Math.min(1 - r, p)) / (1 - r) * 100) };
 }
 
 // ── auto layout helpers ──
@@ -1381,8 +1778,74 @@ async function render() {
     } catch(e) {}
   }
   if (myGen !== _renderGen) return;
-  if (state.mode === 'text') renderText(films, castData);
+  if (state.scratchMode) await renderScratch(films, myGen);
+  else if (state.mode === 'text') renderText(films, castData);
   else await renderImages(films, castData, myGen);
+}
+
+// ── poster header helpers ──
+function _gradColor() {
+  return state.gradientColor || state.colors.accent;
+}
+
+function _bgStyle() {
+  const bg = state.colors.bg;
+  if (!state.gradientEnabled) return bg;
+  const s   = state.gradientStrength / 200;
+  const acc = _gradColor();
+  const r = parseInt(acc.slice(1,3), 16);
+  const g = parseInt(acc.slice(3,5), 16);
+  const b = parseInt(acc.slice(5,7), 16);
+  const a = (op) => `rgba(${r},${g},${b},${Math.min(1, s * op).toFixed(3)})`;
+  switch (state.gradientType) {
+    case 'glow': {
+      const x = state.gradientGlowX, y = state.gradientGlowY;
+      const ar = (state.gradientGlowArea * 1.6).toFixed(1);
+      return `radial-gradient(ellipse at ${x}% ${y}%, ${a(0.6)} 0%, transparent ${ar}%), ${bg}`;
+    }
+    case 'sweep': {
+      const ang = state.gradientSweepAngle;
+      const ar  = (state.gradientSweepArea * 1.5).toFixed(1);
+      return `linear-gradient(${ang}deg, ${a(0.65)} 0%, transparent ${ar}%), ${bg}`;
+    }
+
+    case 'sides': {
+      // Single ellipse centred on the poster — narrow horizontally (controls area),
+      // tall vertically (> 100% so it tapers to a point near top/bottom).
+      // Inside = clear; outside = gradient, producing the lens-shaped clear zone.
+      const ar  = state.gradientSidesArea;
+      const hR  = Math.max(8, 52 - ar * 0.72).toFixed(1);
+      return `radial-gradient(ellipse ${hR}% 78% at 50% 50%, transparent 0%, ${a(0.35)} 60%, ${a(0.65)} 100%), ${bg}`;
+    }
+    default:
+      return bg;
+  }
+}
+
+function _defaultTitle(n) {
+  const isAll = (n === TOTAL);
+  if (state.order === 'ranked') {
+    if (state.selectionMode === 'year')  return `${state.yearFrom} RANKED`;
+    if (state.selectionMode === 'range') return `${state.yearFrom}–${state.yearTo} RANKED`;
+    return isAll ? 'ALL TIME RANKED' : `TOP ${n} RANKED`;
+  } else {
+    if (state.selectionMode === 'year')  return `FILMS SEEN IN ${state.yearFrom}`;
+    if (state.selectionMode === 'range') {
+      if (String(state.yearFrom) === String(state.yearTo)) return `FILMS SEEN IN ${state.yearFrom}`;
+      return `FILMS SEEN ${state.yearFrom}–${state.yearTo}`;
+    }
+    return isAll ? 'ALL FILMS SEEN' : `TOP ${n} FILMS`;
+  }
+}
+
+function _avatarHtml() {
+  if (!state.showAvatar || !state.avatarUrl) return '';
+  const sz = Math.round(CW * 0.055);
+  const bw = Math.max(3, Math.round(sz * 0.04));
+  return `<div style="text-align:${state.avatarAlign};margin-bottom:${Math.round(sz * 0.28)}px;">` +
+    `<img class="avatar-img" src="${state.avatarUrl}" crossorigin="anonymous" ` +
+    `style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;` +
+    `border:${bw}px solid ${state.colors.accent};display:inline-block;vertical-align:middle;"></div>`;
 }
 
 // ── TEXT RENDER ──
@@ -1460,10 +1923,8 @@ function renderText(films, castData) {
   const titleMaxH = Math.round(fs * rowLineH * 2);
   const topPad    = twoLine ? Math.max(4, Math.round((itemH - titleMaxH) / 2)) : 0;
 
-  const orderLbl = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
-  const countLbl = n === TOTAL ? 'ALL' : `TOP ${n}`;
-
-  const defaultTitle = state.selectionMode === 'year' ? `${state.yearFrom} Watchlist` : `${countLbl} FILMS`;
+  const defaultTitle = _defaultTitle(n);
+  const orderLbl  = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
   const hTitle    = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : defaultTitle);
   const hSubtitle = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : orderLbl);
 
@@ -1515,8 +1976,9 @@ function renderText(films, castData) {
 
   document.getElementById('posterCanvas').innerHTML = `
     <div style="padding:${PAD}px ${PAD}px ${PAD_B}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
-                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${_bgStyle()};">
       <div style="flex-shrink:0;margin-bottom:${hdrMgn}px;text-align:${state.titleAlign};">
+        ${_avatarHtml()}
         ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.22em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:16px;">${hSubtitle}</div>` : ''}
         <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
              style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
@@ -1610,6 +2072,16 @@ async function renderImages(films, castData, myGen) {
   fetchOverlay.remove();
   if (myGen !== _renderGen) return;
 
+  // ── smart crop: analyse any newly-loaded posters for saliency ──
+  await Promise.all(films.map(f => {
+    const key = `${f.title}|${f.year}`;
+    const url = state.customImages[key] || state.cache[key];
+    const cached = state.posterSaliency[key];
+    if (url && (!cached || !cached._v4))
+      return _analyzeSaliency(url).then(s => { if (s) state.posterSaliency[key] = { ...s, _v4: 1 }; });
+  }));
+  if (myGen !== _renderGen) return;
+
   // ── colour grade: sort films by average poster hue ──
   let renderFilms = films;
   if (state.colourGrade) {
@@ -1631,18 +2103,43 @@ async function renderImages(films, castData, myGen) {
     gradeOverlay.remove();
     if (myGen !== _renderGen) return;
 
+    // Build global hue histogram to find the biggest gap in colour distribution.
+    // Starting the sort at the gap centre prevents the hue wrap-around from
+    // splitting one colour (e.g. red) across both ends of the poster.
+    const globalHist = new Float32Array(_HUE_BINS);
+    for (const { hsl } of entries) {
+      if (!hsl || hsl.s < 0.12) continue;
+      if (hsl.hist) {
+        for (let i = 0; i < _HUE_BINS; i++) globalHist[i] += hsl.hist[i];
+      } else {
+        globalHist[Math.floor(hsl.h / 360 * _HUE_BINS) % _HUE_BINS]++;
+      }
+    }
+    // Find the window of 3 consecutive bins with the smallest total weight
+    const GAP_W = 3;
+    let gapBin = 0, minSum = Infinity;
+    for (let i = 0; i < _HUE_BINS; i++) {
+      let ws = 0;
+      for (let j = 0; j < GAP_W; j++) ws += globalHist[(i + j) % _HUE_BINS];
+      if (ws < minSum) { minSum = ws; gapBin = i; }
+    }
+    const startHue = ((gapBin + Math.floor(GAP_W / 2)) % _HUE_BINS) / _HUE_BINS * 360;
+
     entries.sort((a, b) => {
       const ha = a.hsl, hb = b.hsl;
       if (!ha && !hb) return 0;
       if (!ha) return 1;
       if (!hb) return -1;
-      // Low saturation or very dark → send to end, sorted by lightness
+      // Desaturated or near-black → send to end, sorted by lightness
       const aFlat = ha.s < 0.12 || ha.l < 0.10;
       const bFlat = hb.s < 0.12 || hb.l < 0.10;
       if (aFlat && !bFlat) return 1;
-      if (bFlat && !aFlat) return -1;
+      if (!aFlat && bFlat) return -1;
       if (aFlat && bFlat) return ha.l - hb.l;
-      return ha.h - hb.h;
+      // Rotate both hues so the gap sits at position 0
+      const rotA = (ha.h - startHue + 360) % 360;
+      const rotB = (hb.h - startHue + 360) % 360;
+      return rotA - rotB;
     });
     renderFilms = entries.map(e => e.f);
   }
@@ -1678,9 +2175,8 @@ async function renderImages(films, castData, myGen) {
     ? Math.round(cellW * 1.5)
     : Math.floor((availH - gap * (rows - 1)) / rows);
 
+  const defaultTitle = _defaultTitle(n);
   const orderLbl  = state.order === 'ranked' ? 'RANKED' : 'CHRONOLOGICAL';
-  const countLbl  = n === TOTAL ? 'ALL' : `TOP ${n}`;
-  const defaultTitle = state.selectionMode === 'year' ? `${state.yearFrom} Watchlist` : `${countLbl} FILMS`;
   const hTitle    = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : defaultTitle);
   const hSubtitle = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : orderLbl);
 
@@ -1702,7 +2198,7 @@ async function renderImages(films, castData, myGen) {
     const y   = row * (cellH + gap);
     const key = `${f.title}|${f.year}`;
     const url = state.customImages[key] || state.cache[key];
-    const off = state.posterOffsets[key] || { x: 50, y: 50 };
+    const off = _smartOffset(key, cellH, cellW);
     const inner = url
       ? `<div data-film-key="${_ea(key)}" data-bg-img="${_ea(url)}"
               style="width:100%;height:100%;background-image:url('${url.replace(/'/g, '%27')}');background-size:cover;background-position:${off.x}% ${off.y}%;"></div>`
@@ -1718,14 +2214,128 @@ async function renderImages(films, castData, myGen) {
 
   canvas.innerHTML = `
     <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
-                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${_bgStyle()};">
       <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;text-align:${state.titleAlign};">
+        ${_avatarHtml()}
         ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.2em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:12px;">${hSubtitle}</div>` : ''}
         <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
              style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;">${hTitle}</div>
       </div>
       <div style="position:relative;width:${availW}px;height:${gridH}px;flex-shrink:0;">${cells}</div>
       ${castHtml}
+    </div>`;
+}
+
+// ── SCRATCH-OFF TOP 100 RENDER ──
+async function renderScratch(films, myGen) {
+  const canvas = document.getElementById('posterCanvas');
+  const wrap   = document.getElementById('posterWrap');
+
+  const fetchOverlay = document.createElement('div');
+  fetchOverlay.style.cssText =
+    'position:absolute;inset:0;z-index:20;pointer-events:none;' +
+    'display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;' +
+    'background:radial-gradient(ellipse at center,rgba(8,8,8,0.88) 0%,rgba(8,8,8,0.55) 40%,transparent 70%);';
+  const _ts = `color:rgba(255,255,255,0.65);font-size:12px;font-family:-apple-system,'Segoe UI',sans-serif;letter-spacing:0.1em;text-transform:uppercase;`;
+  fetchOverlay.innerHTML =
+    '<div class="loading-spinner"></div>' +
+    `<span style="${_ts}">Fetching posters…</span>` +
+    '<div style="width:240px;height:3px;background:rgba(255,255,255,0.12);border-radius:3px;overflow:hidden;">' +
+      `<div class="pl-bar" style="height:100%;width:0%;background:${state.colors.accent};border-radius:3px;transition:width 0.15s ease;"></div>` +
+    '</div>' +
+    `<span class="pl-count" style="${_ts}opacity:0.5;">0 / ${films.length}</span>`;
+  wrap.appendChild(fetchOverlay);
+  const _plBar   = fetchOverlay.querySelector('.pl-bar');
+  const _plCount = fetchOverlay.querySelector('.pl-count');
+
+  await fetchAllPosters(films, (done, total) => {
+    const pct = total > 0 ? (done / total * 100).toFixed(1) : 0;
+    _plBar.style.width   = pct + '%';
+    _plCount.textContent = `${done} / ${total}`;
+  });
+  fetchOverlay.remove();
+  if (myGen !== _renderGen) return;
+
+  // Smart crop: analyse any newly-loaded posters for saliency
+  await Promise.all(films.map(f => {
+    const key = `${f.title}|${f.year}`;
+    const url = state.customImages[key] || state.cache[key];
+    const cached = state.posterSaliency[key];
+    if (url && (!cached || !cached._v4))
+      return _analyzeSaliency(url).then(s => { if (s) state.posterSaliency[key] = { ...s, _v4: 1 }; });
+  }));
+  if (myGen !== _renderGen) return;
+
+  const GOLD = state.colors.accent;
+  const COLS = 10, ROWS = 10;
+  const n = Math.min(films.length, COLS * ROWS);
+
+  const PAD  = Math.round(CW * 0.024);
+  const GAP  = Math.round(CW * 0.0018);
+
+  // Header
+  const titleFs    = Math.round(CW * 0.042);
+  const subtitleFs = Math.round(CW * 0.011);
+  const ruleH      = Math.max(3, Math.round(CW * 0.0006));
+  const HDR_MB     = Math.round(PAD * 0.35);
+  const TITLE_H    = Math.round(subtitleFs * 1.5) + Math.round(PAD * 0.14) + titleFs + Math.round(PAD * 0.20) + ruleH + HDR_MB;
+
+  const availW = CW - PAD * 2;
+  const availH = CH - PAD - TITLE_H - PAD;
+
+  const cellW   = Math.floor((availW - GAP * (COLS - 1)) / COLS);
+  const cellH   = Math.floor((availH - GAP * (ROWS - 1)) / ROWS);
+  const LABEL_H = Math.round(cellH * 0.20);
+  const imgH    = cellH - LABEL_H;
+  const rankFs  = Math.round(LABEL_H * 0.36);
+  const filmFs  = Math.round(LABEL_H * 0.32);
+  const gridW   = COLS * cellW + (COLS - 1) * GAP;
+  const gridH   = ROWS * cellH + (ROWS - 1) * GAP;
+  const gridX   = Math.round((availW - gridW) / 2);
+
+  const cells = films.slice(0, n).map((f, i) => {
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    const x   = col * (cellW + GAP);
+    const y   = row * (cellH + GAP);
+    const key = `${f.title}|${f.year}`;
+    const url = state.customImages[key] || state.cache[key];
+    const off = _smartOffset(key, imgH, cellW);
+    const rank = i + 1;
+
+    const imgEl = url
+      ? `<div data-film-key="${_ea(key)}" data-bg-img="${_ea(url)}"
+              style="width:100%;height:${imgH}px;background-image:url('${url.replace(/'/g,'%27')}');background-size:cover;background-position:${off.x}% ${off.y}%;"></div>`
+      : `<div class="poster-upload-zone" data-film-key="${_ea(key)}" title="Click to upload image"
+              style="width:100%;height:${imgH}px;background:#1c1c1c;display:flex;align-items:center;justify-content:center;">
+           <span style="font-size:${Math.round(cellW*0.15)}px;color:${GOLD};font-weight:900;opacity:0.3;">${rank}</span>
+         </div>`;
+
+    return `<div style="position:absolute;left:${x}px;top:${y}px;width:${cellW}px;height:${cellH}px;overflow:hidden;">
+      ${imgEl}
+      <div style="width:100%;height:${LABEL_H}px;background:#111;box-sizing:border-box;
+                  display:flex;align-items:center;gap:${Math.round(rankFs*0.35)}px;
+                  padding:0 ${Math.round(rankFs*0.45)}px;border-top:1px solid rgba(201,150,62,0.18);">
+        <span style="font-size:${rankFs}px;color:${GOLD};font-weight:900;flex-shrink:0;opacity:0.65;min-width:${Math.round(rankFs*1.5)}px;text-align:right;">${rank}</span>
+        <span style="font-size:${filmFs}px;color:#dedede;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2;word-break:break-word;">${_et(f.title)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const defTitle = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : 'MY TOP 100 MOVIES');
+  const defSub   = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : 'OF ALL TIME');
+
+  canvas.innerHTML = `
+    <div style="padding:${PAD}px ${PAD}px 0;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
+      <div style="flex-shrink:0;text-align:center;margin-bottom:${HDR_MB}px;">
+        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="OF ALL TIME"
+             style="font-size:${subtitleFs}px;color:${GOLD};letter-spacing:0.22em;text-transform:uppercase;margin-bottom:${Math.round(PAD*0.12)}px;opacity:0.7;">${defSub}</div>
+        <div data-edit="header" data-edit-key="hdr:title" data-orig="MY TOP 100 MOVIES"
+             style="font-size:${titleFs}px;font-weight:900;color:${GOLD};letter-spacing:0.04em;line-height:1;">${defTitle}</div>
+        <div style="height:${ruleH}px;background:${GOLD};margin-top:${Math.round(PAD*0.18)}px;opacity:0.4;"></div>
+      </div>
+      <div style="position:relative;width:${gridW}px;height:${gridH}px;flex-shrink:0;margin-left:${gridX}px;">${cells}</div>
     </div>`;
 }
 
@@ -1766,7 +2376,7 @@ function setupPanHandler() {
     if (!el) return;
     e.preventDefault();
     const key = el.dataset.filmKey;
-    const off = state.posterOffsets[key] || { x: 50, y: 50 };
+    const off = _smartOffset(key, el.offsetHeight, el.offsetWidth);
     _pan = { el, key, sx: e.clientX, sy: e.clientY, ox: off.x, oy: off.y };
     el.style.cursor = 'grabbing';
   });
@@ -1777,8 +2387,8 @@ function setupPanHandler() {
     const rect = el.getBoundingClientRect();
     const cw = rect.width  / currentZoom;
     const ch = rect.height / currentZoom;
-    const nx = Math.max(0, Math.min(100, ox - (e.clientX - sx) / cw * 50));
-    const ny = Math.max(0, Math.min(100, oy - (e.clientY - sy) / ch * 50));
+    const nx = Math.max(0, Math.min(100, ox - (e.clientX - sx) / cw * 70));
+    const ny = Math.max(0, Math.min(100, oy - (e.clientY - sy) / ch * 70));
     state.posterOffsets[key] = { x: nx, y: ny };
     el.style.backgroundPosition = `${nx}% ${ny}%`;
   });
@@ -1909,6 +2519,25 @@ async function downloadPoster() {
   const sepLines = [...el.querySelectorAll('.sep-line')];
   sepLines.forEach(sl => sl.style.height = '4px');
 
+  // Convert avatar img to a data URL (proxied through Flask so CORS is guaranteed)
+  const avatarImgs = [...el.querySelectorAll('.avatar-img')];
+  const origAvatarSrcs = new Map();
+  await Promise.all(avatarImgs.map(img => new Promise(resolve => {
+    if (!img.src) { resolve(); return; }
+    origAvatarSrcs.set(img, img.src);
+    const tmp = new Image();
+    tmp.crossOrigin = 'anonymous';
+    tmp.onload = () => {
+      const ac = document.createElement('canvas');
+      ac.width = tmp.naturalWidth; ac.height = tmp.naturalHeight;
+      ac.getContext('2d').drawImage(tmp, 0, 0);
+      try { img.src = ac.toDataURL(); } catch(e) {}
+      resolve();
+    };
+    tmp.onerror = resolve;
+    tmp.src = img.src + '?_t=' + Date.now();
+  })));
+
   // Convert TMDB background-image divs to data URLs so html2canvas reads them
   // without any CORS issue (data URLs are same-origin by definition).
   const bgDivs = [...el.querySelectorAll('[data-bg-img*="tmdb"]')];
@@ -1947,6 +2576,7 @@ async function downloadPoster() {
     });
     const _restoreSepH = Math.max(4, Math.round(2 / currentZoom));
     sepLines.forEach(sl => sl.style.height = _restoreSepH + 'px');
+    avatarImgs.forEach(img => { const s = origAvatarSrcs.get(img); if (s) img.src = s; });
     el.style.transform  = savedTransform;
     wrap.style.position = savedPos;
     wrap.style.top      = '';

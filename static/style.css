@@ -132,8 +132,8 @@
 
 /* ── PREVIEW MODE — banner is outside <main>, so only sticky offsets need updating ── */
 body.preview-mode .builder-controls {
-  top:        94px;                   /* 54px navbar + 40px banner */
-  min-height: calc(100vh - 94px);
+  top:    94px;                   /* 54px navbar + 40px banner */
+  height: calc(100vh - 94px);
 }
 body.preview-mode .builder-layout {
   min-height: calc(100vh - 94px);
@@ -641,12 +641,18 @@ body {
   min-width: 300px;
   background: var(--bg-alt);
   border-right: 1px solid var(--border);
-  min-height: calc(100vh - 54px);
+  height: calc(100vh - 54px);
   padding: 28px 20px;
   position: sticky;
   top: 54px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
+.builder-controls::-webkit-scrollbar { width: 4px; }
+.builder-controls::-webkit-scrollbar-track { background: transparent; }
+.builder-controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.builder-controls::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 .controls-inner { display: flex; flex-direction: column; gap: 32px; }
 
@@ -1166,6 +1172,28 @@ body {
 .welcome-row--exp .tmpl-card { width: calc(25% - 10.5px); }
 .tmpl-card--exp { border-color: rgba(255,126,179,0.18); }
 .tmpl-card--exp:hover { border-color: rgba(255,126,179,0.5); }
+.tmpl-preview--scratch {
+  flex: none;
+  aspect-ratio: 5 / 7;
+  background: #0d0d0d;
+  background-image:
+    linear-gradient(rgba(201,150,62,0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,150,62,0.2) 1px, transparent 1px);
+  background-size: 10% 10%;
+  position: relative;
+  overflow: hidden;
+}
+.tmpl-preview--scratch::before {
+  content: 'TOP 100';
+  position: absolute;
+  top: 7px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #c9963e;
+}
 .tmpl-preview--colour-grade {
   flex: none;
   aspect-ratio: 5 / 7;
