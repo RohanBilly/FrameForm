@@ -1233,3 +1233,40 @@ body {
 }
 .welcome-skip:hover { color: var(--text-bright); }
 .welcome-dot { color: var(--border); font-size: 13px; }
+
+/* ── REFRAME TIP ── */
+#reframe-tip {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(18,22,26,0.93);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 10px 12px 10px 15px;
+  color: rgba(255,255,255,0.80);
+  font-size: 13px;
+  font-family: var(--font);
+  z-index: 9000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+  animation: reframe-tip-in 0.25s ease;
+}
+@keyframes reframe-tip-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+#reframe-tip .tip-icon { font-size: 15px; flex-shrink: 0; }
+#reframe-tip .tip-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.40);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  margin-left: 4px;
+  transition: color 0.15s;
+}
+#reframe-tip .tip-close:hover { color: rgba(255,255,255,0.85); }

@@ -25,6 +25,7 @@
           <div class="toggle-group">
             <button class="toggle-btn active" id="btn-text"   onclick="setMode('text')">Text</button>
             <button class="toggle-btn"        id="btn-images" onclick="setMode('images')">Posters</button>
+            <button class="toggle-btn"        id="btn-grid"   onclick="setMode('grid')">Grid</button>
           </div>
         </div>
 
@@ -159,6 +160,15 @@
           </div>
         </div>
 
+        <!-- grid mode: auto/manual layout toggle -->
+        <div class="control-row" id="grid-auto-row" style="display:none;">
+          <span class="control-label">Layout</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-grid-auto"   onclick="setGridAutoLayout(true)">Auto</button>
+            <button class="toggle-btn"        id="btn-grid-manual" onclick="setGridAutoLayout(false)">Manual</button>
+          </div>
+        </div>
+
         <!-- image mode: columns -->
         <div class="control-row" id="img-cols-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -187,10 +197,20 @@
         <div class="control-row" id="img-aspect-row" style="display:none;">
           <span class="control-label">Fit mode</span>
           <div class="toggle-group">
-            <button class="toggle-btn"        id="btn-aspect-on"  onclick="setKeepAspect(true)">2∶3 Ratio</button>
+            <button class="toggle-btn"        id="btn-aspect-on"  onclick="setKeepAspect(true)">Full Poster</button>
             <button class="toggle-btn active" id="btn-aspect-off" onclick="setKeepAspect(false)">Fill</button>
           </div>
         </div>
+
+        <!-- scratch mode: label alignment -->
+        <div class="control-row" id="label-align-row" style="display:none;">
+          <span class="control-label">Label align</span>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="btn-lbl-align-center" onclick="setLabelAlign('center')">Centre</button>
+            <button class="toggle-btn"        id="btn-lbl-align-left"   onclick="setLabelAlign('left')">Left</button>
+          </div>
+        </div>
+
 
       </div>
 
@@ -223,6 +243,7 @@
             <button class="quick-btn" onclick="applyPreset('ocean')">Ocean</button>
             <button class="quick-btn" onclick="applyPreset('dusk')">Dusk</button>
             <button class="quick-btn" onclick="applyPreset('gold')">Gold</button>
+            <button class="quick-btn" onclick="applyPreset('scratch')">Scratch</button>
           </div>
         </div>
       </div>
@@ -390,6 +411,26 @@
             <button class="toggle-btn"        id="btn-sub-lower" onclick="setSubtitleCase(false)">Lower</button>
           </div>
         </div>
+
+        <div class="control-row">
+          <span class="control-label">Title layout</span>
+          <div class="toggle-group">
+            <button class="toggle-btn"        id="btn-tlayout-none" onclick="setTitleLayout('none')">None</button>
+            <button class="toggle-btn active" id="btn-tlayout-rule" onclick="setTitleLayout('rule')">Rule</button>
+            <button class="toggle-btn"        id="btn-tlayout-box"  onclick="setTitleLayout('box')">Box</button>
+          </div>
+        </div>
+
+        <div class="control-row" id="rule-thickness-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="control-label">Thickness</span>
+            <span class="control-value" id="rule-thickness-display">1.00×</span>
+          </div>
+          <input type="range" class="count-slider" id="rule-thickness-slider"
+                 min="25" max="400" value="100" step="1"
+                 oninput="onRuleThicknessSlide(this.value)">
+          <div class="slider-hints"><span>0.25×</span><span>1×</span><span>4×</span></div>
+        </div>
       </div>
 
       <!-- PROFILE PHOTO -->
@@ -490,6 +531,11 @@
         </div>
       </div>
     </div>
+    <div id="reframe-tip" style="display:none;" role="status" aria-live="polite">
+      <span class="tip-icon">✋</span>
+      <span>Tip: click and drag any poster to reframe it</span>
+      <button class="tip-close" onclick="_dismissReframeTip()" aria-label="Dismiss tip">&times;</button>
+    </div>
     <div class="stage-actions">
       <button class="download-btn" onclick="downloadPoster()">↓ Download PNG</button>
       <button class="start-over-btn" onclick="confirmStartOver()">Start over</button>
@@ -525,6 +571,8 @@ const state = {
   imageCols: 0, imageRows: 0, keepAspect: false,
   colourGrade: false,
   scratchMode: false,
+  gridAutoLayout: true,
+  labelAlign: 'center',
   posterSaliency: {},
   gradientEnabled: false, gradientType: 'glow', gradientStrength: 10,
   gradientColor: '',
@@ -532,7 +580,7 @@ const state = {
   gradientSweepAngle: 135, gradientSweepArea: 50,
 gradientSidesArea: 35,
   showAvatar: false, avatarAlign: 'right', avatarUrl: '',
-  showSubtitle: false, titleAlign: 'left', titleSize: 1.0, subtitleSize: 1.0, subtitleUppercase: true,
+  showSubtitle: false, titleLayout: 'rule', ruleThickness: 1.0, titleAlign: 'left', titleSize: 1.0, subtitleSize: 1.0, subtitleUppercase: true,
   titleColor: '#ffffff', subtitleColor: '#00e054',
   colors: { bg: '#0d0d0d', accent: '#00e054', text: '#ffffff' },
   cache: {},
@@ -549,6 +597,45 @@ const _mctx = (() => { const c = document.createElement('canvas'); return c.getC
 
 // ── state persistence ──
 const _STATE_KEY = 'flm_poster_state';
+
+let _tipTimer = null;
+function _showReframeTip() {
+  if (localStorage.getItem('_tip_reframe')) return;
+  clearTimeout(_tipTimer);
+  _tipTimer = setTimeout(() => {
+    if (localStorage.getItem('_tip_reframe')) return;
+    const el     = document.getElementById('reframe-tip');
+    const canvas = document.getElementById('posterCanvas');
+    if (!el || !canvas) return;
+    const rect = canvas.getBoundingClientRect(); // visual rect — accounts for CSS scale
+    if (!rect.width || !rect.height) return;
+    const tipW = el.offsetWidth || 260;
+    const gap  = 12;
+    // Place tip to the right of the poster; fall back to left if no room
+    let left = rect.right + gap;
+    if (left + tipW > window.innerWidth - 8) left = rect.left - tipW - gap;
+    // Vertically: centre of the visible poster, clamped to viewport
+    const visH    = Math.min(rect.height, window.innerHeight);
+    const visTop  = Math.max(rect.top, 0);
+    const tipTop  = Math.round(visTop + visH * 0.35);
+    el.style.left = Math.max(8, left) + 'px';
+    el.style.top  = Math.max(8, Math.min(tipTop, window.innerHeight - 70)) + 'px';
+    el.style.display = 'flex';
+  }, 10000);
+}
+function _hideReframeTip() {
+  clearTimeout(_tipTimer);
+  const el = document.getElementById('reframe-tip');
+  if (el) el.style.display = 'none';
+}
+function _dismissReframeTip() {
+  clearTimeout(_tipTimer);
+  localStorage.setItem('_tip_reframe', '1');
+  const el = document.getElementById('reframe-tip');
+  el.style.transition = 'opacity 0.2s';
+  el.style.opacity = '0';
+  setTimeout(() => { el.style.display = 'none'; el.style.opacity = ''; }, 210);
+}
 
 function _saveState() {
   try {
@@ -579,8 +666,12 @@ function _syncControlsFromState() {
   const s = state;
   const _tb = (id, active) => { const el = document.getElementById(id); if (el) el.className = 'toggle-btn' + (active ? ' active' : ''); };
 
+  if (s.scratchMode && s.mode !== 'grid') s.mode = 'grid'; // migrate old saved state
   _tb('btn-ranked', s.order === 'ranked'); _tb('btn-chrono', s.order === 'chrono');
   _tb('btn-text',   s.mode  === 'text');   _tb('btn-images', s.mode  === 'images');
+  _tb('btn-grid',   s.mode  === 'grid');
+  _tb('btn-grid-auto',   s.gridAutoLayout !== false);
+  _tb('btn-grid-manual', s.gridAutoLayout === false);
   _tb('btn-orient-portrait',  s.orientation === 'portrait');
   _tb('btn-orient-landscape', s.orientation === 'landscape');
 
@@ -604,7 +695,16 @@ function _syncControlsFromState() {
   _tb('btn-sel-count', s.selectionMode === 'count'); _tb('btn-sel-year', s.selectionMode === 'year'); _tb('btn-sel-range', s.selectionMode === 'range');
   _tb('btn-yt-watch',   s.yearType === 'watch');   _tb('btn-yt-release', s.yearType === 'release');
   _tb('btn-aspect-on',  s.keepAspect);  _tb('btn-aspect-off', !s.keepAspect);
+  _tb('btn-lbl-align-center', (s.labelAlign || 'center') === 'center');
+  _tb('btn-lbl-align-left',   (s.labelAlign || 'center') === 'left');
   _tb('btn-subtitle-on', s.showSubtitle); _tb('btn-subtitle-off', !s.showSubtitle);
+  // migrate old showRule boolean to titleLayout
+  if (s.showRule !== undefined && !s.titleLayout) { s.titleLayout = s.showRule !== false ? 'rule' : 'none'; }
+  const _tl = s.titleLayout || 'rule';
+  _tb('btn-tlayout-none', _tl === 'none'); _tb('btn-tlayout-rule', _tl === 'rule'); _tb('btn-tlayout-box', _tl === 'box');
+  document.getElementById('rule-thickness-row').style.display = _tl !== 'none' ? '' : 'none';
+  document.getElementById('rule-thickness-slider').value = Math.round((s.ruleThickness || 1) * 100);
+  document.getElementById('rule-thickness-display').textContent = (s.ruleThickness || 1).toFixed(2) + '×';
   _tb('btn-title-left',   s.titleAlign === 'left'); _tb('btn-title-center', s.titleAlign === 'center'); _tb('btn-title-right', s.titleAlign === 'right');
   _tb('btn-sub-upper', s.subtitleUppercase); _tb('btn-sub-lower', !s.subtitleUppercase);
 
@@ -673,6 +773,7 @@ document.getElementById('grad-sides-area-slider').value         = s.gradientSide
   }
 }
 
+localStorage.removeItem('_tip_reframe');  // clear old toast-style dismissal flag
 window.addEventListener('DOMContentLoaded', () => {
   if (_restoreState()) {
     _syncControlsFromState();
@@ -712,7 +813,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const _tplP = new URLSearchParams(window.location.search);
   const _tpl  = _tplP.get('template');
   if (_tpl) {
-    state.colourGrade = false; state.scratchMode = false; // reset for all templates
+    state.colourGrade = false; // reset for all templates
     const _tplN    = Math.min(parseInt(_tplP.get('n'))    || TOTAL, TOTAL);
     const _tplYear = parseInt(_tplP.get('year')) || MAX_YEAR;
     if (_tpl === 'top_list') {
@@ -1004,7 +1105,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('img-rows-display').textContent = 'Auto';
       applyZoom(currentZoom);
     } else if (_tpl === 'scratch_100') {
-      state.scratchMode = true;
+      state.mode = 'grid';
       state.order = 'ranked'; state.count = Math.min(100, TOTAL);
       state.orientation = 'portrait';
       CW = BASE_W; CH = BASE_H;
@@ -1084,10 +1185,14 @@ function updateControlVis() {
   const yr = state.selectionMode === 'year' || state.selectionMode === 'range';
   document.getElementById('year-type-row').style.display     = yr ? '' : 'none';
   document.getElementById('date-format-row').style.display   = (t && d)     ? 'flex' : 'none';
-  document.getElementById('img-cols-row').style.display      = im            ? ''     : 'none';
-  document.getElementById('img-rows-row').style.display      = im            ? ''     : 'none';
-  document.getElementById('img-aspect-row').style.display    = im            ? ''     : 'none';
-  document.getElementById('avatar-section').style.display    = state.avatarUrl ? ''   : 'none';
+  const gr  = state.mode === 'grid';
+  const grM = gr && state.gridAutoLayout === false; // grid + manual
+  document.getElementById('grid-auto-row').style.display     = gr                  ? ''     : 'none';
+  document.getElementById('img-cols-row').style.display      = (im || grM)         ? ''     : 'none';
+  document.getElementById('img-rows-row').style.display      = (im || grM)         ? ''     : 'none';
+  document.getElementById('img-aspect-row').style.display    = (im || gr)          ? ''     : 'none';
+  document.getElementById('label-align-row').style.display   = gr                  ? ''     : 'none';
+  document.getElementById('avatar-section').style.display    = state.avatarUrl     ? ''     : 'none';
   document.getElementById('avatar-align-row').style.display  = (state.avatarUrl && state.showAvatar) ? '' : 'none';
 }
 
@@ -1102,6 +1207,13 @@ function setMode(v) {
   state.mode = v;
   document.getElementById('btn-text').className   = 'toggle-btn' + (v === 'text'   ? ' active' : '');
   document.getElementById('btn-images').className = 'toggle-btn' + (v === 'images' ? ' active' : '');
+  document.getElementById('btn-grid').className   = 'toggle-btn' + (v === 'grid'   ? ' active' : '');
+  updateControlVis(); render();
+}
+function setGridAutoLayout(v) {
+  state.gridAutoLayout = v;
+  document.getElementById('btn-grid-auto').className   = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-grid-manual').className = 'toggle-btn' + (!v ? ' active' : '');
   updateControlVis(); render();
 }
 function setOrientation(v) {
@@ -1128,6 +1240,12 @@ function setOrientation(v) {
 }
 
 // ── labels ──
+function setLabelAlign(v) {
+  state.labelAlign = v;
+  document.getElementById('btn-lbl-align-center').className = 'toggle-btn' + (v === 'center' ? ' active' : '');
+  document.getElementById('btn-lbl-align-left').className   = 'toggle-btn' + (v === 'left'   ? ' active' : '');
+  render();
+}
 function setLabelMode(v) {
   state.labelMode = v;
   document.getElementById('btn-lbl-num').className  = 'toggle-btn' + (v === 'numbers' ? ' active' : '');
@@ -1180,6 +1298,19 @@ function setShowSubtitle(v) {
   document.getElementById('subtitle-color-row').style.display = v ? '' : 'none';
   document.getElementById('subtitle-size-row').style.display  = v ? '' : 'none';
   document.getElementById('subtitle-case-row').style.display  = v ? '' : 'none';
+  render();
+}
+function setTitleLayout(v) {
+  state.titleLayout = v;
+  document.getElementById('btn-tlayout-none').className = 'toggle-btn' + (v === 'none' ? ' active' : '');
+  document.getElementById('btn-tlayout-rule').className = 'toggle-btn' + (v === 'rule' ? ' active' : '');
+  document.getElementById('btn-tlayout-box').className  = 'toggle-btn' + (v === 'box'  ? ' active' : '');
+  document.getElementById('rule-thickness-row').style.display = v !== 'none' ? '' : 'none';
+  render();
+}
+function onRuleThicknessSlide(v) {
+  state.ruleThickness = parseInt(v) / 100;
+  document.getElementById('rule-thickness-display').textContent = state.ruleThickness.toFixed(2) + '×';
   render();
 }
 function onSubtitleSizeSlide(v) {
@@ -1320,6 +1451,7 @@ const PRESETS = {
   ocean:    { bg: '#020d1a', accent: '#00b4d8', text: '#caf0f8' },
   dusk:     { bg: '#1c0f1a', accent: '#ff7043', text: '#f5ebe0' },
   gold:     { bg: '#0e0c00', accent: '#ffc300', text: '#fff8dc' },
+  scratch:  { bg: '#080808', accent: '#c9963e', text: '#ffffff' },
 };
 function setColor(key, val) {
   state.colors[key] = val;
@@ -1778,7 +1910,7 @@ async function render() {
     } catch(e) {}
   }
   if (myGen !== _renderGen) return;
-  if (state.scratchMode) await renderScratch(films, myGen);
+  if (state.mode === 'grid') await renderScratch(films, myGen);
   else if (state.mode === 'text') renderText(films, castData);
   else await renderImages(films, castData, myGen);
 }
@@ -1858,10 +1990,19 @@ function renderText(films, castData) {
   // Header font constants (don't depend on grid layout — compute first so HEADER_H is accurate)
   const titleFs = Math.round(CW * 0.052 * state.titleSize);
   const labelFs = Math.round(CW * 0.012);
-  const ruleH   = Math.round(CH * 0.003);
-  const hdrMgn  = Math.round(CH * 0.009);
+  const tLayout    = state.titleLayout || 'rule';
+  const thickBase  = Math.max(2, Math.round(CW * 0.003 * (state.ruleThickness || 1)));
+  const thinRuleH  = Math.max(1, Math.round(thickBase * 0.5));
+  const boxBorderW = tLayout === 'box'  ? thickBase : 0;
+  const boxPadV    = tLayout === 'box'  ? Math.round(titleFs * 0.22) : 0;
+  const boxPadH    = tLayout === 'box'  ? Math.round(titleFs * 0.18) : 0;
+  const ruleH      = tLayout === 'rule' ? thickBase : 0;
+  const hdrMgn     = Math.round(CH * 0.009);
+  const titleBlockH = titleFs + 2 * boxPadV + 2 * boxBorderW;
   const subtitleLineH = state.showSubtitle ? Math.ceil(labelFs * state.subtitleSize * 1.2) + 16 : 0;
-  const HEADER_H = subtitleLineH + titleFs + hdrMgn + ruleH + hdrMgn;
+  const HEADER_H = tLayout === 'box' && state.showSubtitle
+    ? titleBlockH + hdrMgn + 2 * thinRuleH + Math.ceil(labelFs * state.subtitleSize * 1.2) + 16 + hdrMgn
+    : subtitleLineH + titleBlockH + hdrMgn + (tLayout === 'rule' ? ruleH + hdrMgn : 0);
 
   // Build render items with optional month/year separators
   const items = [];
@@ -1977,19 +2118,33 @@ function renderText(films, castData) {
   document.getElementById('posterCanvas').innerHTML = `
     <div style="padding:${PAD}px ${PAD}px ${PAD_B}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${_bgStyle()};">
-      <div style="flex-shrink:0;margin-bottom:${hdrMgn}px;text-align:${state.titleAlign};">
-        ${_avatarHtml()}
-        ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.22em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:16px;">${hSubtitle}</div>` : ''}
-        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
-             style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
-        <div style="height:${ruleH}px;background:${state.colors.accent};margin-top:${hdrMgn}px;border-radius:2px;"></div>
-      </div>
+      ${tLayout === 'box'
+        ? `<div style="flex-shrink:0;margin-bottom:${hdrMgn}px;">
+             ${_avatarHtml()}
+             <div style="width:100%;border:${boxBorderW}px solid ${state.titleColor};padding:${boxPadV}px ${boxPadH}px;box-sizing:border-box;text-align:center;opacity:0.9;">
+               <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+                    style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
+             </div>
+             ${state.showSubtitle ? `<div style="margin-top:${hdrMgn}px;">
+               <div style="height:${thinRuleH}px;background:${state.titleColor};opacity:0.5;"></div>
+               <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.22em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};padding:${Math.round(labelFs*state.subtitleSize*0.4)}px 0;text-align:center;opacity:0.8;">${hSubtitle}</div>
+               <div style="height:${thinRuleH}px;background:${state.titleColor};opacity:0.5;"></div>
+             </div>` : ''}
+           </div>`
+        : `<div style="flex-shrink:0;margin-bottom:${hdrMgn}px;text-align:${state.titleAlign};">
+             ${_avatarHtml()}
+             ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.22em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:16px;">${hSubtitle}</div>` : ''}
+             <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+                  style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;letter-spacing:0.02em;">${hTitle}</div>
+             ${tLayout === 'rule' ? `<div style="height:${ruleH}px;background:${state.titleColor};margin-top:${hdrMgn}px;border-radius:2px;opacity:0.55;"></div>` : ''}
+           </div>`}
       <div style="display:flex;gap:${colGap}px;flex-shrink:0;height:${Math.round(availH)}px;">${colsHtml}</div>
       ${castHtml}
     </div>`;
   // Scale sep-lines so they're visible at current zoom (3px at full-res = invisible at 15%)
   const _sepH = Math.max(4, Math.round(2 / currentZoom));
   document.getElementById('posterCanvas').querySelectorAll('.sep-line').forEach(el => el.style.height = _sepH + 'px');
+  _hideReframeTip();
 }
 
 // ── CAST FONT SIZE ──
@@ -2148,8 +2303,19 @@ async function renderImages(films, castData, myGen) {
   const PAD       = 198;
   const titleFs   = Math.round(CW * 0.030 * state.titleSize);
   const labelFs   = Math.round(CW * 0.011);
+  const tLayout    = state.titleLayout || 'rule';
+  const thickBase  = Math.max(2, Math.round(CW * 0.003 * (state.ruleThickness || 1)));
+  const thinRuleH  = Math.max(1, Math.round(thickBase * 0.5));
+  const boxBorderW = tLayout === 'box'  ? thickBase : 0;
+  const boxPadV    = tLayout === 'box'  ? Math.round(titleFs * 0.22) : 0;
+  const boxPadH    = tLayout === 'box'  ? Math.round(titleFs * 0.18) : 0;
+  const ruleH      = tLayout === 'rule' ? thickBase : 0;
+  const ruleMgn    = tLayout === 'rule' ? Math.round(CH * 0.007) : 0;
+  const titleBlockH = Math.ceil(titleFs * 1.1) + 2 * boxPadV + 2 * boxBorderW;
   const subtitleLineH = state.showSubtitle ? Math.ceil(labelFs * 1.2) + 12 : 0;
-  const HEADER_H  = subtitleLineH + Math.ceil(titleFs * 1.1) + Math.round(CH * 0.010) + 20;
+  const HEADER_H  = tLayout === 'box' && state.showSubtitle
+    ? titleBlockH + Math.round(CH * 0.010) + 20 + 2 * thinRuleH + Math.ceil(labelFs * 1.2) + 12
+    : subtitleLineH + titleBlockH + Math.round(CH * 0.010) + 20 + ruleH + ruleMgn;
   const CAST_H    = castHeight();
   const availW    = CW - PAD * 2;
   const availH    = CH - PAD * 2 - HEADER_H - CAST_H;
@@ -2215,15 +2381,30 @@ async function renderImages(films, castData, myGen) {
   canvas.innerHTML = `
     <div style="padding:${PAD}px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${_bgStyle()};">
-      <div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;text-align:${state.titleAlign};">
-        ${_avatarHtml()}
-        ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.2em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:12px;">${hSubtitle}</div>` : ''}
-        <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
-             style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;">${hTitle}</div>
-      </div>
+      ${tLayout === 'box'
+        ? `<div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;">
+             ${_avatarHtml()}
+             <div style="width:100%;border:${boxBorderW}px solid ${state.titleColor};padding:${boxPadV}px ${boxPadH}px;box-sizing:border-box;text-align:center;opacity:0.9;">
+               <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+                    style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;">${hTitle}</div>
+             </div>
+             ${state.showSubtitle ? `<div style="margin-top:${Math.round(CH*0.007)}px;">
+               <div style="height:${thinRuleH}px;background:${state.titleColor};opacity:0.5;"></div>
+               <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.2em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};padding:${Math.round(labelFs*state.subtitleSize*0.4)}px 0;text-align:center;opacity:0.8;">${hSubtitle}</div>
+               <div style="height:${thinRuleH}px;background:${state.titleColor};opacity:0.5;"></div>
+             </div>` : ''}
+           </div>`
+        : `<div style="flex-shrink:0;margin-bottom:${Math.round(CH*0.010)}px;text-align:${state.titleAlign};">
+             ${_avatarHtml()}
+             ${state.showSubtitle ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="${_ea(orderLbl)}" style="font-size:${Math.round(labelFs*state.subtitleSize)}px;letter-spacing:0.2em;color:${state.subtitleColor};text-transform:${state.subtitleUppercase?'uppercase':'none'};margin-bottom:12px;">${hSubtitle}</div>` : ''}
+             <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(defaultTitle)}"
+                  style="font-size:${titleFs}px;font-weight:800;color:${state.titleColor};line-height:1;">${hTitle}</div>
+             ${tLayout === 'rule' ? `<div style="height:${ruleH}px;background:${state.titleColor};margin-top:${ruleMgn}px;border-radius:2px;opacity:0.55;"></div>` : ''}
+           </div>`}
       <div style="position:relative;width:${availW}px;height:${gridH}px;flex-shrink:0;">${cells}</div>
       ${castHtml}
     </div>`;
+  _showReframeTip();
 }
 
 // ── SCRATCH-OFF TOP 100 RENDER ──
@@ -2267,37 +2448,112 @@ async function renderScratch(films, myGen) {
   if (myGen !== _renderGen) return;
 
   const GOLD = state.colors.accent;
-  const COLS = 10, ROWS = 10;
-  const n = Math.min(films.length, COLS * ROWS);
-
   const PAD  = Math.round(CW * 0.024);
   const GAP  = Math.round(CW * 0.0018);
 
-  // Header
-  const titleFs    = Math.round(CW * 0.042);
-  const subtitleFs = Math.round(CW * 0.011);
-  const ruleH      = Math.max(3, Math.round(CW * 0.0006));
+  // Header — respect title state params
+  const titleColor    = state.titleColor    || GOLD;
+  const subtitleColor = state.subtitleColor || GOLD;
+  const titleFs    = Math.round(CW * 0.042 * (state.titleSize || 1));
+  const subtitleFs = Math.round(CW * 0.011 * (state.subtitleSize || 1));
+  const tLayout    = state.titleLayout || 'rule';
+  const thickBase  = Math.max(2, Math.round(CW * 0.003 * (state.ruleThickness || 1)));
+  const thinRuleH  = Math.max(1, Math.round(thickBase * 0.5));
+  const boxBorderW = tLayout === 'box'  ? thickBase : 0;
+  const boxPadV    = tLayout === 'box'  ? Math.round(titleFs * 0.22) : 0;
+  const boxPadH    = tLayout === 'box'  ? Math.round(PAD * 0.15) : 0;
+  const ruleH      = tLayout === 'rule' ? thickBase : 0;
+  const ruleMargin = tLayout === 'rule' ? Math.round(PAD * 0.18) : 0;
   const HDR_MB     = Math.round(PAD * 0.35);
-  const TITLE_H    = Math.round(subtitleFs * 1.5) + Math.round(PAD * 0.14) + titleFs + Math.round(PAD * 0.20) + ruleH + HDR_MB;
+  const titleBlockH = titleFs + 2 * boxPadV + 2 * boxBorderW;
+  const _boxSubH   = state.showSubtitle !== false
+    ? Math.round(PAD * 0.12) + thinRuleH + Math.round(subtitleFs * 0.4) + Math.round(subtitleFs) + Math.round(subtitleFs * 0.4) + thinRuleH
+    : Math.round(PAD * 0.08);
+  const TITLE_H    = tLayout === 'box'
+    ? titleBlockH + _boxSubH + Math.round(PAD * 0.20) + HDR_MB
+    : Math.round(subtitleFs * 1.5) + Math.round(PAD * 0.14) + titleBlockH + Math.round(PAD * 0.20) + ruleH + ruleMargin + HDR_MB;
 
   const availW = CW - PAD * 2;
   const availH = CH - PAD - TITLE_H - PAD;
 
+  // Resolve COLS / ROWS
+  let COLS, ROWS, n;
+  if (state.gridAutoLayout === false) {
+    // Manual — driven by the col/row sliders
+    if (state.imageCols > 0 && state.imageRows > 0) {
+      COLS = state.imageCols; ROWS = state.imageRows;
+      n = Math.min(films.length, COLS * ROWS);
+    } else if (state.imageCols > 0) {
+      COLS = state.imageCols; n = films.length; ROWS = Math.ceil(n / COLS);
+    } else if (state.imageRows > 0) {
+      ROWS = state.imageRows; n = films.length; COLS = Math.ceil(n / ROWS);
+    } else {
+      n = films.length; COLS = 10; ROWS = Math.ceil(n / COLS);
+    }
+  } else {
+    // Auto — find COLS/ROWS that best fills the poster area
+    n = films.length;
+    const TARGET = 1.875; // cellH/cellW for poster aspect (1.5) after 20% label strip
+    let bestCols = Math.max(1, Math.round(Math.sqrt(n))), bestScore = Infinity;
+    for (let c = 1; c <= Math.min(n, 30); c++) {
+      const r  = Math.ceil(n / c);
+      const cW = Math.floor((availW - GAP * (c - 1)) / c);
+      const cH = state.keepAspect
+        ? Math.round(cW * TARGET)
+        : Math.floor((availH - GAP * (r - 1)) / r);
+      if (cW <= 0 || cH <= 0) continue;
+      const gridH = cH * r + GAP * (r - 1);
+      const waste = c * r - n;
+      let score;
+      if (state.keepAspect) {
+        // Full Poster: strongly prefer filling the poster height; mild tolerance for slight overflow
+        if (gridH > availH * 1.1) continue; // skip severe overflow (>10%)
+        const wasteScore  = waste / n * 3.0;
+        const overflow    = Math.max(0, gridH - availH);
+        const underfill   = Math.max(0, availH - gridH);
+        const heightScore = (overflow / availH) * 3.0 + Math.pow(underfill / availH, 2) * 15.0;
+        score = wasteScore + heightScore;
+      } else {
+        if (gridH > availH * 1.05) continue;
+        const wasteScore    = waste / c * 5.0;
+        const aspectScore   = Math.abs(cH / cW - TARGET);
+        const symmetryScore = Math.abs(c - r) / (c + r) * 0.4;
+        // Penalise cells too narrow for readable title text.
+        // The rank number column (each side in centre layout) eats ~0.828×labelH of cell width.
+        const labelHest    = cH * 0.20;
+        const filmFsEst    = labelHest * 0.32;
+        const rankColEach  = labelHest * 0.828; // pad + rankWidth + gap per side
+        const effectiveTW  = Math.max(0, cW - 2 * rankColEach);
+        const charsPerLine = effectiveTW / Math.max(1, filmFsEst * 0.58);
+        const textFitScore = Math.max(0, 8 - charsPerLine) / 8 * 4.0;
+        score = wasteScore + aspectScore + symmetryScore + textFitScore;
+      }
+      if (score < bestScore) { bestScore = score; bestCols = c; }
+    }
+    COLS = bestCols; ROWS = Math.ceil(n / COLS);
+  }
+
   const cellW   = Math.floor((availW - GAP * (COLS - 1)) / COLS);
-  const cellH   = Math.floor((availH - GAP * (ROWS - 1)) / ROWS);
+  const cellH   = state.keepAspect
+    ? Math.round(cellW * 1.875)
+    : Math.floor((availH - GAP * (ROWS - 1)) / ROWS);
   const LABEL_H = Math.round(cellH * 0.20);
   const imgH    = cellH - LABEL_H;
   const rankFs  = Math.round(LABEL_H * 0.36);
   const filmFs  = Math.round(LABEL_H * 0.32);
-  const gridW   = COLS * cellW + (COLS - 1) * GAP;
-  const gridH   = ROWS * cellH + (ROWS - 1) * GAP;
-  const gridX   = Math.round((availW - gridW) / 2);
+  const gridW        = COLS * cellW + (COLS - 1) * GAP;
+  const gridH        = ROWS * cellH + (ROWS - 1) * GAP;
+  const gridX        = Math.round((availW - gridW) / 2);
+  const lastRowCount = n - (ROWS - 1) * COLS;
+  const lastRowX     = lastRowCount < COLS
+    ? Math.round((gridW - lastRowCount * cellW - (lastRowCount - 1) * GAP) / 2)
+    : 0;
 
   const cells = films.slice(0, n).map((f, i) => {
-    const col = i % COLS;
-    const row = Math.floor(i / COLS);
-    const x   = col * (cellW + GAP);
-    const y   = row * (cellH + GAP);
+    const col  = i % COLS;
+    const row  = Math.floor(i / COLS);
+    const x    = col * (cellW + GAP) + (row === ROWS - 1 ? lastRowX : 0);
+    const y    = row * (cellH + GAP);
     const key = `${f.title}|${f.year}`;
     const url = state.customImages[key] || state.cache[key];
     const off = _smartOffset(key, imgH, cellW);
@@ -2311,32 +2567,68 @@ async function renderScratch(films, myGen) {
            <span style="font-size:${Math.round(cellW*0.15)}px;color:${GOLD};font-weight:900;opacity:0.3;">${rank}</span>
          </div>`;
 
+    const lblAlign = state.labelAlign === 'left' ? 'left' : 'center';
+    const _pad  = Math.round(rankFs * 0.45);
+    const _gap  = Math.round(rankFs * 0.35);
+    const _rnkW = Math.round(rankFs * 1.5);
+    const _rCol = _pad + _rnkW + _gap; // rank column width = left-pad + number + gap
+    const _border = `border-top:1px solid rgba(201,150,62,0.18);`;
+    const _labelInner = lblAlign === 'center'
+      // 3-column grid: equal left/right columns guarantee the middle column is truly centred
+      ? `<div style="width:100%;height:${LABEL_H}px;background:#111;box-sizing:border-box;${_border}
+                     display:grid;grid-template-columns:${_rCol}px 1fr ${_rCol}px;align-items:center;">
+           <span style="font-size:${rankFs}px;color:${GOLD};font-weight:900;opacity:0.65;
+                        text-align:right;padding-left:${_pad}px;padding-right:${_gap}px;">${rank}</span>
+           <span style="font-size:${filmFs}px;color:#dedede;font-weight:600;text-align:center;
+                        overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+                        line-height:1.2;word-break:break-word;">${_et(f.title)}</span>
+           <span></span>
+         </div>`
+      // Left align: simple flex
+      : `<div style="width:100%;height:${LABEL_H}px;background:#111;box-sizing:border-box;${_border}
+                     display:flex;align-items:center;gap:${_gap}px;padding:0 ${_pad}px;">
+           <span style="font-size:${rankFs}px;color:${GOLD};font-weight:900;flex-shrink:0;opacity:0.65;
+                        min-width:${_rnkW}px;text-align:right;">${rank}</span>
+           <span style="font-size:${filmFs}px;color:#dedede;font-weight:600;flex:1;text-align:left;
+                        overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+                        line-height:1.2;word-break:break-word;">${_et(f.title)}</span>
+         </div>`;
     return `<div style="position:absolute;left:${x}px;top:${y}px;width:${cellW}px;height:${cellH}px;overflow:hidden;">
       ${imgEl}
-      <div style="width:100%;height:${LABEL_H}px;background:#111;box-sizing:border-box;
-                  display:flex;align-items:center;gap:${Math.round(rankFs*0.35)}px;
-                  padding:0 ${Math.round(rankFs*0.45)}px;border-top:1px solid rgba(201,150,62,0.18);">
-        <span style="font-size:${rankFs}px;color:${GOLD};font-weight:900;flex-shrink:0;opacity:0.65;min-width:${Math.round(rankFs*1.5)}px;text-align:right;">${rank}</span>
-        <span style="font-size:${filmFs}px;color:#dedede;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2;word-break:break-word;">${_et(f.title)}</span>
-      </div>
+      ${_labelInner}
     </div>`;
   }).join('');
 
-  const defTitle = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : 'MY TOP 100 MOVIES');
+  const _autoTitle = `MY TOP ${n} MOVIES`;
+  const defTitle = _et('hdr:title'    in state.editedTexts ? state.editedTexts['hdr:title']    : _autoTitle);
   const defSub   = _et('hdr:subtitle' in state.editedTexts ? state.editedTexts['hdr:subtitle'] : 'OF ALL TIME');
+  const subTxt   = `letter-spacing:0.22em;text-transform:${state.subtitleUppercase !== false ? 'uppercase' : 'none'};`;
 
   canvas.innerHTML = `
     <div style="padding:${PAD}px ${PAD}px 0;display:flex;flex-direction:column;height:100%;box-sizing:border-box;overflow:hidden;
-                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${state.colors.bg};">
-      <div style="flex-shrink:0;text-align:center;margin-bottom:${HDR_MB}px;">
-        <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="OF ALL TIME"
-             style="font-size:${subtitleFs}px;color:${GOLD};letter-spacing:0.22em;text-transform:uppercase;margin-bottom:${Math.round(PAD*0.12)}px;opacity:0.7;">${defSub}</div>
-        <div data-edit="header" data-edit-key="hdr:title" data-orig="MY TOP 100 MOVIES"
-             style="font-size:${titleFs}px;font-weight:900;color:${GOLD};letter-spacing:0.04em;line-height:1;">${defTitle}</div>
-        <div style="height:${ruleH}px;background:${GOLD};margin-top:${Math.round(PAD*0.18)}px;opacity:0.4;"></div>
-      </div>
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${_bgStyle()};">
+      ${tLayout === 'box'
+        ? `<div style="flex-shrink:0;margin-bottom:${HDR_MB}px;">
+             <div style="width:100%;border:${boxBorderW}px solid ${titleColor};padding:${boxPadV}px ${boxPadH}px;box-sizing:border-box;text-align:center;opacity:0.9;">
+               <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(_autoTitle)}"
+                    style="font-size:${titleFs}px;font-weight:900;color:${titleColor};letter-spacing:0.04em;line-height:1;">${defTitle}</div>
+             </div>
+             ${state.showSubtitle !== false ? `<div style="margin-top:${Math.round(PAD*0.12)}px;">
+               <div style="height:${thinRuleH}px;background:${titleColor};opacity:0.5;"></div>
+               <div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="OF ALL TIME" style="font-size:${subtitleFs}px;color:${subtitleColor};${subTxt}padding:${Math.round(subtitleFs*0.4)}px 0;text-align:center;opacity:0.75;">${defSub}</div>
+               <div style="height:${thinRuleH}px;background:${titleColor};opacity:0.5;"></div>
+             </div>` : ''}
+           </div>`
+        : `<div style="flex-shrink:0;text-align:${state.titleAlign || 'center'};margin-bottom:${HDR_MB}px;">
+             ${state.showSubtitle !== false ? `<div data-edit="subtitle" data-edit-key="hdr:subtitle" data-orig="OF ALL TIME"
+                  style="font-size:${subtitleFs}px;color:${subtitleColor};${subTxt}margin-bottom:${Math.round(PAD*0.12)}px;opacity:0.75;">${defSub}</div>` : ''}
+             <div data-edit="header" data-edit-key="hdr:title" data-orig="${_ea(_autoTitle)}"
+                  style="font-size:${titleFs}px;font-weight:900;color:${titleColor};letter-spacing:0.04em;line-height:1;">${defTitle}</div>
+             ${tLayout === 'rule' ? `<div style="height:${ruleH}px;background:${titleColor};margin-top:${ruleMargin}px;opacity:0.55;"></div>` : ''}
+           </div>`}
       <div style="position:relative;width:${gridW}px;height:${gridH}px;flex-shrink:0;margin-left:${gridX}px;">${cells}</div>
     </div>`;
+  _showReframeTip();
 }
 
 // ── CLICK-TO-EDIT ──
