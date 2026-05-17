@@ -1673,20 +1673,20 @@ function _extractHue(url) {
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
-        const SIZE = 24;
+        const SIZE = 48;  // 4× more pixels than 24 — much more accurate colour reading
         const c = document.createElement('canvas');
         c.width = SIZE; c.height = SIZE;
         const ctx = c.getContext('2d');
         ctx.drawImage(img, 0, 0, SIZE, SIZE);
         const d = ctx.getImageData(0, 0, SIZE, SIZE).data;
         const hist = new Float32Array(_HUE_BINS);
-        let lSum = 0, sSum = 0, saturated = 0;
+        let lSum = 0, sSum = 0, saturated = 0, totalPx = 0;
         for (let i = 0; i < d.length; i += 4) {
           const r = d[i]/255, g = d[i+1]/255, b = d[i+2]/255;
           const max = Math.max(r,g,b), min = Math.min(r,g,b), diff = max - min;
           const l = (max + min) / 2;
           const s = diff === 0 ? 0 : diff / (1 - Math.abs(2*l - 1));
-          lSum += l;
+          lSum += l; totalPx++;
           if (s < 0.15 || l < 0.10 || l > 0.92) continue;  // skip grey/black/white
           let h = 0;
           if (diff > 0) {
@@ -1697,15 +1697,23 @@ function _extractHue(url) {
           hist[Math.floor(h * _HUE_BINS) % _HUE_BINS] += s;
           sSum += s; saturated++;
         }
-        const totalPx = d.length / 4;
         if (saturated === 0) {
           resolve({ h: 0, s: 0, l: lSum / totalPx, hist });
           return;
         }
-        // Dominant hue = centre of the heaviest bin
+        // Gaussian smooth histogram before peak detection — eliminates bin-boundary flicker
+        // where two visually-identical posters straddle a bin edge and sort far apart
+        const smooth = new Float32Array(_HUE_BINS);
+        for (let i = 0; i < _HUE_BINS; i++) {
+          smooth[i] = hist[(i-2+_HUE_BINS)%_HUE_BINS] * 0.06 +
+                      hist[(i-1+_HUE_BINS)%_HUE_BINS] * 0.24 +
+                      hist[i]                          * 0.40 +
+                      hist[(i+1)%_HUE_BINS]            * 0.24 +
+                      hist[(i+2)%_HUE_BINS]            * 0.06;
+        }
         let peak = 0;
-        for (let i = 1; i < _HUE_BINS; i++) if (hist[i] > hist[peak]) peak = i;
-        resolve({ h: (peak + 0.5) / _HUE_BINS * 360, s: sSum / saturated, l: lSum / totalPx, hist });
+        for (let i = 1; i < _HUE_BINS; i++) if (smooth[i] > smooth[peak]) peak = i;
+        resolve({ h: (peak + 0.5) / _HUE_BINS * 360, s: sSum / saturated, l: lSum / totalPx, hist: smooth });
       } catch(e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
@@ -1742,7 +1750,8 @@ async function _sortFilmsByColour(films, wrap, myGen) {
       globalHist[Math.floor(hsl.h / 360 * _HUE_BINS) % _HUE_BINS]++;
     }
   }
-  const GAP_W = 3;
+  // Wider 5-bin (50°) window finds the true colour gap more reliably with smoothed histograms
+  const GAP_W = 5;
   let gapBin = 0, minSum = Infinity;
   for (let i = 0; i < _HUE_BINS; i++) {
     let ws = 0;
@@ -1763,7 +1772,10 @@ async function _sortFilmsByColour(films, wrap, myGen) {
     if (aFlat && bFlat) return ha.l - hb.l;
     const rotA = (ha.h - startHue + 360) % 360;
     const rotB = (hb.h - startHue + 360) % 360;
-    return rotA - rotB;
+    // Within the same 15° hue band, sort dark → light for a gradient effect
+    const hueDiff = rotA - rotB;
+    if (Math.abs(hueDiff) < 1.5) return ha.l - hb.l;
+    return hueDiff;
   });
   return entries.map(e => e.f);
 }

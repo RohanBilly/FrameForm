@@ -9,7 +9,6 @@ Searching
 Casino Royale
 Skyfall
 Good Time
-American Phycho
 The Machinist
 Limitless
 Her
@@ -111,8 +110,6 @@ I Am Legend
 Host
 Project Power
 A Nightmare on Elm Street
-Harry Potter and the Deathly Hallows: Pt 1
-Harry Potter and the Deathly Hallows: Pt 2
 Train to Busan
 Shazam!
 Circle
@@ -128,7 +125,6 @@ Peninsula
 Fight Club
 World War Z
 Game Night
-Lon: The Professional
 The Gift
 The Watch
 The Gentlemen
@@ -346,7 +342,6 @@ Sinister 2
 Halloween
 The Thing
 Scary Movie
-The Thing (1982)
 Fantastic Mr. Fox
 REC
 Attack the Block
@@ -530,6 +525,480 @@ Louis Theroux: Inside the Manosphere
 Joker: Folie  Deux
 Nope
 The Northman
+Mad Max: Fury Road
+The Martian
+Ex Machina
+Inside Out
+Sicario
+Star Wars: The Force Awakens
+Room
+Spotlight
+Mission: Impossible - Rogue Nation
+Ant-Man
+Jurassic World
+Kingsman: The Secret Service
+The Man from U.N.C.L.E.
+Spy
+Bridge of Spies
+Black Mass
+Steve Jobs
+Joy
+Crimson Peak
+The Danish Girl
+Everest
+Me and Earl and the Dying Girl
+Dope
+Concussion
+American Ultra
+The End of the Tour
+The Walk
+Arrival
+Hell or High Water
+Deadpool
+Nocturnal Animals
+Patriots Day
+Batman v Superman: Dawn of Justice
+Fantastic Beasts and Where to Find Them
+The Jungle Book
+Zootopia
+Finding Dory
+Moana
+The Accountant
+Sully
+Don't Breathe
+Lights Out
+The Conjuring 2
+Green Room
+The Girl on the Train
+Deepwater Horizon
+Allied
+Florence Foster Jenkins
+Sing Street
+A Monster Calls
+Silence
+The Neon Demon
+Hail, Caesar!
+Midnight Special
+Ouija: Origin of Evil
+Eddie the Eagle
+Captain Fantastic
+It
+Logan
+Wonder Woman
+Justice League
+Star Wars: The Last Jedi
+The Shape of Water
+Three Billboards Outside Ebbing, Missouri
+The Big Sick
+The Florida Project
+Mudbound
+I, Tonya
+Atomic Blonde
+John Wick: Chapter 2
+mother!
+Happy Death Day
+Kong: Skull Island
+The Beguiled
+Okja
+Raw
+A Ghost Story
+Colossal
+Free Fire
+Annabelle: Creation
+The Meyerowitz Stories
+Stronger
+Downsizing
+Roma
+The Favourite
+Black Panther
+Mission: Impossible - Fallout
+First Man
+If Beale Street Could Talk
+Bohemian Rhapsody
+Crazy Rich Asians
+A Simple Favor
+BlacKkKlansman
+Annihilation
+Upgrade
+Mandy
+Suspiria
+Overlord
+A Quiet Place
+The Nun
+The Hate U Give
+Can You Ever Forgive Me?
+Widows
+First Reformed
+Shoplifters
+Wildlife
+Burning
+Border
+Incredibles 2
+Aquaman
+Bad Times at the El Royale
+The Sisters Brothers
+Mamma Mia! Here We Go Again
+Little Women
+Portrait of a Lady on Fire
+Hustlers
+Honey Boy
+Rocketman
+Captain Marvel
+Toy Story 4
+The Lion King
+John Wick: Chapter 3
+It: Chapter Two
+Ad Astra
+Pain and Glory
+Harriet
+Judy
+Just Mercy
+Bombshell
+The Two Popes
+Downton Abbey
+Crawl
+Ready or Not
+Promising Young Woman
+Ma Rainey's Black Bottom
+The Trial of the Chicago 7
+One Night in Miami
+Pieces of a Woman
+Da 5 Bloods
+The Midnight Sky
+I'm Thinking of Ending Things
+First Cow
+Never Rarely Sometimes Always
+Tenet
+Possessor
+Wolfwalkers
+Mank
+News of the World
+The Vast of Night
+Spencer
+C'mon C'mon
+Licorice Pizza
+The Worst Person in the World
+Titane
+Pig
+Memoria
+Red Rocket
+Shang-Chi and the Legend of the Ten Rings
+Eternals
+Dune: Part One
+Nobody
+Wrath of Man
+Mortal Kombat
+Zack Snyder's Justice League
+The French Dispatch
+Belfast
+West Side Story
+Drive My Car
+Flee
+The Green Knight
+Benedetta
+Everything Everywhere All at Once
+Tar
+The Banshees of Inisherin
+Triangle of Sadness
+RRR
+All Quiet on the Western Front
+Aftersun
+Women Talking
+White Noise
+Blonde
+Babylon
+Avatar: The Way of Water
+Prey
+Black Panther: Wakanda Forever
+Doctor Strange in the Multiverse of Madness
+Thor: Love and Thunder
+Top Gun: Maverick
+Elvis
+Smile
+Decision to Leave
+Close
+Living
+Till
+The Fabelmans
+Wendell & Wild
+Puss in Boots: The Last Wish
+Amsterdam
+Violent Night
+Killers of the Flower Moon
+Past Lives
+Poor Things
+May December
+The Holdovers
+A Haunting in Venice
+Mission: Impossible - Dead Reckoning Part One
+Indiana Jones and the Dial of Destiny
+The Creator
+Anatomy of a Fall
+Priscilla
+Ferrari
+Napoleon
+Maestro
+American Fiction
+Origin
+Nyad
+The Flash
+Blue Beetle
+Renfield
+Evil Dead Rise
+Scream VI
+The Nun II
+The Exorcist: Believer
+Cocaine Bear
+M3GAN
+65
+Infinity Pool
+Beau Is Afraid
+The Killer
+Society of the Snow
+The Boy and the Heron
+Dune: Part Two
+Alien: Romulus
+Longlegs
+The Substance
+The Brutalist
+Conclave
+Emilia Perez
+A Complete Unknown
+Anora
+Queer
+The Apprentice
+Nickel Boys
+September 5
+Strange Darling
+MaXXXine
+Twisters
+Inside Out 2
+Kingdom of the Planet of the Apes
+Civil War
+Monkey Man
+Road House
+Hit Man
+I Saw the TV Glow
+Never Let Go
+Furiosa: A Mad Max Saga
+Ghostbusters: Frozen Empire
+Godzilla x Kong: The New Empire
+Immaculate
+IF
+Cabrini
+Kinds of Kindness
+It Ends with Us
+His Three Daughters
+Transformers One
+Look Back
+Saturday Night
+Mickey 17
+A Minecraft Movie
+The Alto Knights
+The Amateur
+Black Bag
+Wolf Man
+One of Them Days
+Captain America: Brave New World
+Thunderbolts
+The Accountant 2
+Mission: Impossible - The Final Reckoning
+Materialists
+Eddington
+Elio
+How to Train Your Dragon
+The Phoenician Scheme
+Jurassic World Rebirth
+Karate Kid: Legends
+Lilo & Stitch
+Snow White
+Ted 2
+San Andreas
+The Hunger Games: Mockingjay - Part 2
+Minions
+Chappie
+Insurgent
+The Good Dinosaur
+The Peanuts Movie
+Cinderella
+Home
+Paper Towns
+X-Men: Apocalypse
+Ghostbusters
+Jason Bourne
+The Magnificent Seven
+The Shallows
+Central Intelligence
+Now You See Me 2
+Kubo and the Two Strings
+Blair Witch
+The Purge: Election Year
+Jack Reacher: Never Go Back
+Pete's Dragon
+Hardcore Henry
+Cafe Society
+13 Hours
+The 5th Wave
+Guardians of the Galaxy Vol. 2
+Alien: Covenant
+Pirates of the Caribbean: Dead Men Tell No Tales
+The Greatest Showman
+Bright
+Geostorm
+Cars 3
+Ingrid Goes West
+Power Rangers
+The Dark Tower
+Valerian and the City of a Thousand Planets
+The Mummy
+Suburbicon
+Ferdinand
+Solo: A Star Wars Story
+Jurassic World: Fallen Kingdom
+The Meg
+Ant-Man and the Wasp
+Ready Player One
+Tomb Raider
+The Predator
+Rampage
+Robin Hood
+Hold the Dark
+The Crimes of Grindelwald
+Aladdin
+Fast & Furious Presents: Hobbs & Shaw
+Terminator: Dark Fate
+Men in Black: International
+Stuber
+Fighting with My Family
+21 Bridges
+Angel Has Fallen
+Midway
+The Kitchen
+The Art of Racing in the Rain
+The Old Guard
+Greyhound
+Onward
+Mulan
+The Devil All the Time
+Love and Monsters
+Eurovision Song Contest: The Story of Fire Saga
+Ava
+Wonder Woman 1984
+The Nest
+Come Play
+Rebecca
+Jungle Cruise
+Free Guy
+Venom: Let There Be Carnage
+Ghostbusters: Afterlife
+The Harder They Fall
+The Hitman's Wife's Bodyguard
+Coming 2 America
+Barb and Star Go to Vista Del Mar
+Yes Day
+The Mitchells vs. the Machines
+Raya and the Last Dragon
+Luca
+Space Jam: A New Legacy
+Snake Eyes
+Stillwater
+Without Remorse
+The Courier
+Finch
+Sonic the Hedgehog 2
+Uncharted
+The Bad Guys
+Morbius
+Jurassic World Dominion
+Lightyear
+Minions: The Rise of Gru
+Black Adam
+Halloween Ends
+See How They Run
+Orphan: First Kill
+The Gray Man
+Day Shift
+The Adam Project
+John Wick: Chapter 4
+Extraction 2
+Elemental
+Transformers: Rise of the Beasts
+The Little Mermaid
+Haunted Mansion
+Teenage Mutant Ninja Turtles: Mutant Mayhem
+You People
+Missing
+Operation Fortune: Ruse de Guerre
+Dungeons & Dragons: Honor Among Thieves
+The Pope's Exorcist
+Expend4bles
+The Equalizer 3
+Heart of Stone
+They Cloned Tyrone
+Luther: The Fallen Sun
+The Mother
+Murder Mystery 2
+Bird Box: Barcelona
+Pain Hustlers
+Rustin
+Renaissance: A Film by Beyonce
+Ant-Man and the Wasp: Quantumania
+Shazam! Fury of the Gods
+The Wild Robot
+Moana 2
+Wicked
+Gladiator II
+Red One
+Mufasa: The Lion King
+Sonic the Hedgehog 3
+Bad Boys: Ride or Die
+Kung Fu Panda 4
+Despicable Me 4
+The Bikeriders
+Venom: The Last Dance
+Beverly Hills Cop: Axel F
+Rebel Moon - Part Two: The Scargiver
+Atlas
+Lift
+Under Paris
+The Union
+Spaceman
+The Deliverance
+Trigger Warning
+Paddington in Peru
+Heads of State
+Nonnas
+Splitsville
+The Bride!
+The Gorge
+Dog Man
+Darkest Hour
+The Post
+Phantom Thread
+Molly's Game
+The Disaster Artist
+Paddington 2
+The Last Duel
+Halloween Kills
+Army of Thieves
+The Woman King
+Ambulance
+Strange World
+Turning Red
+Causeway
+Aquaman and the Lost Kingdom
+The Marvels
+Air
+Rebel Moon
+80 for Brady
+Gemini Man
+Blinded by the Light
+Sing Sing
+Maria
+Babygirl
+The Witches
+Bill & Ted Face the Music
+Honest Thief
 
     RANKED LIST OF FILMS SEEN
 Reservoir Dogs
@@ -550,7 +1019,6 @@ Birdman
 Nightcrawler
 Green Book
 Star Wars: Revenge of the Sith
-The Thing (1982)
 Saving Private Ryan
 The Wolf of Wall Street
 The Dark Knight
@@ -639,7 +1107,6 @@ Batman Begins
 Marty Supreme
 The Nice Guys
 Ocean's Eleven
-American Phycho
 Searching
 Star Wars: The Empire Strikes Back
 The Truman Show
@@ -690,7 +1157,6 @@ Snatch
 The Secret Life of Walter Mitty
 28 Days Later...
 Tropic Thunder
-Harry Potter and the Deathly Hallows: Pt 2
 We're the Millers
 Imperium
 The Interview
@@ -749,7 +1215,6 @@ Luce
 Bruised
 Coco
 Blood Diamond
-Lon: The Professional
 La La Land
 Knock at the Cabin
 Call Me by Your Name
@@ -953,7 +1418,6 @@ The Perfect Neighbor
 The Hunger Games: The Ballad of Songbirds & Snakes
 The Dictator
 Furious 7
-Harry Potter and the Deathly Hallows: Pt 1
 Army of the Dead
 Rush Hour
 The Grey
@@ -1063,6 +1527,480 @@ Meg 2: The Trench
 The BFG
 Underwater
 The Midnight Meat Train
+Mad Max: Fury Road
+The Martian
+Ex Machina
+Inside Out
+Sicario
+Star Wars: The Force Awakens
+Room
+Spotlight
+Mission: Impossible - Rogue Nation
+Ant-Man
+Jurassic World
+Kingsman: The Secret Service
+The Man from U.N.C.L.E.
+Spy
+Bridge of Spies
+Black Mass
+Steve Jobs
+Joy
+Crimson Peak
+The Danish Girl
+Everest
+Me and Earl and the Dying Girl
+Dope
+Concussion
+American Ultra
+The End of the Tour
+The Walk
+Arrival
+Hell or High Water
+Deadpool
+Nocturnal Animals
+Patriots Day
+Batman v Superman: Dawn of Justice
+Fantastic Beasts and Where to Find Them
+The Jungle Book
+Zootopia
+Finding Dory
+Moana
+The Accountant
+Sully
+Don't Breathe
+Lights Out
+The Conjuring 2
+Green Room
+The Girl on the Train
+Deepwater Horizon
+Allied
+Florence Foster Jenkins
+Sing Street
+A Monster Calls
+Silence
+The Neon Demon
+Hail, Caesar!
+Midnight Special
+Ouija: Origin of Evil
+Eddie the Eagle
+Captain Fantastic
+It
+Logan
+Wonder Woman
+Justice League
+Star Wars: The Last Jedi
+The Shape of Water
+Three Billboards Outside Ebbing, Missouri
+The Big Sick
+The Florida Project
+Mudbound
+I, Tonya
+Atomic Blonde
+John Wick: Chapter 2
+mother!
+Happy Death Day
+Kong: Skull Island
+The Beguiled
+Okja
+Raw
+A Ghost Story
+Colossal
+Free Fire
+Annabelle: Creation
+The Meyerowitz Stories
+Stronger
+Downsizing
+Roma
+The Favourite
+Black Panther
+Mission: Impossible - Fallout
+First Man
+If Beale Street Could Talk
+Bohemian Rhapsody
+Crazy Rich Asians
+A Simple Favor
+BlacKkKlansman
+Annihilation
+Upgrade
+Mandy
+Suspiria
+Overlord
+A Quiet Place
+The Nun
+The Hate U Give
+Can You Ever Forgive Me?
+Widows
+First Reformed
+Shoplifters
+Wildlife
+Burning
+Border
+Incredibles 2
+Aquaman
+Bad Times at the El Royale
+The Sisters Brothers
+Mamma Mia! Here We Go Again
+Little Women
+Portrait of a Lady on Fire
+Hustlers
+Honey Boy
+Rocketman
+Captain Marvel
+Toy Story 4
+The Lion King
+John Wick: Chapter 3
+It: Chapter Two
+Ad Astra
+Pain and Glory
+Harriet
+Judy
+Just Mercy
+Bombshell
+The Two Popes
+Downton Abbey
+Crawl
+Ready or Not
+Promising Young Woman
+Ma Rainey's Black Bottom
+The Trial of the Chicago 7
+One Night in Miami
+Pieces of a Woman
+Da 5 Bloods
+The Midnight Sky
+I'm Thinking of Ending Things
+First Cow
+Never Rarely Sometimes Always
+Tenet
+Possessor
+Wolfwalkers
+Mank
+News of the World
+The Vast of Night
+Spencer
+C'mon C'mon
+Licorice Pizza
+The Worst Person in the World
+Titane
+Pig
+Memoria
+Red Rocket
+Shang-Chi and the Legend of the Ten Rings
+Eternals
+Dune: Part One
+Nobody
+Wrath of Man
+Mortal Kombat
+Zack Snyder's Justice League
+The French Dispatch
+Belfast
+West Side Story
+Drive My Car
+Flee
+The Green Knight
+Benedetta
+Everything Everywhere All at Once
+Tar
+The Banshees of Inisherin
+Triangle of Sadness
+RRR
+All Quiet on the Western Front
+Aftersun
+Women Talking
+White Noise
+Blonde
+Babylon
+Avatar: The Way of Water
+Prey
+Black Panther: Wakanda Forever
+Doctor Strange in the Multiverse of Madness
+Thor: Love and Thunder
+Top Gun: Maverick
+Elvis
+Smile
+Decision to Leave
+Close
+Living
+Till
+The Fabelmans
+Wendell & Wild
+Puss in Boots: The Last Wish
+Amsterdam
+Violent Night
+Killers of the Flower Moon
+Past Lives
+Poor Things
+May December
+The Holdovers
+A Haunting in Venice
+Mission: Impossible - Dead Reckoning Part One
+Indiana Jones and the Dial of Destiny
+The Creator
+Anatomy of a Fall
+Priscilla
+Ferrari
+Napoleon
+Maestro
+American Fiction
+Origin
+Nyad
+The Flash
+Blue Beetle
+Renfield
+Evil Dead Rise
+Scream VI
+The Nun II
+The Exorcist: Believer
+Cocaine Bear
+M3GAN
+65
+Infinity Pool
+Beau Is Afraid
+The Killer
+Society of the Snow
+The Boy and the Heron
+Dune: Part Two
+Alien: Romulus
+Longlegs
+The Substance
+The Brutalist
+Conclave
+Emilia Perez
+A Complete Unknown
+Anora
+Queer
+The Apprentice
+Nickel Boys
+September 5
+Strange Darling
+MaXXXine
+Twisters
+Inside Out 2
+Kingdom of the Planet of the Apes
+Civil War
+Monkey Man
+Road House
+Hit Man
+I Saw the TV Glow
+Never Let Go
+Furiosa: A Mad Max Saga
+Ghostbusters: Frozen Empire
+Godzilla x Kong: The New Empire
+Immaculate
+IF
+Cabrini
+Kinds of Kindness
+It Ends with Us
+His Three Daughters
+Transformers One
+Look Back
+Saturday Night
+Mickey 17
+A Minecraft Movie
+The Alto Knights
+The Amateur
+Black Bag
+Wolf Man
+One of Them Days
+Captain America: Brave New World
+Thunderbolts
+The Accountant 2
+Mission: Impossible - The Final Reckoning
+Materialists
+Eddington
+Elio
+How to Train Your Dragon
+The Phoenician Scheme
+Jurassic World Rebirth
+Karate Kid: Legends
+Lilo & Stitch
+Snow White
+Ted 2
+San Andreas
+The Hunger Games: Mockingjay - Part 2
+Minions
+Chappie
+Insurgent
+The Good Dinosaur
+The Peanuts Movie
+Cinderella
+Home
+Paper Towns
+X-Men: Apocalypse
+Ghostbusters
+Jason Bourne
+The Magnificent Seven
+The Shallows
+Central Intelligence
+Now You See Me 2
+Kubo and the Two Strings
+Blair Witch
+The Purge: Election Year
+Jack Reacher: Never Go Back
+Pete's Dragon
+Hardcore Henry
+Cafe Society
+13 Hours
+The 5th Wave
+Guardians of the Galaxy Vol. 2
+Alien: Covenant
+Pirates of the Caribbean: Dead Men Tell No Tales
+The Greatest Showman
+Bright
+Geostorm
+Cars 3
+Ingrid Goes West
+Power Rangers
+The Dark Tower
+Valerian and the City of a Thousand Planets
+The Mummy
+Suburbicon
+Ferdinand
+Solo: A Star Wars Story
+Jurassic World: Fallen Kingdom
+The Meg
+Ant-Man and the Wasp
+Ready Player One
+Tomb Raider
+The Predator
+Rampage
+Robin Hood
+Hold the Dark
+The Crimes of Grindelwald
+Aladdin
+Fast & Furious Presents: Hobbs & Shaw
+Terminator: Dark Fate
+Men in Black: International
+Stuber
+Fighting with My Family
+21 Bridges
+Angel Has Fallen
+Midway
+The Kitchen
+The Art of Racing in the Rain
+The Old Guard
+Greyhound
+Onward
+Mulan
+The Devil All the Time
+Love and Monsters
+Eurovision Song Contest: The Story of Fire Saga
+Ava
+Wonder Woman 1984
+The Nest
+Come Play
+Rebecca
+Jungle Cruise
+Free Guy
+Venom: Let There Be Carnage
+Ghostbusters: Afterlife
+The Harder They Fall
+The Hitman's Wife's Bodyguard
+Coming 2 America
+Barb and Star Go to Vista Del Mar
+Yes Day
+The Mitchells vs. the Machines
+Raya and the Last Dragon
+Luca
+Space Jam: A New Legacy
+Snake Eyes
+Stillwater
+Without Remorse
+The Courier
+Finch
+Sonic the Hedgehog 2
+Uncharted
+The Bad Guys
+Morbius
+Jurassic World Dominion
+Lightyear
+Minions: The Rise of Gru
+Black Adam
+Halloween Ends
+See How They Run
+Orphan: First Kill
+The Gray Man
+Day Shift
+The Adam Project
+John Wick: Chapter 4
+Extraction 2
+Elemental
+Transformers: Rise of the Beasts
+The Little Mermaid
+Haunted Mansion
+Teenage Mutant Ninja Turtles: Mutant Mayhem
+You People
+Missing
+Operation Fortune: Ruse de Guerre
+Dungeons & Dragons: Honor Among Thieves
+The Pope's Exorcist
+Expend4bles
+The Equalizer 3
+Heart of Stone
+They Cloned Tyrone
+Luther: The Fallen Sun
+The Mother
+Murder Mystery 2
+Bird Box: Barcelona
+Pain Hustlers
+Rustin
+Renaissance: A Film by Beyonce
+Ant-Man and the Wasp: Quantumania
+Shazam! Fury of the Gods
+The Wild Robot
+Moana 2
+Wicked
+Gladiator II
+Red One
+Mufasa: The Lion King
+Sonic the Hedgehog 3
+Bad Boys: Ride or Die
+Kung Fu Panda 4
+Despicable Me 4
+The Bikeriders
+Venom: The Last Dance
+Beverly Hills Cop: Axel F
+Rebel Moon - Part Two: The Scargiver
+Atlas
+Lift
+Under Paris
+The Union
+Spaceman
+The Deliverance
+Trigger Warning
+Paddington in Peru
+Heads of State
+Nonnas
+Splitsville
+The Bride!
+The Gorge
+Dog Man
+Darkest Hour
+The Post
+Phantom Thread
+Molly's Game
+The Disaster Artist
+Paddington 2
+The Last Duel
+Halloween Kills
+Army of Thieves
+The Woman King
+Ambulance
+Strange World
+Turning Red
+Causeway
+Aquaman and the Lost Kingdom
+The Marvels
+Air
+Rebel Moon
+80 for Brady
+Gemini Man
+Blinded by the Light
+Sing Sing
+Maria
+Babygirl
+The Witches
+Bill & Ted Face the Music
+Honest Thief
 
     DATES
 13/01/2020,27/10/2021
@@ -1075,7 +2013,6 @@ The Midnight Meat Train
 27/01/2020
 29/01/2020
 31/01/2020,30/09/2024
-02/02/2020
 04/02/2020
 06/02/2020
 08/02/2020
@@ -1177,8 +2114,6 @@ The Midnight Meat Train
 17/08/2020
 20/08/2020
 23/08/2020
-25/08/2020
-26/08/2020
 27/08/2020
 27/08/2020
 27/08/2020,27/08/2021
@@ -1194,7 +2129,6 @@ The Midnight Meat Train
 11/09/2020
 11/09/2020
 12/09/2020
-13/09/2020
 16/09/2020
 19/09/2020
 23/09/2020
@@ -1412,7 +2346,6 @@ The Midnight Meat Train
 09/10/2021
 10/10/2021
 10/10/2021
-12/10/2021
 13/10/2021
 13/10/2021
 14/10/2021
@@ -1597,6 +2530,480 @@ The Midnight Meat Train
 18/03/2026
 18/03/2026
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     RUN TIMES
 119
 109
@@ -1608,7 +3015,6 @@ The Midnight Meat Train
 144
 143
 102
-101
 101
 105
 126
@@ -1710,8 +3116,6 @@ The Midnight Meat Train
 57
 113
 95
-146
-130
 118
 132
 87
@@ -1727,7 +3131,6 @@ The Midnight Meat Train
 139
 116
 100
-110
 108
 102
 113
@@ -1945,7 +3348,6 @@ The Midnight Meat Train
 91
 103
 88
-109
 87
 78
 88
@@ -2130,6 +3532,480 @@ The Midnight Meat Train
 130
 137
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     DIRECTORS
 Sam Mendes
 Robert Eggers
@@ -2141,7 +4017,6 @@ Aneesh Chaganty
 Martin Campbell
 Sam Mendes
 Benny Safdie,Josh Safdie
-Mary Harron
 Brad Anderson
 Neil Burger
 Spike Jonze
@@ -2243,8 +4118,6 @@ Francis Lawrence
 Rob Savage
 Henry Joost,Ariel Schulman
 Samuel Bayer
-David Yates
-David Yates
 Sang-ho Yeon
 David F. Sandberg
 Aaron Hann,Mario Miscione
@@ -2260,7 +4133,6 @@ Sang-ho Yeon
 David Fincher
 Marc Forster
 John Francis Daley,Jonathan Goldstein
-Luc Besson
 Joel Edgerton
 Akiva Schaffer
 Guy Ritchie
@@ -2478,7 +4350,6 @@ Ciarn Foy
 John Carpenter
 Matthijs van Heijningen Jr.
 Keenen Ivory Wayans
-John Carpenter
 Wes Anderson
 Jaume Balaguer,Paco Plaza
 Joe Cornish
@@ -2663,6 +4534,480 @@ Todd Phillips
 Jordan Peele
 Robert Eggers
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ACTORS
 Dean-Charles Chapman,George MacKay,Daniel Mays,Colin Firth,Pip Carter,Andy Apollo,Paul Tinto,Josef Davies,Billy Postlethwaite,Gabriel Akuwudike,Andrew Scott,Spike Leighton,Robert Maaser,Gerran Howell,Adam Hugill,Mark Strong,Richard McCabe,Benjamin Adams,Anson Boon,Kenny Fullwood,Tommy French,Nabhaan Rizwan,Ryan Nolan,Elliot Baxter,Bogdan Kumshatsky,Kye Mckee,Claire Duburcq,Ivy-l Macnamara,Merlin Leonhardt,Taddeo Kufus,Jos Slovick,Luke Hornsby,Jack Shalloo,Elliot Edusah,Chris Walley,Joe Mendes
 Robert Pattinson,Willem Dafoe,Valeriia Karaman,Logan Hawkes,Kyla Nicolle,Shaun Clarke,Pierre Richard,Preston Hudson,Jeffrey Cruts,Sully Seagull
@@ -2674,7 +5019,6 @@ John Cho,Sara Sohn,Alex Jayne Go,Megan Liu,Kya Dawn Lau,Michelle La,Joseph Lee,D
 Daniel Craig,Eva Green,Mads Mikkelsen,Judi Dench,Jeffrey Wright,Giancarlo Giannini,Caterina Murino,Simon Abkarian,Isaach De Bankol,Jesper Christensen,Ivana Milicevic,Tobias Menzies,Claudio Santamaria,Sebastien Foucan,Malcolm Sinclair,Richard Sammel,Ludger Pistor,Joseph Millson,Darwin Shaw,Clemens Schick,Emmanuel Avena,Tom Chadbon,Ade,Urbano Barberini,Tsai Chin,Charlie Levi Leroy
 Daniel Craig,Judi Dench,Javier Bardem,Ralph Fiennes,Naomie Harris,Brnice Marlohe,Albert Finney,Ben Whishaw,Rory Kinnear,Ola Rapace,Helen McCrory,Nicholas Woodeson,Bill Buckhurst,Elize du Toit,Ian Bonar,Gordon Milne,Peter Basham,Ben Loyd-Holmes,Tonia Sotiropoulou,Wolf Blitzer,David Gillies,James Li,Kenneth Hazeldine,Orion Lee,Dave Wong,Tank Dong
 Robert Pattinson,Benny Safdie,Buddy Duress,Taliah Webster,Jennifer Jason Leigh,Barkhad Abdi,Necro,Peter Verby,Saida Mansoor,Gladys Mathon,Rose Gregorio,Eric Paykert,Astrid Corrales,Rachel Black,Hirakish Ranasaki,Maynard Nicholl,Ben Edelman,Laurence Blum,Jason Harvey,Robert Clohessy,Michael Kaufman,Goran Spadina,Michael McClard,Eloisa Santos,Bryan Seslow,Craig muMs Grant,George Lee Miles,Kate Halpern,Christopher Kirk,Leticia Ortega,Souleymane Sy Savane,Mahadeo Shivraj,Dorothi Fox,Ratnesh Dubey,Tessa O'Conner,Jim Handley
-Christian Bale,Justin Theroux,Josh Lucas,Bill Sage,Chlo Sevigny,Reese Witherspoon,Samantha Mathis,Matt Ross,Jared Leto,Willem Dafoe,Cara Seymour,Guinevere Turner,Stephen Bogaert,Monika Meier,Reg E. Cathey,Blair Williams,Marie Dame,Kelley Harron,Patricia Gage,Krista Sutton,Landy Cannon,Park Bench,Catherine Black,Margaret Ma,Peter Tufford Kennedy,Mark Pawson
 Christian Bale,Jennifer Jason Leigh,Aitana Snchez-Gijn,John Sharian,Michael Ironside,Lawrence Gilliard Jr.,Reg E. Cathey,Anna Massey,Matthew Romero Moore,Robert Long,Colin Stinton,Craig Stevenson,Ferran Lahoz,Jeremy Xido,Norman Bell,Nancy Crane,Richard Torrington,Buffy Davis,Reg Wilson,Ramon Camn,Christopher Hood,Marc Aspinall,Guillermo Ayesa,Daniel Ceren,Marta Rubio,Ewan Watson
 Bradley Cooper,Robert De Niro,Abbie Cornish,Andrew Howard,Anna Friel,Johnny Whitworth,Tomas Arana,Robert John Burke,Darren Goldstein,Ned Eisenberg,T.V. Carpio,Richard Bekins,Patricia Kalember,Cindy Katz,Brian Anthony Wilson,Rebecca Dayan,Ann Marie Green,Damali Mason,Meg McCrossen,Tom Bloom,Nina Hodoruk,Tom Teti,Stephanie Humphrey,Joe B. McCarthy,Peter Pryor,Daniel Breaker
 Joaquin Phoenix,Lynn Adrianna Freedman,Lisa Renee Pitts,Gabe Gomez,Chris Pratt,Artt Butler,May Lindstrom,Rooney Mara,Bill Hader,Kristen Wiig,Brian Johnson,Scarlett Johansson,Amy Adams,Matt Letscher,Spike Jonze,Olivia Wilde,David Azar,Guy Lewis,Melanie Seacat,Pramode Kumar,Evelyn Edwards,Steve Zissis,Dane White,Nicole Grother,James Ozasky,Samantha Sarakanti
@@ -2776,8 +5120,6 @@ Will Smith,Alice Braga,Charlie Tahan,Salli Richardson-Whitfield,Willow Smith,Dar
 Haley Bishop,Jemma Moore,Emma Louise Webb,Radina Drandova,Caroline Ward,Alan Emrys,Patrick Ward,Edward Linard,Jinny Lofthouse,Seylan Baxter,Jack Brydon,James Swanton
 Jamie Foxx,Joseph Gordon-Levitt,Dominique Fishback,Rodrigo Santoro,Courtney B. Vance,Amy Landecker,Machine Gun Kelly,Tait Fletcher,Allen Maldonado,Andrene Ward-Hammond,Kyanna Simone Simpson,C.J. LeBlanc,CG Lewis,Joseph Poliquin,Jazzy De Lisser,Cory DeMeyers,Casey Neistat,Azhar Khan,Janet Rose Nguyen,Marjorie Parker,Chika,Jim Klock,Terrell Batiste,Jeanine Stander,Sam Malone,Chip Carriere
 Jackie Earle Haley,Kyle Gallner,Rooney Mara,Katie Cassidy,Thomas Dekker,Kellan Lutz,Clancy Brown,Connie Britton,Lia D. Mortensen,Julianna Damm,Christian Stolte,Katie Schooping Knight,Hailey Schooping Knight,Leah Uteg,Don Robert Cass,Kurt Naebig,Kyra Krumins,Brayden Coyer,Max Holt,Andrew Fiscella,Bob Kizer,Peter A Kelly,Jason Brandstetter,Rob Riley,Scott Lindvall,Dominick Coviello
-Bill Nighy,Emma Watson,Richard Griffiths,Harry Melling,Daniel Radcliffe,Julie Walters,Bonnie Wright,Rupert Grint,Ian Kelly,Michelle Fairley,Fiona Shaw,Alan Rickman,Carolyn Pickles,Ralph Fiennes,Helena Bonham Carter,Helen McCrory,Jason Isaacs,Tom Felton,Timothy Spall,Graham Duff,Peter Mullan,Guy Henry,Arben Bajraktaraj,Rod Hunt,Suzanne Toase,Ralph Ineson
-Ralph Fiennes,Michael Gambon,Alan Rickman,Daniel Radcliffe,Rupert Grint,Emma Watson,Evanna Lynch,Domhnall Gleeson,Clmence Posy,Warwick Davis,John Hurt,Helena Bonham Carter,Graham Duff,Anthony Allgood,Rusty Goffe,Jon Key,Kelly Macdonald,Jason Isaacs,Helen McCrory,Tom Felton,Ian Peck,Benn Northover,Ciarn Hinds,Hebe Beardsall,Matthew Lewis,Devon Murray
 Yoo Gong,Yu-mi Jung,Dong-seok Ma,Su-an Kim,Eui-sung Kim,Woo-sik Choi,Sohee,Soo-jung Ye,Myung-shin Park,Gwi-hwa Choi,Seok-yong Jeong,Hyuk-jin Jang,Seong-soo Han,Do-im Woo,Hye-Yeong Moon,Jae-rok Kim,Chang-hwan Kim,Joo-sil Lee,Joo-Heon Kim,Min-Seok Kim,Min-sang Kim,Seong-min Park,Hyeong-Seok Kim,Yeong Jeon,Joong-ok Lee,Yool-ho Kim
 Zachary Levi,Mark Strong,Asher Angel,Jack Dylan Grazer,Adam Brody,Djimon Hounsou,Faithe Herman,Meagan Good,Grace Fulton,Michelle Borth,Ian Chen,Ross Butler,Jovan Armand,D.J. Cotrona,Marta Milans,Cooper Andrews,Ethan Pugiotto,John Glover,Landon Doak,Wayne Ward,Paul Braunstein,Nadine Roden,David Kohlsmith,Caroline Palmer,Emily Nixon,Michael Xavier
 Allegra Masters,Aimee McKay,Ashley Key,Autumn Federici,Bill Lewis,Brent Stiefel,Cameron Cruz,Carter Jenkins,Cesar Garcia,Mustafa Speaks,Daniel Lench,Daniel Yelsky,David Reivers,David Saucedo,DeMaris Gordon,Emilio Rossal,Fay DeWitt,Floyd Foster Jr.,Gloria Sandoval,Han Nah Kim,Howard S. Miller,Jacquelyn Houston,Jamie Lee Redmon,Jay Hawkins,John Edward Lee,Jordi Vilasuso,Julie Benz,Kaiwi Lyman,Kevin Sheridan,Kurt Long,Lawrence Kao,Leandra Terrazzano,Lisa Pelikan,Marc Cedric Smith,Marisol Ramirez,Matt Corboy
@@ -2793,7 +5135,6 @@ Dong-Won Gang,Jung-hyun Lee,Re Lee,Hae-hyo Kwon,Min-Jae Kim,Gyo-hwan Koo,Do-Yoon
 Edward Norton,Brad Pitt,Meat Loaf,Zach Grenier,Richmond Arquette,David Andrews,George Maguire,Eugenie Bondurant,Helena Bonham Carter,Christina Cabot,Sydney 'Big Dawg' Colston,Rachel Singer,Christie Cronenweth,Tim DeZarn,Ezra Buzzington,Dierdre Downing-Jackson,Bob Stephenson,Charlie Dell,Rob Lanza,David Lee Smith,Holt McCallany,Joel Bissonnette,Eion Bailey,Evan Mirand,Robby Robinson,Lou Beatty Jr.,Thom Gossom Jr.,Valerie Bickford,Jared Leto,Peter Iacangelo,Carl Ciarfalio,Stuart Blumberg,Todd Peirce,Mark Fite,Matt Winston,Joon Kim
 Brad Pitt,Mireille Enos,Daniella Kertesz,James Badge Dale,Ludi Boeken,Matthew Fox,Fana Mokoena,David Morse,Elyes Gabel,Peter Capaldi,Pierfrancesco Favino,Ruth Negga,Moritz Bleibtreu,Sterling Jerins,Abigail Hargrove,Fabrizio Guido,David Andrews,John Gordon Sinclair,Grgory Fitoussi,Jane Perry,Lucy Russell,Mark Holden,Tim Berrington,Konstantin Khabenskiy,Michiel Huisman,Lee Nicholas Harris,Ann Ogbomo,Jonathan Howard,Mike Noble,Ernesto Cantu,Vicky Araico,Graham Hornsby,Nick Bartlett,Kevin Kiely Jnr,Ruari Cannon,Ryen Perkins-Gangnes
 Jason Bateman,Rachel McAdams,Kyle Chandler,Sharon Horgan,Billy Magnussen,Lamorne Morris,Kylie Bunbury,Jesse Plemons,Michael C. Hall,Danny Huston,Chelsea Peretti,Camille Chen,Zerrick Williams,Joshua Mikel,R.F. Daley,John Francis Daley,Michael Cyril Creighton,Brooke Jaye Taylor,Jonathan Goldstein,Charlotte Haynes Hazzard,Chad Lail,Natasha Hall,Loren Schaffer,Kabby Borders,Kelly Johns,Steve Witting,Andrew Benator,Malcolm X. Hughes,Jessica Lee,Olivia,Bobby Akers,Buddy Cannon,Vinny Costa,Carmen Dash,Robin Dyke,Abigail Ford
-Jean Reno,Gary Oldman,Natalie Portman,Danny Aiello,Peter Appel,Willi One Blood,Don Creech,Keith A. Glascoe,Randolph Scott,Michael Badalucco,Ellen Greene,Elizabeth Regen,Carl J. Matusovich,Frank Senger,Lucius Wyatt Cherokee,Eric Challier,Luc Bernard,Mawenn,Jessie Keosian,George Martin,Abdul Hassan Sharif,Stuart Rudin,Kent Broadhurst,Tommy Hollis,Peter Linari,Johnny Limo,Danny Peled,Seth Jerome Walker,Michael Mundra,Alex Dezen,Betty Miller,Geoffrey Bateman,Arsne Jiroyan,Peter Vizard,Joseph Malerba,David W. Butler
 Jason Bateman,Rebecca Hall,Joel Edgerton,Allison Tolman,Tim Griffin,Busy Philipps,Adam Lazarre-White,Beau Knapp,Wendell Pierce,Mirrah Foulkes
 Ben Stiller,Vince Vaughn,Richard Ayoade,Jonah Hill,Rosemarie DeWitt,Erin Moriarty
 Matthew McConaughey,Charlie Hunnam,Michelle Dockery,Jeremy Strong,Lyne Rene,Colin Farrell,Henry Golding,Tom Wu,Chidi Ajufo,Hugh Grant,Simon R. Barker,Eddie Marsan,Jason Wong,John Dagleish,Jordan Long,Lily Frazer,Gershwyn Eustache Jnr,Samuel West,Geraldine Somerville,Eliot Sumner,Franz Drameh,Christopher Evangelou,James Warren,Sean Sagar,Bugzy Malone,Tom Rhys Harries,Danny Griffin,Max Bennett,Eugenia Kuzmina,Bruce Chong,Ashley McGuire,George Asprey,Shanu Hazzan,Jack Jones,Sammy Williams,Ryan Dean
@@ -3011,7 +5352,6 @@ James Ransone,Shannyn Sossamon,Robert Daniel Sloan,Dartanian Sloan,Lea Coco,Tate
 Donald Pleasence,Jamie Lee Curtis,Nancy Kyes,P.J. Soles,Charles Cyphers,Kyle Richards,Brian Andrews,John Michael Graham,Nancy Stephens,Arthur Malet,Mickey Yablans,Brent Le Page,Adam Hollander,Robert Phalen,Tony Moran,Will Sandin,Sandy Johnson,David Kyle,Peter Griffith,Nick Castle,Barry Bernardi,Joseph Cornelius,George O'Hanlon Jr.,Darla Rae,Jennifer Rhodes,Gwen Van Dam,Tommy Lee Wallace
 Mary Elizabeth Winstead,Joel Edgerton,Ulrich Thomsen,Eric Christian Olsen,Adewale Akinnuoye-Agbaje,Paul Braunstein,Trond Espen Seim,Kim Bubbs,Jrgen Langhelle,Jan Gunnar Rise,Stig Henrik Hoff,Kristofer Hivju,Jo Adrian Haavind,Carsten Bjrnlund,Jonathan Walker,Ole Martin Aune Nilsen,Michael Brown
 Carmen Electra,Dave Sheridan,Frank B. Moore,Giacomo Baessato,Kyle Graham,Leanne Santos,Mark McConchie,Karen Kruper,Anna Faris,Jon Abrahams,Rick Ducommun,Regina Hall,Marlon Wayans,Shannon Elizabeth,Lloyd Berry,Cheri Oteri,Matthew Paxman,Chris Robson,Susan Shears,Peter Bryant,Lochlyn Munro,Shawn Wayans,Andrea Nemeth,Craig Bruhnanski,Dan Joffre,Kelly Coffield Park,Kurt Fuller,David L. Lander,Reg Tupper,Tanja Reichert,Kendall Saunders,Babe Dolan,David Neale,Nels Lennarson,Nicola Crosbie,Ian Bliss
-Kurt Russell,Wilford Brimley,T.K. Carter,David Clennon,Keith David,Richard Dysart,Charles Hallahan,Peter Maloney,Richard Masur,Donald Moffat,Joel Polis,Thomas G. Waites,Norbert Weisser,Larry Franco,Nate Irwin,William Zeman,Adrienne Barbeau,John Carpenter,Jed
 George Clooney,Meryl Streep,Jason Schwartzman,Bill Murray,Wallace Wolodarsky,Eric Chase Anderson,Michael Gambon,Willem Dafoe,Owen Wilson,Jarvis Cocker,Wes Anderson,Karen Duffy,Robin Hurlstone,Hugo Guinness,Helen McCrory,Roman Coppola,Juman Malouf,Jeremy Dawson,Garth Jennings,Brian Cox,Tristan Oliver,James Hamilton,Steven Rales,Rob Hersov,Jennifer Furches,Allison Abbate,Molly Cooper,Adrien Brody,Mario Batali,Martin Ballard
 Manuela Velasco,Ferran Terraza,Jorge-Yamam Serrano,Pablo Rosso,David Vert,Vicente Gil,Martha Carbonell,Carlos Vicente,Mara Teresa Ortega,Manuel Bronchud,Akemi Goto,Chen Min Kao,Maria Lanau,Claudia Silva,Carlos Lasarte,Javier Botet,Ben Temple,Ana Isabel Velsquez,Daniel Trinh,Marita Borrego,Jana Prats,Vctor Massagu,Javier Coromina,Joe Lewis
 Jodie Whittaker,John Boyega,Alex Esmail,Leeon Jones,Franz Drameh,Simon Howard,Maggie McCarthy,Danielle Vitalis,Paige Meade,Gina Antwi,Natasha Jonas,Sammy Williams,Michael Ajao,Luke Treadaway,Flaminia Cinque,Nick Frost,Jumayn Hunter,Selom Awadzi,Adam Buxton,Haneen Hammou,Jacey Salles,Yvonne D'Alpra,Karl Collins,Joey Ansah,Adam Leese,Lee Long,Jermaine Smith,Dylan Charles,David Cann,Paisley Billings,Paul Chiedozie,Lee Nicholas Harris,Philip Harvey,Chris Mansfield,Stephanie Street,David Warren
@@ -3196,6 +5536,480 @@ Joaquin Phoenix,Lady Gaga,Brendan Gleeson,Catherine Keener,Zazie Beetz,Steve Coo
 Daniel Kaluuya,Keke Palmer,Brandon Perea,Michael Wincott,Steven Yeun,Wrenn Schmidt,Keith David,Devon Graye,Terry Notary,Barbie Ferreira,Donna Mills,Osgood Perkins,Eddie Jemison,Jacob Kim,Sophia Coto,Jennifer Lafleur,Andrew Patrick Ralston,Lincoln Lambert,Pierce Kang,Roman Gross,Alex Hyde-White,Hetty Chang,Liza Treyger,Ryan W. Garcia,Courtney Elizabeth,Caden J. Lovgren,Malcolm Jae O'Shea,Evan Shafran,Mark Casimir Dyniewicz Jr.,Haley Babula
 Alexander Skarsgrd,Nicole Kidman,Claes Bang,Ethan Hawke,Anya Taylor-Joy,Gustav Lindh,Elliott Rose,Willem Dafoe,Phill Martin,Eldar Skar,Olwen Four,Edgar Abram,Jack Gassmann,Ingvar E. Sigursson,Oscar Novak,Jack Walsh,Bjrk,Ian Whyte,Katie Pattinson,Andrea ONeill,Rebecca Ineson,Kate Dickie,sadra Bjarkardttir Barney,Kevin Horsham,Seamus O'Hara,Scott Sinclair,Tadhg Murphy,James Yates,Hafr Jlus Bjrnsson,Ian Gerard Whyte,Ralph Ineson,Murray McArthur,Nille Glsel,Jonas Lorentzen,Magne Osnes,Ineta Sliuzaite,Finn Lafferty,Jon Campling,Helen Roche,Faoileann Cunningham,Gareth Parker,Mark Fitzgerald,Gavin Peden,Joel Hicks,Chris Finlayson,Eric Higgins,Matt Symonds,Luca Evans,James Harper-Jones,Thomas Harper-Jones,Sheila Flitton,Lily Bird,Robin Carolan,Mark P. O'Connor
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     GENRES
 Action,Drama,War,
 Drama,Fantasy,Horror,Mystery,Thriller,
@@ -3207,7 +6021,6 @@ Drama,Mystery,Thriller,
 Action,Adventure,Thriller,
 Action,Adventure,Thriller,
 Crime,Drama,Thriller,
-Comedy,Crime,Drama,
 Drama,Thriller,
 Sci-Fi,Thriller,
 Drama,Romance,Sci-Fi,
@@ -3309,8 +6122,6 @@ Action,Adventure,Drama,Sci-Fi,Thriller,
 Horror,Mystery,
 Action,Crime,Sci-Fi,Thriller,
 Crime,Drama,Horror,Mystery,
-Adventure,Family,Fantasy,Mystery,
-Adventure,Drama,Fantasy,Mystery,
 Action,Horror,Thriller,
 Action,Adventure,Comedy,Fantasy,
 Drama,Horror,Mystery,Sci-Fi,Thriller,
@@ -3326,7 +6137,6 @@ Action,Horror,Thriller,
 Drama,
 Action,Adventure,Horror,Sci-Fi,
 Action,Comedy,Crime,Thriller,
-Action,Crime,Drama,Thriller,
 Drama,Mystery,Thriller,
 Comedy,Sci-Fi,
 Action,Comedy,Crime,
@@ -3544,7 +6354,6 @@ Horror,Mystery,Thriller,
 Horror,Thriller,
 Horror,Mystery,Sci-Fi,
 Comedy,
-Horror,Mystery,Sci-Fi,
 Animation,Adventure,Comedy,Crime,Drama,Family,
 Horror,Mystery,Thriller,
 Action,Adventure,Comedy,Sci-Fi,Thriller,
@@ -3729,6 +6538,480 @@ Drama,Crime,Thriller
 Horror,Science Fiction
 Action,Adventure,Fantasy
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     COMPOSERS
 Thomas Newman
 Mark Korven
@@ -3740,7 +7023,6 @@ Torin Borrowdale
 David Arnold
 Thomas Newman
 Daniel Lopatin
-John Cale
 Roque Baos
 Paul Leonard-Morgan
 Arcade Fire
@@ -3842,8 +7124,6 @@ James Newton Howard
 no composers
 Joseph Trapanese
 Steve Jablonsky
-Alexandre Desplat
-Alexandre Desplat
 Young-gyu Jang
 Benjamin Wallfisch
 Justin Marshall Elias
@@ -3859,7 +7139,6 @@ Mowg
 Dust Brothers
 Marco Beltrami
 Cliff Martinez
-ric Serra
 Danny Bensi
 Christophe Beck
 Christopher Benstead
@@ -4077,7 +7356,6 @@ tomandandy
 John Carpenter
 Marco Beltrami
 David Kitay
-Ennio Morricone
 Alexandre Desplat
 no composers
 Steven Price
@@ -4262,6 +7540,480 @@ N/A
 N/A
 N/A
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     YEAR
 2019
 2019
@@ -4273,7 +8025,6 @@ N/A
 2006
 2012
 2017
-2000
 2004
 2011
 2013
@@ -4375,8 +8126,6 @@ N/A
 2020
 2020
 2010
-2010
-2011
 2016
 2019
 2015
@@ -4392,7 +8141,6 @@ N/A
 1999
 2013
 2018
-1994
 2015
 2012
 2019
@@ -4610,7 +8358,6 @@ N/A
 1978
 2011
 2000
-1982
 2009
 2007
 2011
@@ -4794,6 +8541,480 @@ N/A
 2024
 2022
 2022
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2025
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2015
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2016
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2017
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2018
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2019
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2020
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2021
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2022
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2023
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2025
+2025
+2025
+2025
+2025
+2025
+2017
+2017
+2017
+2017
+2017
+2017
+2021
+2021
+2021
+2022
+2022
+2022
+2022
+2022
+2023
+2023
+2023
+2023
+2023
+2019
+2019
+2024
+2024
+2024
+2020
+2020
+2020
 
     VIEW COUNT
 2
@@ -4812,7 +9033,6 @@ N/A
 1
 1
 1
-1
 2
 1
 1
@@ -4910,10 +9130,7 @@ N/A
 1
 1
 1
-1
-1
 2
-1
 1
 1
 1
@@ -5166,7 +9383,6 @@ N/A
 1
 1
 1
-1
 2
 1
 1
@@ -5177,6 +9393,480 @@ N/A
 1
 1
 2
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
 1
 1
 1
