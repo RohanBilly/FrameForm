@@ -388,12 +388,15 @@ def api_scrape_letterboxd():
         s = _get_state(uid)
 
         yield ev("status", message="Connecting to Letterboxd…")
+
+        # Try HTML scraping first; fall back to RSS if blocked (e.g. CDN IP block)
+        use_rss = False
         all_film_data = []
         seen_slugs    = set()
         page = 1
         while True:
             yield ev("status", message=f"Fetching film list — page {page}… ({len(all_film_data)} found so far)")
-            yield f": keepalive\n\n"
+            yield ": keepalive\n\n"
             url = f"https://letterboxd.com/{username}/films/page/{page}/"
             try:
                 r = _lb_session.get(url, timeout=20)
@@ -405,6 +408,9 @@ def api_scrape_letterboxd():
             if r.status_code == 404 and page == 1:
                 yield ev("error", message=f"User '{username}' not found on Letterboxd.")
                 return
+            if r.status_code == 403 and page == 1:
+                use_rss = True
+                break
             if r.status_code != 200:
                 if page == 1:
                     yield ev("error", message=f"Letterboxd returned HTTP {r.status_code}. The profile may be private.")
@@ -419,6 +425,37 @@ def api_scrape_letterboxd():
                     all_film_data.append(f)
             page += 1
 
+        # ── RSS fallback ──────────────────────────────────────────────────────
+        if use_rss:
+            yield ev("status", message="Loading from Letterboxd RSS feed…")
+            try:
+                rss_entries = list(_lb_rss_entries(username))
+            except RuntimeError as e:
+                yield ev("error", message=str(e))
+                return
+            if not rss_entries:
+                yield ev("error", message="No films found in RSS feed. Make sure the profile is public.")
+                return
+            yield ev("status", message=f"Found {len(rss_entries)} films via RSS. Enriching with TMDB…")
+            films = []
+            for i, (title, year, date_watched, tmdb_id, _rating) in enumerate(rss_entries):
+                film = ScrapedFilm(title, year, date_watched, rank_idx=i)
+                yield ev("progress", current=i + 1, total=len(rss_entries), film=title)
+                _tmdb_enrich(film, tmdb_id=tmdb_id)
+                films.append(film)
+            class _M:
+                pass
+            m = _M()
+            m.films = films
+            s["manager"]     = m
+            s["data_loaded"] = True
+            s["is_preview"]  = False
+            s["has_dates"]   = any(f.date_watched for f in films)
+            _save_library(uid)
+            yield ev("done", count=len(films))
+            return
+
+        # ── HTML path ─────────────────────────────────────────────────────────
         if not all_film_data:
             yield ev("error", message="No films found. Make sure the profile is public and has watched films.")
             return
