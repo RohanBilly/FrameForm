@@ -14,7 +14,9 @@
   <div class="welcome-row welcome-row--portrait">
 
     <a href="/poster?template=grid_top100" class="tmpl-card {% if total < 100 %}tmpl-card--disabled{% endif %}">
-      <div class="tmpl-preview tmpl-preview--scratch"></div>
+      <div class="tmpl-preview tmpl-preview--img">
+        <img src="{{ url_for('static', filename='template_grid.jpg') }}" alt="Top 100 Grid preview">
+      </div>
       <div class="tmpl-info">
         <div class="tmpl-badge">Grid</div>
         <div class="tmpl-title">Top 100 Grid</div>
