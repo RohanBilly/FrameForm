@@ -14,7 +14,15 @@ import requests as http_req
 from curl_cffi import requests as _curl_cffi
 from html import unescape as _html_unescape
 
-_lb_session = _curl_cffi.Session(impersonate="chrome120")
+_lb_session = _curl_cffi.Session(impersonate="chrome124")
+_lb_session.headers.update({
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Upgrade-Insecure-Requests": "1",
+})
 
 _POSTER_CACHE_DIR = Path(__file__).parent / "static" / "poster_cache"
 _POSTER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
