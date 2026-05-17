@@ -18,7 +18,7 @@ import sys
 
 DATA_FILE = "2020 Vision.txt"
 BACKUP_FILE = "2020 Vision Backup.txt"
-TMDB_API_KEY = "c9e7e3075b9ea8dae513713df3d0a139"
+TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "c9e7e3075b9ea8dae513713df3d0a139")
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
 def is_android():

@@ -294,7 +294,7 @@
             <div class="slider-hints"><span>80%</span><span>100%</span><span>120%</span></div>
           </div>
           <div class="control-row" id="grid-auto-row" style="display:none;">
-            <span class="control-label">Grid layout</span>
+            <span class="control-label">Layout</span>
             <div class="toggle-group">
               <button class="toggle-btn active" id="btn-grid-auto"   onclick="setGridAutoLayout(true)">Auto</button>
               <button class="toggle-btn"        id="btn-grid-manual" onclick="setGridAutoLayout(false)">Manual</button>
@@ -326,6 +326,16 @@
               <button class="toggle-btn"        id="btn-aspect-on"  onclick="setKeepAspect(true)">Full Poster</button>
               <button class="toggle-btn active" id="btn-aspect-off" onclick="setKeepAspect(false)">Fill</button>
             </div>
+          </div>
+          <div class="control-row" id="poster-gap-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="control-label">Gap</span>
+              <span class="control-value" id="poster-gap-display">0.10</span>
+            </div>
+            <input type="range" class="count-slider" id="poster-gap-slider"
+                   min="0" max="1" value="0.1" step="0.05"
+                   oninput="onPosterGapSlide(this.value)">
+            <div class="slider-hints"><span>None</span><span>0.5</span><span>Max</span></div>
           </div>
           <div class="control-row" id="label-align-row" style="display:none;">
             <span class="control-label">Label align</span>
@@ -551,6 +561,7 @@ const TOTAL      = {{ total }};
 const MIN_YEAR   = {{ min_year }};
 const MAX_YEAR   = {{ max_year }};
 const IS_PREVIEW = {{ 'true' if is_preview else 'false' }};
+const HAS_DATES  = {{ 'true' if has_dates else 'false' }};
 
 // Canvas is A2 at 300 DPI: 4961×7016px — displayed scaled down, downloaded at scale:1 = 4961×7016px
 const BASE_W = 4961, BASE_H = 7016;
@@ -565,7 +576,7 @@ const state = {
   selectionMode: 'count', yearType: 'watch', yearFrom: MAX_YEAR, yearTo: MAX_YEAR,
   castEnabled: false, castType: 'both', castAlign: 'left',
   actorCount: 5, directorCount: 5, castFontScale: 1.0,
-  imageCols: 0, imageRows: 0, keepAspect: false,
+  imageCols: 0, imageRows: 0, keepAspect: false, posterGap: 0.1,
   colourGrade: false,
   scratchMode: false,
   gridAutoLayout: true,
@@ -659,6 +670,14 @@ function _restoreState() {
   } catch(e) { return false; }
 }
 
+function _fixStateForCaps() {
+  if (!HAS_DATES) {
+    if (state.order     === 'chrono') { state.order     = 'ranked';  _syncOrderBtns('ranked'); }
+    if (state.labelMode === 'dates')  { state.labelMode = 'numbers'; }
+    if (state.yearType  === 'watch')  { state.yearType  = 'release'; }
+  }
+}
+
 function _syncControlsFromState() {
   const s = state;
   const _tb = (id, active) => { const el = document.getElementById(id); if (el) el.className = 'toggle-btn' + (active ? ' active' : ''); };
@@ -716,6 +735,8 @@ function _syncControlsFromState() {
   _sl('font-scale-slider',   Math.round(s.fontScale*100),'font-scale-display',   v => (v/100).toFixed(2)+'×');
   _sl('img-cols-slider',     s.imageCols,                'img-cols-display',     v => v==0?'Auto':v);
   _sl('img-rows-slider',     s.imageRows,                'img-rows-display',     v => v==0?'Auto':v);
+  if (s.mode === 'grid' && s.gridAutoLayout === false) _syncGridSliderMode(true);
+  _sl('poster-gap-slider', s.posterGap ?? 0.1, 'poster-gap-display', v => Number(v).toFixed(2));
   _sl('title-size-slider',   Math.round(s.titleSize*100),'title-size-display',   v => (v/100).toFixed(2)+'×');
   _sl('subtitle-size-slider',Math.round(s.subtitleSize*100),'subtitle-size-display',v => (v/100).toFixed(2)+'×');
 
@@ -1102,17 +1123,64 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('img-rows-slider').value        = 0;
       document.getElementById('img-rows-display').textContent = 'Auto';
       applyZoom(currentZoom);
-    } else if (_tpl === 'scratch_100') {
-      state.mode = 'grid';
-      state.order = 'ranked'; state.count = Math.min(100, TOTAL);
-      state.orientation = 'portrait';
-      CW = BASE_W; CH = BASE_H;
-      Object.assign(state.colors, { bg: '#0d0d0d', accent: '#c9963e', text: '#ffffff' });
-      state.titleColor = '#c9963e'; state.subtitleColor = '#c9963e';
-      document.getElementById('btn-ranked').className = 'toggle-btn active';
-      document.getElementById('btn-chrono').className = 'toggle-btn';
-      document.getElementById('count-slider').value        = state.count;
-      document.getElementById('count-display').textContent = state.count;
+    } else if (_tpl === 'grid_top100') {
+      const _n = Math.min(100, TOTAL);
+      state.mode = 'grid'; state.order = 'ranked'; state.count = _n;
+      state.gridAutoLayout = true; state.imageCols = 0; state.imageRows = 0;
+      state.posterGap = 0.2;
+      state.orientation = 'portrait'; CW = BASE_W; CH = BASE_H;
+      Object.assign(state.colors, PRESETS.dusk);
+      state.titleColor = PRESETS.dusk.text; state.subtitleColor = PRESETS.dusk.accent;
+      state.gradientEnabled = true; state.gradientType = 'sweep';
+      state.gradientSweepArea = 70; state.gradientSweepAngle = 135; state.gradientStrength = 50;
+      state.titleLayout = 'box'; state.showSubtitle = true;
+      state.subtitleSize = 1.54; state.titleFont = 'josefin'; state.titleSize = 1.16;
+      document.getElementById('btn-ranked').className           = 'toggle-btn active';
+      document.getElementById('btn-chrono').className           = 'toggle-btn';
+      document.getElementById('btn-orient-portrait').className  = 'toggle-btn active';
+      document.getElementById('btn-orient-landscape').className = 'toggle-btn';
+      document.getElementById('btn-grid-auto').className        = 'toggle-btn active';
+      document.getElementById('btn-grid-manual').className      = 'toggle-btn';
+      document.getElementById('count-slider').value             = _n;
+      document.getElementById('count-display').textContent      = _n;
+      document.getElementById('img-cols-slider').value          = 0;
+      document.getElementById('img-cols-display').textContent   = 'Auto';
+      document.getElementById('img-rows-slider').value          = 0;
+      document.getElementById('img-rows-display').textContent   = 'Auto';
+      document.getElementById('poster-gap-slider').value        = 0.2;
+      document.getElementById('poster-gap-display').textContent = '0.20';
+      document.getElementById('color-bg').value                 = PRESETS.dusk.bg;
+      document.getElementById('color-accent').value             = PRESETS.dusk.accent;
+      document.getElementById('color-text').value               = PRESETS.dusk.text;
+      document.getElementById('color-title-text').value         = PRESETS.dusk.text;
+      document.getElementById('color-subtitle-text').value      = PRESETS.dusk.accent;
+      document.getElementById('btn-grad-on').className          = 'toggle-btn active';
+      document.getElementById('btn-grad-off').className         = 'toggle-btn';
+      document.getElementById('gradient-options').style.display = 'flex';
+      ['sides','glow','sweep'].forEach(t => {
+        document.getElementById('btn-grad-' + t).className           = 'toggle-btn' + (t === 'sweep' ? ' active' : '');
+        document.getElementById('grad-' + t + '-opts').style.display = (t === 'sweep') ? 'flex' : 'none';
+      });
+      document.getElementById('grad-strength-slider').value           = 50;
+      document.getElementById('grad-strength-display').textContent    = '50%';
+      document.getElementById('grad-sweep-angle-slider').value        = 135;
+      document.getElementById('grad-sweep-angle-display').textContent = '135°';
+      document.getElementById('grad-sweep-area-slider').value         = 70;
+      document.getElementById('grad-sweep-area-display').textContent  = '70%';
+      document.getElementById('btn-tlayout-none').className           = 'toggle-btn';
+      document.getElementById('btn-tlayout-rule').className           = 'toggle-btn';
+      document.getElementById('btn-tlayout-box').className            = 'toggle-btn active';
+      document.getElementById('btn-subtitle-on').className            = 'toggle-btn active';
+      document.getElementById('btn-subtitle-off').className           = 'toggle-btn';
+      document.getElementById('subtitle-size-row').style.display      = '';
+      document.getElementById('subtitle-color-row').style.display     = '';
+      document.getElementById('subtitle-case-row').style.display      = '';
+      document.getElementById('subtitle-font-row').style.display      = '';
+      document.getElementById('title-size-slider').value              = 116;
+      document.getElementById('title-size-display').textContent       = '1.16×';
+      document.getElementById('subtitle-size-slider').value           = 154;
+      document.getElementById('subtitle-size-display').textContent    = '1.54×';
+      const _tfs = document.getElementById('title-font-select'); if (_tfs) _tfs.value = 'josefin';
       applyZoom(currentZoom);
     }
     _syncOrderBtns(state.order);
@@ -1132,6 +1200,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('preview-mode');
   }
 
+  _fixStateForCaps();
   updateControlVis();
   applyZoom(currentZoom);
   // Initialise gradient colour picker — must run on every load path (restored or fresh)
@@ -1183,15 +1252,25 @@ function updateControlVis() {
   const yr = state.selectionMode === 'year' || state.selectionMode === 'range';
   document.getElementById('year-type-row').style.display     = yr ? '' : 'none';
   document.getElementById('date-format-row').style.display   = (t && d)     ? 'flex' : 'none';
-  const gr  = state.mode === 'grid';
-  const grM = gr && state.gridAutoLayout === false; // grid + manual
-  document.getElementById('grid-auto-row').style.display     = gr                  ? ''     : 'none';
-  document.getElementById('img-cols-row').style.display      = (im || grM)         ? ''     : 'none';
-  document.getElementById('img-rows-row').style.display      = (im || grM)         ? ''     : 'none';
+  const gr         = state.mode === 'grid';
+  const manualMode = (gr || im) && state.gridAutoLayout === false;
+  _syncGridSliderMode(manualMode);
+  document.getElementById('grid-auto-row').style.display     = (gr || im)          ? ''     : 'none';
+  document.getElementById('img-cols-row').style.display      = manualMode          ? ''     : 'none';
+  document.getElementById('img-rows-row').style.display      = manualMode          ? ''     : 'none';
   document.getElementById('img-aspect-row').style.display    = (im || gr)          ? ''     : 'none';
+  document.getElementById('poster-gap-row').style.display    = (im || gr)          ? ''     : 'none';
   document.getElementById('label-align-row').style.display   = gr                  ? ''     : 'none';
   document.getElementById('avatar-section').style.display    = state.avatarUrl     ? ''     : 'none';
   document.getElementById('avatar-align-row').style.display  = (state.avatarUrl && state.showAvatar) ? '' : 'none';
+  // Features that require watch dates
+  if (!HAS_DATES) {
+    document.getElementById('btn-chrono').style.display        = 'none';
+    document.getElementById('btn-lbl-date').style.display      = 'none';
+    document.getElementById('btn-yt-watch').style.display      = 'none';
+    document.getElementById('year-breaks-row').style.display   = 'none';
+    document.getElementById('month-breaks-row').style.display  = 'none';
+  }
 }
 
 // ── order / mode ──
@@ -1212,10 +1291,39 @@ function setMode(v) {
   document.getElementById('btn-grid').className   = 'toggle-btn' + (v === 'grid'   ? ' active' : '');
   updateControlVis(); render();
 }
+function _syncGridSliderMode(manual) {
+  const cs = document.getElementById('img-cols-slider');
+  const rs = document.getElementById('img-rows-slider');
+  const ch = document.getElementById('img-cols-row').querySelector('.slider-hints');
+  const rh = document.getElementById('img-rows-row').querySelector('.slider-hints');
+  if (manual) {
+    cs.min = '1'; rs.min = '1';
+    if (parseInt(cs.value) < 1) { cs.value = '5'; document.getElementById('img-cols-display').textContent = '5'; state.imageCols = 5; }
+    if (parseInt(rs.value) < 1) { rs.value = '5'; document.getElementById('img-rows-display').textContent = '5'; state.imageRows = 5; }
+    ch.innerHTML = '<span>1</span><span>5</span><span>10</span><span>15</span><span>25</span>';
+    rh.innerHTML = '<span>1</span><span>5</span><span>10</span><span>15</span><span>25</span>';
+  } else {
+    cs.min = '0'; rs.min = '0';
+    ch.innerHTML = '<span>Auto</span><span>5</span><span>10</span><span>15</span><span>25</span>';
+    rh.innerHTML = '<span>Auto</span><span>5</span><span>10</span><span>15</span><span>25</span>';
+  }
+}
 function setGridAutoLayout(v) {
   state.gridAutoLayout = v;
   document.getElementById('btn-grid-auto').className   = 'toggle-btn' + (v  ? ' active' : '');
   document.getElementById('btn-grid-manual').className = 'toggle-btn' + (!v ? ' active' : '');
+  if (!v) {
+    if (!state.imageCols) { state.imageCols = 5; }
+    if (!state.imageRows)  { state.imageRows = 5; }
+    _syncGridSliderMode(true);
+    document.getElementById('img-cols-slider').value = state.imageCols;
+    document.getElementById('img-cols-display').textContent = state.imageCols;
+    document.getElementById('img-rows-slider').value = state.imageRows;
+    document.getElementById('img-rows-display').textContent = state.imageRows;
+  } else {
+    state.imageCols = 0;
+    state.imageRows = 0;
+  }
   updateControlVis(); render();
 }
 function setOrientation(v) {
@@ -1283,6 +1391,11 @@ function onImgColsSlide(v) {
 function onImgRowsSlide(v) {
   state.imageRows = parseInt(v);
   document.getElementById('img-rows-display').textContent = v === '0' ? 'Auto' : v;
+  scheduleRender();
+}
+function onPosterGapSlide(v) {
+  state.posterGap = parseFloat(v);
+  document.getElementById('poster-gap-display').textContent = parseFloat(v).toFixed(2);
   scheduleRender();
 }
 function setKeepAspect(v) {
@@ -2362,7 +2475,7 @@ async function renderImages(films, castData, myGen) {
   const availW    = CW - PAD * 2;
   const segW      = Math.round(availW * 0.43);
   const availH    = CH - PAD * 2 - HEADER_H - CAST_H;
-  const gap       = 10;
+  const gap       = Math.round(CW * (state.posterGap ?? 0.1) * 0.018);
 
   let cols, rows;
   if (state.imageCols > 0 && state.imageRows > 0) {
@@ -2513,7 +2626,7 @@ async function renderScratch(films, myGen) {
 
   const GOLD = state.colors.accent;
   const PAD  = Math.round(CW * 0.024);
-  const GAP  = Math.round(CW * 0.0018);
+  const GAP  = Math.round(CW * (state.posterGap ?? 0.1) * 0.018);
 
   // Header — respect title state params
   const titleColor    = state.titleColor    || GOLD;
@@ -2582,7 +2695,8 @@ async function renderScratch(films, myGen) {
       } else {
         if (gridH > availH * 1.05) continue;
         // Score by actual poster aspect (imgH/cellW), not cell aspect — label is fixed to cellW.
-        const wasteScore    = waste / Math.max(1, n) * 0.5;
+        const lastRowFrac = waste / c;
+        const wasteScore  = waste === 0 ? 0 : 0.3 + lastRowFrac * 2.0;
         const labelHest     = cW * 0.13;
         const imgAspect     = (cH - labelHest) / cW;
         const aspectScore   = Math.abs(imgAspect - 1.5);

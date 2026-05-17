@@ -1,3 +1,8 @@
 flask
 requests
 gunicorn
+curl_cffi
+Flask-Login
+Flask-SQLAlchemy
+psycopg2-binary
+Authlib

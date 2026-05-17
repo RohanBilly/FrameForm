@@ -10,8 +10,32 @@
     <div class="welcome-sub">Each template pre-configures the poster builder. You can adjust everything after selecting one.</div>
   </div>
 
-  <!-- Row 1: portrait templates -->
+  <!-- Row 1: 4 portrait templates -->
   <div class="welcome-row welcome-row--portrait">
+
+    <a href="/poster?template=grid_top100" class="tmpl-card {% if total < 100 %}tmpl-card--disabled{% endif %}">
+      <div class="tmpl-preview tmpl-preview--scratch"></div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge">Grid</div>
+        <div class="tmpl-title">Top 100 Grid</div>
+        <div class="tmpl-sub">
+          {% if total >= 100 %}
+            Auto grid · dusk · sweep gradient · portrait
+          {% else %}
+            Needs {{ 100 - total }} more film{{ 's' if 100 - total != 1 else '' }}
+          {% endif %}
+        </div>
+      </div>
+    </a>
+
+    <a href="/poster?template=colour_grade" class="tmpl-card">
+      <div class="tmpl-preview tmpl-preview--colour-grade"></div>
+      <div class="tmpl-info">
+        <div class="tmpl-badge tmpl-badge--exp">Colour</div>
+        <div class="tmpl-title">Colour Grade</div>
+        <div class="tmpl-sub">Posters sorted by average colour · portrait · all films</div>
+      </div>
+    </a>
 
     <a href="/poster?template=top300" class="tmpl-card {% if total < 300 %}tmpl-card--disabled{% endif %}">
       <div class="tmpl-preview tmpl-preview--img">
@@ -30,20 +54,9 @@
       </div>
     </a>
 
-    <a href="/poster?template=top_posters&n={{ top_n }}" class="tmpl-card">
-      <div class="tmpl-preview tmpl-preview--img">
-        <img src="{{ url_for('static', filename='top100-preview.jpg') }}" alt="Top 100 preview">
-      </div>
-      <div class="tmpl-info">
-        <div class="tmpl-badge">Ranked</div>
-        <div class="tmpl-title">All Time Top {{ top_n }}</div>
-        <div class="tmpl-sub">Poster grid · image layout</div>
-      </div>
-    </a>
-
     <a href="/poster?template=year_watchlist&year={{ last_year }}" class="tmpl-card {% if last_year_count == 0 %}tmpl-card--disabled{% endif %}">
       <div class="tmpl-preview tmpl-preview--img">
-        <img src="{{ url_for('static', filename='year-watchlist-preview.jpg') }}" alt="Year Watchlist preview">
+        <img src="{{ url_for('static', filename='year-watchlist-preview.jpg') }}" alt="{{ last_year }} Watchlist preview">
       </div>
       <div class="tmpl-info">
         <div class="tmpl-badge tmpl-badge--year">{{ last_year }}</div>
@@ -58,21 +71,10 @@
       </div>
     </a>
 
-    <a href="/poster?template=year_review" class="tmpl-card">
-      <div class="tmpl-preview tmpl-preview--img">
-        <img src="{{ url_for('static', filename='year-review-preview.jpg') }}" alt="Year Review preview">
-      </div>
-      <div class="tmpl-info">
-        <div class="tmpl-badge">Ranked</div>
-        <div class="tmpl-title">Year Review</div>
-        <div class="tmpl-sub">Poster grid · release year · paper layout</div>
-      </div>
-    </a>
-
   </div>
 
-  <!-- Row 2: landscape templates + build your own -->
-  <div class="welcome-row welcome-row--landscape">
+  <!-- Row 2: 2 landscape templates, centred -->
+  <div class="welcome-row welcome-row--landscape" style="justify-content: center;">
 
     <a href="/poster?template=top250" class="tmpl-card {% if total < 250 %}tmpl-card--disabled{% endif %}">
       <div class="tmpl-preview tmpl-preview--img">
@@ -91,78 +93,17 @@
       </div>
     </a>
 
-    <a href="/poster?template=top500" class="tmpl-card {% if total < 500 %}tmpl-card--disabled{% endif %}">
-      <div class="tmpl-preview tmpl-preview--img">
-        <img src="{{ url_for('static', filename='top500-preview.jpg') }}" alt="Top 500 preview">
-      </div>
-      <div class="tmpl-info">
-        <div class="tmpl-badge">Ranked</div>
-        <div class="tmpl-title">Top 500 Films</div>
-        <div class="tmpl-sub">
-          {% if total >= 500 %}
-            Landscape · 10 columns · text layout
-          {% else %}
-            Needs {{ 500 - total }} more film{{ 's' if 500 - total != 1 else '' }}
-          {% endif %}
-        </div>
-      </div>
-    </a>
-
-    <!-- Decade Review — Landscape Poster Grid -->
-    <a href="/poster?template=decade_review" class="tmpl-card">
-      <div class="tmpl-preview tmpl-preview--img">
-        <img src="{{ url_for('static', filename='decade-review-preview.jpg') }}" alt="Decade Review preview">
-      </div>
-      <div class="tmpl-info">
-        <div class="tmpl-badge">Ranked</div>
-        <div class="tmpl-title">Decade Review</div>
-        <div class="tmpl-sub">Poster grid · landscape · release year range</div>
-      </div>
-    </a>
-
     <a href="/poster?template=byo" class="tmpl-card tmpl-card--byo">
       <div class="tmpl-preview tmpl-preview--byo">
         <div class="tmpl-byo-icon">+</div>
       </div>
       <div class="tmpl-info">
         <div class="tmpl-badge tmpl-badge--dim">Custom</div>
-        <div class="tmpl-title">Build your own</div>
+        <div class="tmpl-title">Create Your Own</div>
         <div class="tmpl-sub">Start from scratch with full controls</div>
       </div>
     </a>
 
-  </div>
-
-  <!-- Experimental -->
-  <div class="welcome-experimental">
-    <div class="welcome-exp-label">Experimental</div>
-    <div class="welcome-row welcome-row--portrait welcome-row--exp">
-
-      <a href="/poster?template=colour_grade" class="tmpl-card tmpl-card--exp">
-        <div class="tmpl-preview tmpl-preview--colour-grade"></div>
-        <div class="tmpl-info">
-          <div class="tmpl-badge tmpl-badge--exp">Colour</div>
-          <div class="tmpl-title">Colour Grade</div>
-          <div class="tmpl-sub">Posters sorted by average colour · portrait · all films</div>
-        </div>
-      </a>
-
-      <a href="/poster?template=scratch_100" class="tmpl-card tmpl-card--exp {% if total < 100 %}tmpl-card--disabled{% endif %}">
-        <div class="tmpl-preview tmpl-preview--scratch"></div>
-        <div class="tmpl-info">
-          <div class="tmpl-badge tmpl-badge--exp">Grid</div>
-          <div class="tmpl-title">Top 100 Grid</div>
-          <div class="tmpl-sub">
-            {% if total >= 100 %}
-              10×10 poster grid · gold &amp; black · scratch-off style
-            {% else %}
-              Needs {{ 100 - total }} more film{{ 's' if 100 - total != 1 else '' }}
-            {% endif %}
-          </div>
-        </div>
-      </a>
-
-    </div>
   </div>
 
 </div>
