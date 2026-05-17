@@ -129,6 +129,10 @@
   background: var(--bg-card);
   color: var(--text-muted);
 }
+.onboarding-badge--warn {
+  background: #92400e;
+  color: #fcd34d;
+}
 
 /* ── PREVIEW MODE — banner is outside <main>, so only sticky offsets need updating ── */
 body.preview-mode .builder-controls {
