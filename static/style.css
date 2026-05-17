@@ -488,7 +488,7 @@ body {
 }
 .toggle-btn {
   flex: 1;
-  padding: 6px 10px;
+  padding: 6px 7px;
   font-size: 11px;
   color: var(--text);
   text-decoration: none;
@@ -637,15 +637,16 @@ body {
 }
 
 .builder-controls {
-  width: 300px;
-  min-width: 300px;
+  width: 330px;
+  min-width: 330px;
   background: var(--bg-alt);
   border-right: 1px solid var(--border);
   height: calc(100vh - 54px);
-  padding: 28px 20px;
+  padding: 28px 16px;
   position: sticky;
   top: 54px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
@@ -654,8 +655,43 @@ body {
 .builder-controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .builder-controls::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-.controls-inner { display: flex; flex-direction: column; gap: 32px; }
+.controls-inner { display: flex; flex-direction: column; gap: 4px; }
 
+.control-section { display: block; }
+
+.control-section > summary {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--green);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  user-select: none;
+}
+.control-section > summary::-webkit-details-marker { display: none; }
+.control-section > summary::after {
+  content: '▾';
+  font-size: 13px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.control-section[open] > summary::after { transform: rotate(-180deg); }
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0 8px;
+}
+
+/* keep old title class for any non-details usage */
 .control-section-title {
   font-size: 10px;
   font-weight: 700;
@@ -666,7 +702,6 @@ body {
   border-bottom: 1px solid var(--border);
   padding-bottom: 8px;
 }
-.control-section { display: flex; flex-direction: column; gap: 16px; }
 
 .control-row {
   display: flex;
@@ -972,6 +1007,20 @@ body {
 .year-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 /* ── COLOUR PICKER INPUT ── */
+.control-select {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 6px 8px;
+  cursor: pointer;
+  flex: 1;
+}
+.control-select:focus { outline: none; border-color: var(--green); }
+
 .color-input {
   -webkit-appearance: none;
   width: 36px;
