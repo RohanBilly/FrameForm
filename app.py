@@ -14,7 +14,13 @@ import requests as http_req
 from curl_cffi import requests as _curl_cffi
 from html import unescape as _html_unescape
 
-_lb_session = _curl_cffi.Session(impersonate="chrome131")
+_lb_session   = _curl_cffi.Session(impersonate="chrome131")
+_LB_PROXY_URL = os.environ.get("LB_PROXY_URL", "")
+
+def _lb_get(url, timeout=20):
+    if _LB_PROXY_URL:
+        return http_req.get(f"{_LB_PROXY_URL}?url={url}", timeout=timeout)
+    return _lb_session.get(url, timeout=timeout)
 
 _POSTER_CACHE_DIR = Path(__file__).parent / "static" / "poster_cache"
 _POSTER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -349,7 +355,7 @@ def api_debug_letterboxd():
     for page in (1, 2):
         url = f"https://letterboxd.com/{username}/films/page/{page}/"
         try:
-            r = _lb_session.get(url, timeout=20)
+            r = _lb_get(url, timeout=20)
         except Exception as e:
             results[f"page{page}"] = {"error": str(e)}
             continue
@@ -399,7 +405,7 @@ def api_scrape_letterboxd():
             yield ": keepalive\n\n"
             url = f"https://letterboxd.com/{username}/films/page/{page}/"
             try:
-                r = _lb_session.get(url, timeout=20)
+                r = _lb_get(url, timeout=20)
             except Exception as e:
                 if page == 1:
                     yield ev("error", message=f"Network error: {e}")
@@ -469,7 +475,7 @@ def api_scrape_letterboxd():
             yield ev("status", message=f"Fetching watch dates — page {diary_page}… ({len(diary_dates)} dates so far)")
             url = f"https://letterboxd.com/{username}/films/diary/page/{diary_page}/"
             try:
-                r = _lb_session.get(url, timeout=20)
+                r = _lb_get(url, timeout=20)
             except Exception:
                 break
             if r.status_code != 200:
