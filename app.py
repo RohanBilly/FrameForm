@@ -393,6 +393,7 @@ def api_scrape_letterboxd():
         page = 1
         while True:
             yield ev("status", message=f"Fetching film list — page {page}… ({len(all_film_data)} found so far)")
+            yield f": keepalive\n\n"
             url = f"https://letterboxd.com/{username}/films/page/{page}/"
             try:
                 r = _lb_session.get(url, timeout=20)
@@ -428,6 +429,7 @@ def api_scrape_letterboxd():
         diary_dates = {}
         diary_page  = 1
         while True:
+            yield ev("status", message=f"Fetching watch dates — page {diary_page}… ({len(diary_dates)} dates so far)")
             url = f"https://letterboxd.com/{username}/films/diary/page/{diary_page}/"
             try:
                 r = _lb_session.get(url, timeout=20)
