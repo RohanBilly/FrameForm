@@ -2011,18 +2011,31 @@ async function fetchPosterUrl(title, year) {
   return state.cache[key];
 }
 async function fetchAllPosters(films, onProgress) {
+  // Step 1: batch-resolve all URLs that are already in the server cache (one request)
+  const needBatch = films.filter(f => !(`${f.title}|${f.year}` in state.cache));
+  if (needBatch.length > 0) {
+    try {
+      const r = await fetch('/api/poster-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(needBatch.map(f => ({ title: f.title, year: f.year })))
+      });
+      const urls = await r.json();
+      for (const [key, url] of Object.entries(urls)) state.cache[key] = url;
+    } catch(e) {}
+  }
+
+  // Step 2: individually fetch+download anything still missing (genuine cache misses)
   const B = 8;
-  let done = 0;
-  const uncached = films.filter(f => {
-    if (`${f.title}|${f.year}` in state.cache) { done++; return false; }
-    return true;
-  });
+  let done = films.filter(f => `${f.title}|${f.year}` in state.cache).length;
   if (onProgress) onProgress(done, films.length);
-  for (let i = 0; i < uncached.length; i += B) {
-    await Promise.all(uncached.slice(i, i + B).map(f => fetchPosterUrl(f.title, f.year)));
-    done += Math.min(B, uncached.length - i);
+  const stillMissing = films.filter(f => !(`${f.title}|${f.year}` in state.cache));
+  for (let i = 0; i < stillMissing.length; i += B) {
+    await Promise.all(stillMissing.slice(i, i + B).map(f => fetchPosterUrl(f.title, f.year)));
+    done += Math.min(B, stillMissing.length - i);
     if (onProgress) onProgress(Math.min(done, films.length), films.length);
   }
+  if (onProgress) onProgress(films.length, films.length);
 }
 
 // ── date helpers ──

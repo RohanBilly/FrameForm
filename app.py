@@ -1058,6 +1058,33 @@ def api_cast_stats():
     })
 
 
+@app.route("/api/poster-batch", methods=["POST"])
+@login_required
+def api_poster_batch():
+    """Resolve poster URLs for a list of {title, year} objects in one shot.
+    Returns a dict keyed by 'title|year'. Only checks the local cache —
+    films not found here fall back to individual /api/poster calls client-side."""
+    items = request.get_json(silent=True) or []
+    result = {}
+    for item in items:
+        title = (item.get("title") or "").strip()
+        year  = (item.get("year")  or "").strip()
+        if not title:
+            continue
+        key = f"{title}|{year}"
+        if key in _poster_cache:
+            result[key] = _poster_cache[key]
+            continue
+        fname = hashlib.md5(key.encode()).hexdigest() + ".jpg"
+        local = _POSTER_CACHE_DIR / fname
+        if local.exists() and local.stat().st_size > 0:
+            url = f"/static/poster_cache/{fname}"
+            _poster_cache[key] = url
+            result[key] = url
+        # leave missing keys absent — client handles them individually
+    return jsonify(result)
+
+
 @app.route("/api/poster")
 @login_required
 def api_poster():
