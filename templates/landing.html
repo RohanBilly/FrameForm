@@ -63,7 +63,7 @@
     @keyframes scroll-left  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
     @keyframes scroll-right { from { transform: translateX(-50%); } to { transform: translateX(0); }    }
 
-    /* ── OVERLAYS ── */
+    /* ── OVERLAY ── */
     .landing-overlay {
       position: fixed;
       inset: 0;
@@ -115,7 +115,7 @@
     }
     .landing-nav-link--cta:hover { background: rgba(255,255,255,0.13); }
 
-    /* ── CENTRE CONTENT ── */
+    /* ── HERO ── */
     .landing-center {
       position: relative;
       z-index: 10;
@@ -161,21 +161,19 @@
       color: var(--text);
       max-width: 360px;
       line-height: 1.75;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
     }
 
-    /* ── MARKETING BUTTONS (logged-out) ── */
     .landing-actions {
       display: flex;
       gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 16px;
     }
 
     .landing-btn {
       display: inline-block;
-      padding: 13px 30px;
+      padding: 13px 32px;
       border-radius: 6px;
       font-size: 13px;
       font-weight: 700;
@@ -194,12 +192,6 @@
     .landing-btn--secondary { background: transparent; color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.25); }
     .landing-btn--secondary:hover { color: #fff; border-color: rgba(255,255,255,0.65); }
 
-    .landing-demo-link {
-      font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer;
-      font-family: var(--font); text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s; padding: 4px 0;
-    }
-    .landing-demo-link:hover { color: var(--text); }
-
     .landing-chips {
       display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 40px;
     }
@@ -208,94 +200,122 @@
       color: var(--muted); padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px;
     }
 
-    /* ── IMPORT PANEL (logged-in, no data) ── */
-    .import-panel {
+    /* ── IMPORT MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-card {
+      position: relative;
       width: 100%;
       max-width: 400px;
-      background: rgba(28,34,40,0.92);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #1c2228;
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 28px 28px 24px;
-      backdrop-filter: blur(8px);
-      text-align: left;
+      transform: translateY(16px);
+      transition: transform 0.2s ease;
     }
 
-    .import-panel-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 20px;
-      text-align: center;
+    .modal-backdrop.open .modal-card {
+      transform: translateY(0);
     }
 
-    .import-section { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none; border: none;
+      color: var(--muted); font-size: 20px; line-height: 1;
+      cursor: pointer; font-family: var(--font);
+      transition: color 0.15s;
+      padding: 4px 6px;
+    }
+    .modal-close:hover { color: #fff; }
 
-    .import-section-label {
+    .modal-title {
+      font-size: 15px; font-weight: 700; color: #fff;
+      margin-bottom: 20px; text-align: center;
+    }
+
+    /* import form elements inside modal */
+    .imp-section { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+
+    .imp-label {
       font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--muted); display: flex; align-items: center; gap: 8px;
     }
 
-    .import-badge {
+    .imp-badge {
       font-size: 9px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 6px;
       border-radius: 10px; background: #f97316; color: #fff; text-transform: uppercase;
     }
-    .import-badge--dim  { background: var(--bg-card); color: var(--muted); }
-    .import-badge--warn { background: #92400e; color: #fcd34d; }
+    .imp-badge--dim  { background: var(--bg-card); color: var(--muted); }
+    .imp-badge--warn { background: #92400e; color: #fcd34d; }
 
-    .import-hint {
-      font-size: 11px; color: var(--muted); line-height: 1.55;
-    }
+    .imp-hint { font-size: 11px; color: var(--muted); line-height: 1.55; }
 
-    .import-btn {
+    .imp-btn {
       display: block; width: 100%; padding: 10px 16px;
       background: var(--green); color: #000; border: none; border-radius: 5px;
       font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
       cursor: pointer; transition: opacity 0.15s; font-family: var(--font); text-align: center;
     }
-    .import-btn:hover { opacity: 0.85; }
-    .import-btn:disabled { opacity: 0.5; cursor: default; }
-    .import-btn--lb   { background: #f97316; color: #fff; }
-    .import-btn--imdb { background: #f5c518; color: #000; }
-    .import-btn--secondary { background: var(--bg-card); color: #fff; }
-    .import-btn--secondary:hover { opacity: 1; background: #374352; }
-    .import-btn--demo { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .import-btn--demo:hover { opacity: 1; background: var(--bg-card); }
+    .imp-btn:hover { opacity: 0.85; }
+    .imp-btn:disabled { opacity: 0.5; cursor: default; }
+    .imp-btn--lb   { background: #f97316; color: #fff; }
+    .imp-btn--imdb { background: #f5c518; color: #000; }
+    .imp-btn--dim  { background: var(--bg-card); color: #fff; }
+    .imp-btn--dim:hover { opacity: 1; background: #374352; }
+    .imp-btn--demo { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .imp-btn--demo:hover { opacity: 1; background: var(--bg-card); }
 
-    .import-divider {
+    .imp-divider {
       display: flex; align-items: center; gap: 8px; color: var(--muted);
       font-size: 11px; margin: 10px 0;
     }
-    .import-divider::before, .import-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
+    .imp-divider::before, .imp-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .import-lb-row { display: flex; flex-direction: column; gap: 6px; }
-
-    .import-input {
+    .imp-input {
       width: 100%; padding: 9px 12px; background: #0f1318; border: 1px solid var(--border);
       border-radius: 5px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.15s;
       font-family: var(--font);
     }
-    .import-input:focus { border-color: var(--green); }
-    .import-input::placeholder { color: var(--muted); }
+    .imp-input:focus { border-color: var(--green); }
+    .imp-input::placeholder { color: var(--muted); }
 
-    .import-progress { display: flex; flex-direction: column; gap: 6px; }
-    .import-progress-track {
-      width: 100%; height: 5px; background: #0f1318; border-radius: 3px; overflow: hidden;
-    }
-    .import-progress-fill {
-      height: 100%; width: 0%; background: #f97316; border-radius: 3px; transition: width 0.3s ease;
-    }
-    .import-progress-msg { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .imp-progress { display: flex; flex-direction: column; gap: 6px; }
+    .imp-progress-track { width: 100%; height: 5px; background: #0f1318; border-radius: 3px; overflow: hidden; }
+    .imp-progress-fill  { height: 100%; width: 0%; background: #f97316; border-radius: 3px; transition: width 0.3s; }
+    .imp-progress-msg   { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   </style>
 </head>
 <body>
 
-  <!-- Minimal nav -->
+  <!-- Nav -->
   <nav class="landing-nav">
     <a href="/" class="landing-nav-logo">FLM</a>
     <div class="landing-nav-links">
-      {% if current_user.is_authenticated %}
+      {% if has_data %}
+        <a href="/poster" class="landing-nav-link">Poster</a>
+        <a href="/films"  class="landing-nav-link">Films</a>
         <a href="/auth/logout" class="landing-nav-link">Log out</a>
       {% else %}
         <a href="/auth/login"    class="landing-nav-link">Log in</a>
@@ -304,86 +324,34 @@
     </div>
   </nav>
 
-  <!-- Scrolling poster rows -->
+  <!-- Scrolling poster background -->
   <div class="landing-bg" id="landingBg"></div>
   <div class="landing-overlay"></div>
 
-  <!-- Hero content -->
+  <!-- Hero -->
   <div class="landing-center">
     <div class="landing-eyebrow">Film journal &amp; poster builder</div>
     <div class="landing-logo">FLM</div>
     <div class="landing-tagline">Your film life, visualised.</div>
     <p class="landing-sub">
-      Import your Letterboxd or IMDb library and create beautiful
-      poster grids sorted by rank, year, colour, and more.
+      Create stunning poster grids from your Letterboxd or IMDb library —
+      sorted by rank, year, colour, and more.
     </p>
 
-    {% if has_data %}
-    <!-- Logged in + has data — quick-nav to app -->
     <div class="landing-actions">
-      <a href="/poster" class="landing-btn landing-btn--primary">Go to poster builder</a>
-      <a href="/films"  class="landing-btn landing-btn--secondary">Browse films</a>
-    </div>
-    <a href="/auth/logout" class="landing-demo-link">Log out &amp; clear data →</a>
-
-    {% elif current_user.is_authenticated %}
-    <!-- Logged in, no data — show import panel -->
-    <div class="import-panel">
-      <div class="import-panel-title">Load your film library</div>
-
-      <div class="import-section">
-        <div class="import-section-label">Letterboxd <span class="import-badge">Recommended</span></div>
-        <p class="import-hint">
-          Export from <strong style="color:#fff">letterboxd.com/settings/data</strong> and upload the ZIP directly.
-        </p>
-        <label class="import-btn import-btn--lb" id="zipLabel">
-          Upload Letterboxd ZIP
-          <input type="file" id="zipInput" accept=".zip" style="display:none" onchange="doUploadZip(this)">
-        </label>
-      </div>
-
-      <div class="import-section">
-        <div class="import-section-label">IMDb <span class="import-badge import-badge--dim">ratings export</span></div>
-        <label class="import-btn import-btn--imdb" id="imdbLabel">
-          Upload IMDb ratings.csv
-          <input type="file" id="imdbInput" accept=".csv" style="display:none" onchange="doUploadImdb(this)">
-        </label>
-        <div id="imdbProgress" style="display:none" class="import-progress">
-          <div class="import-progress-track"><div class="import-progress-fill" id="imdbFill"></div></div>
-          <p class="import-progress-msg" id="imdbMsg">Starting…</p>
-        </div>
-      </div>
-
-      <div class="import-divider"><span>or</span></div>
-
-      <div class="import-section">
-        <div class="import-section-label">Letterboxd username <span class="import-badge import-badge--warn">Experimental</span></div>
-        <div class="import-lb-row">
-          <input type="text" id="lbUser" class="import-input" placeholder="Letterboxd username"
-                 autocomplete="off" autocapitalize="none"
-                 onkeydown="if(event.key==='Enter')doScrape()">
-          <button class="import-btn import-btn--secondary" id="lbBtn" onclick="doScrape()">Load from Letterboxd</button>
-        </div>
-        <div id="lbProgress" style="display:none" class="import-progress">
-          <div class="import-progress-track"><div class="import-progress-fill" id="lbFill"></div></div>
-          <p class="import-progress-msg" id="lbMsg">Starting…</p>
-        </div>
-      </div>
-
-      <div class="import-divider"><span>or</span></div>
-
-      <button class="import-btn import-btn--demo" id="demoBtn" onclick="doDemo()">Load demo data</button>
+      {% if has_data %}
+        <a href="/poster" class="landing-btn landing-btn--primary">Go to poster builder</a>
+        <a href="/films"  class="landing-btn landing-btn--secondary">Browse films</a>
+      {% elif current_user.is_authenticated %}
+        <button class="landing-btn landing-btn--primary" onclick="openModal()">Get started</button>
+      {% else %}
+        <button class="landing-btn landing-btn--primary" onclick="openModal()">Get started</button>
+        <a href="/auth/login" class="landing-btn landing-btn--secondary">Log in</a>
+      {% endif %}
     </div>
 
-    {% else %}
-    <!-- Logged out — marketing CTAs -->
-    <div class="landing-actions">
-      <a href="/auth/register" class="landing-btn landing-btn--primary">Create account</a>
-      <a href="/auth/login"    class="landing-btn landing-btn--secondary">Log in</a>
-    </div>
-    <button class="landing-demo-link" onclick="guestDemo()">Try with demo data →</button>
-
-    <div class="landing-chips">
+    {% if not has_data %}
+    <div class="landing-chips" style="margin-top:40px">
       <span class="landing-chip">Letterboxd</span>
       <span class="landing-chip">IMDb</span>
       <span class="landing-chip">Colour Sort</span>
@@ -392,6 +360,55 @@
       <span class="landing-chip">Rankings</span>
     </div>
     {% endif %}
+  </div>
+
+  <!-- Import modal -->
+  <div class="modal-backdrop" id="importModal" onclick="backdropClick(event)">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+      <div class="modal-title">Load your film library</div>
+
+      <div class="imp-section">
+        <div class="imp-label">Letterboxd <span class="imp-badge">Recommended</span></div>
+        <p class="imp-hint">Export from <strong style="color:#fff">letterboxd.com/settings/data</strong> and upload the ZIP directly.</p>
+        <label class="imp-btn imp-btn--lb" id="zipLabel">
+          Upload Letterboxd ZIP
+          <input type="file" id="zipInput" accept=".zip" style="display:none" onchange="doUploadZip(this)">
+        </label>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-label">IMDb <span class="imp-badge imp-badge--dim">ratings export</span></div>
+        <label class="imp-btn imp-btn--imdb" id="imdbLabel">
+          Upload IMDb ratings.csv
+          <input type="file" id="imdbInput" accept=".csv" style="display:none" onchange="doUploadImdb(this)">
+        </label>
+        <div id="imdbProgress" style="display:none" class="imp-progress">
+          <div class="imp-progress-track"><div class="imp-progress-fill" id="imdbFill"></div></div>
+          <p class="imp-progress-msg" id="imdbMsg">Starting…</p>
+        </div>
+      </div>
+
+      <div class="imp-divider"><span>or</span></div>
+
+      <div class="imp-section">
+        <div class="imp-label">Letterboxd username <span class="imp-badge imp-badge--warn">Experimental</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <input type="text" id="lbUser" class="imp-input" placeholder="Letterboxd username"
+                 autocomplete="off" autocapitalize="none"
+                 onkeydown="if(event.key==='Enter')doScrape()">
+          <button class="imp-btn imp-btn--dim" id="lbBtn" onclick="doScrape()">Load from Letterboxd</button>
+        </div>
+        <div id="lbProgress" style="display:none" class="imp-progress">
+          <div class="imp-progress-track"><div class="imp-progress-fill" id="lbFill"></div></div>
+          <p class="imp-progress-msg" id="lbMsg">Starting…</p>
+        </div>
+      </div>
+
+      <div class="imp-divider"><span>or</span></div>
+
+      <button class="imp-btn imp-btn--demo" id="demoBtn" onclick="doDemo()">Load demo data</button>
+    </div>
   </div>
 
   <script>
@@ -420,8 +437,7 @@
 
         [...slice, ...slice].forEach(src => {
           const img = document.createElement('img');
-          img.src = src;
-          img.loading = 'lazy';
+          img.src = src; img.loading = 'lazy';
           img.onload = () => img.classList.add('vis');
           track.appendChild(img);
         });
@@ -429,12 +445,24 @@
       }
     }
 
-    /* ── Guest demo (logged out) ── */
-    async function guestDemo() {
-      window.location.href = '/auth/register';
+    /* ── Modal ── */
+    function openModal() {
+      document.getElementById('importModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
 
-    /* ── Import helpers (logged in) ── */
+    function closeModal() {
+      document.getElementById('importModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function backdropClick(e) {
+      if (e.target === document.getElementById('importModal')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ── Import actions ── */
     function disableAll() {
       ['zipLabel','imdbLabel','lbBtn','demoBtn'].forEach(id => {
         const el = document.getElementById(id);
@@ -454,22 +482,21 @@
       disableAll();
       try {
         const r = await fetch('/api/load-demo');
+        if (r.redirected || r.status === 401 || r.status === 302) {
+          window.location.href = '/auth/register'; return;
+        }
         const d = await r.json();
         if (d.loaded) window.location.href = '/welcome';
       } catch(e) {
-        btn.textContent = 'Error — try again';
-        enableAll();
+        btn.textContent = 'Error — try again'; enableAll();
       }
     }
 
     async function doUploadZip(input) {
-      const file = input.files[0];
-      if (!file) return;
+      const file = input.files[0]; if (!file) return;
       const label = document.getElementById('zipLabel');
-      label.textContent = 'Uploading…';
-      disableAll();
-      const fd = new FormData();
-      fd.append('zip', file);
+      label.textContent = 'Uploading…'; disableAll();
+      const fd = new FormData(); fd.append('zip', file);
       try {
         const r = await fetch('/api/upload-letterboxd-zip', { method: 'POST', body: fd });
         const d = await r.json();
@@ -477,26 +504,19 @@
           label.textContent = `Loaded ${d.count} films!`;
           setTimeout(() => window.location.href = '/welcome', 600);
         } else {
-          label.textContent = 'Error: ' + (d.error || 'unknown');
-          enableAll();
+          label.textContent = 'Error: ' + (d.error || 'unknown'); enableAll();
         }
-      } catch(e) {
-        label.textContent = 'Upload failed — try again';
-        enableAll();
-      }
+      } catch(e) { label.textContent = 'Upload failed — try again'; enableAll(); }
     }
 
     async function doUploadImdb(input) {
-      const file = input.files[0];
-      if (!file) return;
+      const file = input.files[0]; if (!file) return;
       const label = document.getElementById('imdbLabel');
       const fill  = document.getElementById('imdbFill');
       const msg   = document.getElementById('imdbMsg');
       const prog  = document.getElementById('imdbProgress');
-      label.textContent = 'Uploading…';
-      disableAll();
-      const fd = new FormData();
-      fd.append('csv', file);
+      label.textContent = 'Uploading…'; disableAll();
+      const fd = new FormData(); fd.append('csv', file);
       try {
         const r = await fetch('/api/upload-imdb-csv', { method: 'POST', body: fd });
         const d = await r.json();
@@ -517,10 +537,7 @@
           }
         };
         es.onerror = () => { es.close(); msg.textContent = 'Connection lost.'; enableAll(); };
-      } catch(e) {
-        label.textContent = 'Upload failed — try again';
-        enableAll();
-      }
+      } catch(e) { label.textContent = 'Upload failed — try again'; enableAll(); }
     }
 
     async function doScrape() {
@@ -530,9 +547,7 @@
       const fill = document.getElementById('lbFill');
       const msg  = document.getElementById('lbMsg');
       const prog = document.getElementById('lbProgress');
-      btn.textContent = 'Connecting…';
-      disableAll();
-      prog.style.display = 'flex';
+      btn.textContent = 'Connecting…'; disableAll(); prog.style.display = 'flex';
       const es = new EventSource(`/api/scrape-letterboxd?username=${encodeURIComponent(username)}`);
       es.onmessage = e => {
         const d = JSON.parse(e.data);
