@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, stream_with_context
-from flask_login import LoginManager, login_required, current_user
+from flask_login import LoginManager, login_required, login_user, current_user
 from pathlib import Path
 from collections import Counter
 import sys
@@ -57,6 +57,19 @@ init_auth(app)
 
 with app.app_context():
     db.create_all()
+
+# Auto-login when running locally (no DATABASE_URL = SQLite dev mode)
+if not _raw_db:
+    @app.before_request
+    def _dev_autologin():
+        if not current_user.is_authenticated:
+            user = User.query.filter_by(email="dev@local").first()
+            if not user:
+                user = User(email="dev@local", name="Dev")
+                user.set_password("dev")
+                db.session.add(user)
+                db.session.commit()
+            login_user(user)
 
 # ── Per-user in-memory state ──────────────────────────────────────────────────
 _poster_cache = {}
@@ -698,7 +711,21 @@ def _total_minutes():
 
 @app.route("/")
 def index():
-    return redirect(url_for("poster"))
+    if current_user.is_authenticated and _get_state()["data_loaded"]:
+        return redirect(url_for("poster"))
+    return render_template("landing.html")
+
+
+@app.route("/api/landing-posters")
+def api_landing_posters():
+    import random
+    try:
+        files = [f.name for f in _POSTER_CACHE_DIR.iterdir()
+                 if f.suffix == ".jpg" and f.stat().st_size > 5000]
+    except Exception:
+        files = []
+    sample = random.sample(files, min(96, len(files)))
+    return jsonify({"posters": [f"/static/poster_cache/{fn}" for fn in sample]})
 
 
 @app.route("/home")
@@ -746,7 +773,7 @@ def home():
 def welcome():
     st = _get_state()
     if not st["data_loaded"]:
-        return redirect(url_for("poster"))
+        return redirect(url_for("index"))
     total = len(st["manager"].films)
     top_n = 100 if total >= 100 else (50 if total >= 50 else 10 if total >= 10 else total)
 

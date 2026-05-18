@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLM — Your film life, visualised</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:    #14181c;
+      --green: #00e054;
+      --text:  #9ab;
+      --muted: #567;
+      --border: #2c3a48;
+      --bg-card: #2c3440;
+      --font:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: #fff;
+      font-family: var(--font);
+      overflow-x: hidden;
+    }
+
+    /* ── POSTER BACKGROUND ── */
+    .landing-bg {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .poster-track {
+      display: flex;
+      gap: 6px;
+      height: 130px;
+      flex-shrink: 0;
+      will-change: transform;
+    }
+
+    .poster-track img {
+      height: 130px;
+      width: 87px;
+      object-fit: cover;
+      border-radius: 3px;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .poster-track img.vis { opacity: 1; }
+
+    .poster-track--left  { animation: scroll-left  var(--dur, 60s) linear infinite; }
+    .poster-track--right { animation: scroll-right var(--dur, 60s) linear infinite; }
+
+    @keyframes scroll-left  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+    @keyframes scroll-right { from { transform: translateX(-50%); } to { transform: translateX(0); }    }
+
+    /* ── OVERLAYS ── */
+    .landing-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom,
+          var(--bg) 0%, rgba(20,24,28,0.80) 12%,
+          rgba(20,24,28,0.68) 35%, rgba(20,24,28,0.68) 65%,
+          rgba(20,24,28,0.80) 88%, var(--bg) 100%),
+        radial-gradient(ellipse 90% 75% at 50% 50%,
+          rgba(20,24,28,0.80) 0%, rgba(20,24,28,0.42) 60%, rgba(20,24,28,0.18) 100%);
+    }
+
+    /* ── MINIMAL NAV ── */
+    .landing-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: 52px;
+    }
+
+    .landing-nav-logo {
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-decoration: none;
+    }
+
+    .landing-nav-links { display: flex; gap: 8px; align-items: center; }
+
+    .landing-nav-link {
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .landing-nav-link:hover { color: #fff; }
+    .landing-nav-link--cta {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-weight: 600;
+    }
+    .landing-nav-link--cta:hover { background: rgba(255,255,255,0.13); }
+
+    /* ── CENTRE CONTENT ── */
+    .landing-center {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 40px;
+    }
+
+    .landing-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 16px;
+      opacity: 0.85;
+    }
+
+    .landing-logo {
+      font-size: clamp(72px, 12vw, 120px);
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 0 60px rgba(0,224,84,0.26), 0 2px 32px rgba(0,0,0,0.7);
+      margin-bottom: 18px;
+    }
+
+    .landing-tagline {
+      font-size: clamp(16px, 2.8vw, 24px);
+      font-weight: 300;
+      color: rgba(255,255,255,0.80);
+      letter-spacing: 0.03em;
+      margin-bottom: 8px;
+    }
+
+    .landing-sub {
+      font-size: 14px;
+      color: var(--text);
+      max-width: 360px;
+      line-height: 1.75;
+      margin-bottom: 32px;
+    }
+
+    /* ── MARKETING BUTTONS (logged-out) ── */
+    .landing-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .landing-btn {
+      display: inline-block;
+      padding: 13px 30px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font);
+      border: 2px solid transparent;
+    }
+
+    .landing-btn--primary { background: var(--green); color: #000; border-color: var(--green); }
+    .landing-btn--primary:hover { background: transparent; color: var(--green); }
+
+    .landing-btn--secondary { background: transparent; color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.25); }
+    .landing-btn--secondary:hover { color: #fff; border-color: rgba(255,255,255,0.65); }
+
+    .landing-demo-link {
+      font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer;
+      font-family: var(--font); text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s; padding: 4px 0;
+    }
+    .landing-demo-link:hover { color: var(--text); }
+
+    .landing-chips {
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 40px;
+    }
+    .landing-chip {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
+      color: var(--muted); padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px;
+    }
+
+    /* ── IMPORT PANEL (logged-in, no data) ── */
+    .import-panel {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(28,34,40,0.92);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 28px 24px;
+      backdrop-filter: blur(8px);
+      text-align: left;
+    }
+
+    .import-panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .import-section { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+
+    .import-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); display: flex; align-items: center; gap: 8px;
+    }
+
+    .import-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 6px;
+      border-radius: 10px; background: #f97316; color: #fff; text-transform: uppercase;
+    }
+    .import-badge--dim  { background: var(--bg-card); color: var(--muted); }
+    .import-badge--warn { background: #92400e; color: #fcd34d; }
+
+    .import-hint {
+      font-size: 11px; color: var(--muted); line-height: 1.55;
+    }
+
+    .import-btn {
+      display: block; width: 100%; padding: 10px 16px;
+      background: var(--green); color: #000; border: none; border-radius: 5px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      cursor: pointer; transition: opacity 0.15s; font-family: var(--font); text-align: center;
+    }
+    .import-btn:hover { opacity: 0.85; }
+    .import-btn:disabled { opacity: 0.5; cursor: default; }
+    .import-btn--lb   { background: #f97316; color: #fff; }
+    .import-btn--imdb { background: #f5c518; color: #000; }
+    .import-btn--secondary { background: var(--bg-card); color: #fff; }
+    .import-btn--secondary:hover { opacity: 1; background: #374352; }
+    .import-btn--demo { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .import-btn--demo:hover { opacity: 1; background: var(--bg-card); }
+
+    .import-divider {
+      display: flex; align-items: center; gap: 8px; color: var(--muted);
+      font-size: 11px; margin: 10px 0;
+    }
+    .import-divider::before, .import-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .import-lb-row { display: flex; flex-direction: column; gap: 6px; }
+
+    .import-input {
+      width: 100%; padding: 9px 12px; background: #0f1318; border: 1px solid var(--border);
+      border-radius: 5px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.15s;
+      font-family: var(--font);
+    }
+    .import-input:focus { border-color: var(--green); }
+    .import-input::placeholder { color: var(--muted); }
+
+    .import-progress { display: flex; flex-direction: column; gap: 6px; }
+    .import-progress-track {
+      width: 100%; height: 5px; background: #0f1318; border-radius: 3px; overflow: hidden;
+    }
+    .import-progress-fill {
+      height: 100%; width: 0%; background: #f97316; border-radius: 3px; transition: width 0.3s ease;
+    }
+    .import-progress-msg { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal nav -->
+  <nav class="landing-nav">
+    <a href="/" class="landing-nav-logo">FLM</a>
+    <div class="landing-nav-links">
+      {% if current_user.is_authenticated %}
+        <a href="/auth/logout" class="landing-nav-link">Log out</a>
+      {% else %}
+        <a href="/auth/login"    class="landing-nav-link">Log in</a>
+        <a href="/auth/register" class="landing-nav-link landing-nav-link--cta">Sign up</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Scrolling poster rows -->
+  <div class="landing-bg" id="landingBg"></div>
+  <div class="landing-overlay"></div>
+
+  <!-- Hero content -->
+  <div class="landing-center">
+    <div class="landing-eyebrow">Film journal &amp; poster builder</div>
+    <div class="landing-logo">FLM</div>
+    <div class="landing-tagline">Your film life, visualised.</div>
+    <p class="landing-sub">
+      Import your Letterboxd or IMDb library and create beautiful
+      poster grids sorted by rank, year, colour, and more.
+    </p>
+
+    {% if current_user.is_authenticated %}
+    <!-- Logged in, no data — show import panel -->
+    <div class="import-panel">
+      <div class="import-panel-title">Load your film library</div>
+
+      <div class="import-section">
+        <div class="import-section-label">Letterboxd <span class="import-badge">Recommended</span></div>
+        <p class="import-hint">
+          Export from <strong style="color:#fff">letterboxd.com/settings/data</strong> and upload the ZIP directly.
+        </p>
+        <label class="import-btn import-btn--lb" id="zipLabel">
+          Upload Letterboxd ZIP
+          <input type="file" id="zipInput" accept=".zip" style="display:none" onchange="doUploadZip(this)">
+        </label>
+      </div>
+
+      <div class="import-section">
+        <div class="import-section-label">IMDb <span class="import-badge import-badge--dim">ratings export</span></div>
+        <label class="import-btn import-btn--imdb" id="imdbLabel">
+          Upload IMDb ratings.csv
+          <input type="file" id="imdbInput" accept=".csv" style="display:none" onchange="doUploadImdb(this)">
+        </label>
+        <div id="imdbProgress" style="display:none" class="import-progress">
+          <div class="import-progress-track"><div class="import-progress-fill" id="imdbFill"></div></div>
+          <p class="import-progress-msg" id="imdbMsg">Starting…</p>
+        </div>
+      </div>
+
+      <div class="import-divider"><span>or</span></div>
+
+      <div class="import-section">
+        <div class="import-section-label">Letterboxd username <span class="import-badge import-badge--warn">Experimental</span></div>
+        <div class="import-lb-row">
+          <input type="text" id="lbUser" class="import-input" placeholder="Letterboxd username"
+                 autocomplete="off" autocapitalize="none"
+                 onkeydown="if(event.key==='Enter')doScrape()">
+          <button class="import-btn import-btn--secondary" id="lbBtn" onclick="doScrape()">Load from Letterboxd</button>
+        </div>
+        <div id="lbProgress" style="display:none" class="import-progress">
+          <div class="import-progress-track"><div class="import-progress-fill" id="lbFill"></div></div>
+          <p class="import-progress-msg" id="lbMsg">Starting…</p>
+        </div>
+      </div>
+
+      <div class="import-divider"><span>or</span></div>
+
+      <button class="import-btn import-btn--demo" id="demoBtn" onclick="doDemo()">Load demo data</button>
+    </div>
+
+    {% else %}
+    <!-- Logged out — marketing CTAs -->
+    <div class="landing-actions">
+      <a href="/auth/register" class="landing-btn landing-btn--primary">Create account</a>
+      <a href="/auth/login"    class="landing-btn landing-btn--secondary">Log in</a>
+    </div>
+    <button class="landing-demo-link" onclick="guestDemo()">Try with demo data →</button>
+
+    <div class="landing-chips">
+      <span class="landing-chip">Letterboxd</span>
+      <span class="landing-chip">IMDb</span>
+      <span class="landing-chip">Colour Sort</span>
+      <span class="landing-chip">Poster Grids</span>
+      <span class="landing-chip">Stats</span>
+      <span class="landing-chip">Rankings</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    /* ── Poster background ── */
+    const SPEEDS = [58, 70, 52, 66];
+    const DIRS   = ['left', 'right', 'left', 'right'];
+
+    async function initPosters() {
+      let posters = [];
+      try {
+        const r = await fetch('/api/landing-posters');
+        posters  = (await r.json()).posters || [];
+      } catch(e) { return; }
+      if (posters.length < 8) return;
+
+      const bg = document.getElementById('landingBg');
+      for (let row = 0; row < 4; row++) {
+        const track = document.createElement('div');
+        track.className = `poster-track poster-track--${DIRS[row]}`;
+        track.style.setProperty('--dur', SPEEDS[row] + 's');
+
+        const chunk = Math.ceil(posters.length / 4);
+        const start = row * chunk;
+        const slice = posters.slice(start, start + chunk);
+        while (slice.length < chunk && posters.length) slice.push(...posters.slice(0, chunk - slice.length));
+
+        [...slice, ...slice].forEach(src => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.loading = 'lazy';
+          img.onload = () => img.classList.add('vis');
+          track.appendChild(img);
+        });
+        bg.appendChild(track);
+      }
+    }
+
+    /* ── Guest demo (logged out) ── */
+    async function guestDemo() {
+      window.location.href = '/auth/register';
+    }
+
+    /* ── Import helpers (logged in) ── */
+    function disableAll() {
+      ['zipLabel','imdbLabel','lbBtn','demoBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.disabled = true; el.style.pointerEvents = 'none'; }
+      });
+    }
+    function enableAll() {
+      ['zipLabel','imdbLabel','lbBtn','demoBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.disabled = false; el.style.pointerEvents = ''; }
+      });
+    }
+
+    async function doDemo() {
+      const btn = document.getElementById('demoBtn');
+      btn.textContent = 'Loading…';
+      disableAll();
+      try {
+        const r = await fetch('/api/load-demo');
+        const d = await r.json();
+        if (d.loaded) window.location.href = '/welcome';
+      } catch(e) {
+        btn.textContent = 'Error — try again';
+        enableAll();
+      }
+    }
+
+    async function doUploadZip(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const label = document.getElementById('zipLabel');
+      label.textContent = 'Uploading…';
+      disableAll();
+      const fd = new FormData();
+      fd.append('zip', file);
+      try {
+        const r = await fetch('/api/upload-letterboxd-zip', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (d.loaded) {
+          label.textContent = `Loaded ${d.count} films!`;
+          setTimeout(() => window.location.href = '/welcome', 600);
+        } else {
+          label.textContent = 'Error: ' + (d.error || 'unknown');
+          enableAll();
+        }
+      } catch(e) {
+        label.textContent = 'Upload failed — try again';
+        enableAll();
+      }
+    }
+
+    async function doUploadImdb(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const label = document.getElementById('imdbLabel');
+      const fill  = document.getElementById('imdbFill');
+      const msg   = document.getElementById('imdbMsg');
+      const prog  = document.getElementById('imdbProgress');
+      label.textContent = 'Uploading…';
+      disableAll();
+      const fd = new FormData();
+      fd.append('csv', file);
+      try {
+        const r = await fetch('/api/upload-imdb-csv', { method: 'POST', body: fd });
+        const d = await r.json();
+        if (!d.staged) { label.textContent = 'Error: ' + (d.error || 'unknown'); enableAll(); return; }
+        label.textContent = `Parsed ${d.count} films`;
+        prog.style.display = 'flex';
+        const es = new EventSource('/api/enrich-imdb-films');
+        es.onmessage = e => {
+          const ev = JSON.parse(e.data);
+          if (ev.type === 'progress') {
+            fill.style.width = Math.round(ev.current / ev.total * 100) + '%';
+            msg.textContent = `(${ev.current}/${ev.total}) ${ev.film}`;
+          } else if (ev.type === 'done') {
+            es.close(); msg.textContent = `Done — ${ev.count} films!`; fill.style.width = '100%';
+            setTimeout(() => window.location.href = '/welcome', 800);
+          } else if (ev.type === 'error') {
+            es.close(); msg.textContent = 'Error: ' + ev.message; enableAll();
+          }
+        };
+        es.onerror = () => { es.close(); msg.textContent = 'Connection lost.'; enableAll(); };
+      } catch(e) {
+        label.textContent = 'Upload failed — try again';
+        enableAll();
+      }
+    }
+
+    async function doScrape() {
+      const username = document.getElementById('lbUser').value.trim();
+      if (!username) { document.getElementById('lbUser').focus(); return; }
+      const btn  = document.getElementById('lbBtn');
+      const fill = document.getElementById('lbFill');
+      const msg  = document.getElementById('lbMsg');
+      const prog = document.getElementById('lbProgress');
+      btn.textContent = 'Connecting…';
+      disableAll();
+      prog.style.display = 'flex';
+      const es = new EventSource(`/api/scrape-letterboxd?username=${encodeURIComponent(username)}`);
+      es.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'progress') {
+          fill.style.width = Math.round(d.current / d.total * 100) + '%';
+          msg.textContent = `(${d.current}/${d.total}) ${d.film}`;
+        } else if (d.type === 'done') {
+          es.close(); msg.textContent = `Done — ${d.count} films!`; fill.style.width = '100%';
+          setTimeout(() => window.location.href = '/welcome', 800);
+        } else if (d.type === 'error') {
+          es.close(); msg.textContent = 'Error: ' + d.message;
+          btn.textContent = 'Load from Letterboxd'; enableAll();
+        }
+      };
+      es.onerror = () => {
+        es.close(); msg.textContent = 'Connection lost.';
+        btn.textContent = 'Load from Letterboxd'; enableAll();
+      };
+    }
+
+    initPosters();
+  </script>
+</body>
+</html>
