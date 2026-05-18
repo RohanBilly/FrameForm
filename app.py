@@ -55,6 +55,12 @@ from auth import auth_bp, init_auth
 app.register_blueprint(auth_bp)
 init_auth(app)
 
+from flask_login import user_logged_out
+
+@user_logged_out.connect_via(app)
+def _on_logout(_sender, user, **_extra):
+    _user_state.pop(user.id, None)
+
 with app.app_context():
     db.create_all()
 
