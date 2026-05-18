@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}FLM{% endblock %}</title>
+  <title>{% block title %}FrameForm{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-inner">
-      <a href="/poster" class="nav-logo">FLM</a>
+      <a href="/" class="nav-logo">FrameForm</a>
       <div class="nav-links">
         <a href="/poster" class="nav-link {% if request.path == '/poster' %}active{% endif %}">Poster</a>
         <a href="/films"  class="nav-link {% if request.path.startswith('/film') %}active{% endif %}">Films</a>
@@ -36,7 +36,7 @@
   {% if not data_loaded %}
   <div class="onboarding-overlay" id="onboardingOverlay">
     <div class="onboarding-card">
-      <div class="onboarding-logo">FLM</div>
+      <div class="onboarding-logo">FrameForm</div>
       <p class="onboarding-sub">Load your film data to get started.</p>
 
       <div class="onboarding-actions">

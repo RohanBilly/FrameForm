@@ -731,7 +731,22 @@ def index():
     if has_data and _raw_db:
         return redirect(url_for("poster"))
     error = request.args.get("error")
-    return render_template("landing.html", has_data=has_data, error=error, min_films=MIN_FILMS)
+
+    w_total = w_last_year = w_last_year_count = None
+    if has_data:
+        st   = _get_state()
+        _tot = len(st["manager"].films)
+        if _tot >= MIN_FILMS:
+            from datetime import date as _date
+            current_year  = _date.today().year
+            years_in_data = {y for f in st["manager"].films if (y := _watch_year(f)) is not None}
+            past_years    = sorted([y for y in years_in_data if y < current_year], reverse=True)
+            w_last_year   = past_years[0] if past_years else (max(years_in_data) if years_in_data else current_year - 1)
+            w_last_year_count = sum(1 for f in st["manager"].films if _watch_year(f) == w_last_year)
+            w_total       = _tot
+
+    return render_template("landing.html", has_data=has_data, error=error, min_films=MIN_FILMS,
+                           w_total=w_total, w_last_year=w_last_year, w_last_year_count=w_last_year_count)
 
 
 @app.route("/api/landing-posters")
@@ -826,13 +841,8 @@ def poster():
                 years.add(int(m.group(1)))
     min_year = min(years) if years else 2000
     max_year = max(years) if years else 2025
-    has_cast = any(
-        (getattr(f, "directors", None) and any(d.strip() and d.upper() != "N/A" for d in f.directors)) or
-        (getattr(f, "actors",    None) and any(a.strip() and a.upper() != "N/A" for a in f.actors))
-        for f in st["manager"].films
-    )
     return render_template("poster.html", total=len(st["manager"].films),
-                           min_year=min_year, max_year=max_year, has_cast=has_cast)
+                           min_year=min_year, max_year=max_year)
 
 
 def _watch_year(f):

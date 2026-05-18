@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FLM — Your film life, visualised</title>
+  <title>FrameForm — Your film life, visualised</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -92,9 +96,10 @@
     .landing-nav-logo {
       color: var(--green);
       font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 3px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
       text-decoration: none;
+      font-family: 'Space Grotesk', sans-serif;
     }
 
     .landing-nav-links { display: flex; gap: 8px; align-items: center; }
@@ -136,16 +141,19 @@
       color: var(--green);
       margin-bottom: 16px;
       opacity: 0.85;
+      text-align: center;
+      width: 100%;
     }
 
     .landing-logo {
-      font-size: clamp(72px, 12vw, 120px);
-      font-weight: 900;
-      letter-spacing: 0.18em;
+      font-size: clamp(56px, 9vw, 96px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: #fff;
       line-height: 1;
       text-shadow: 0 0 60px rgba(0,224,84,0.26), 0 2px 32px rgba(0,0,0,0.7);
       margin-bottom: 18px;
+      font-family: 'Space Grotesk', sans-serif;
     }
 
     .landing-tagline {
@@ -305,13 +313,21 @@
     .imp-progress-track { width: 100%; height: 5px; background: #0f1318; border-radius: 3px; overflow: hidden; }
     .imp-progress-fill  { height: 100%; width: 0%; background: #f97316; border-radius: 3px; transition: width 0.3s; }
     .imp-progress-msg   { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── TEMPLATES MODAL ── */
+    .modal-card--templates {
+      max-width: 1100px;
+      padding: 36px 36px 32px;
+    }
+    /* ensure tmpl styles that rely on --bg-alt etc. work in standalone page context */
+    :root { --bg-alt: #1c2228; --text-bright: #fff; --text-muted: #567; }
   </style>
 </head>
 <body>
 
   <!-- Nav -->
   <nav class="landing-nav">
-    <a href="/" class="landing-nav-logo">FLM</a>
+    <a href="/" class="landing-nav-logo">FrameForm</a>
     <div class="landing-nav-links">
       {% if has_data %}
         <a href="/poster" class="landing-nav-link">Poster</a>
@@ -330,8 +346,8 @@
 
   <!-- Hero -->
   <div class="landing-center">
-    <div class="landing-eyebrow">Film journal &amp; poster builder</div>
-    <div class="landing-logo">FLM</div>
+    <div class="landing-eyebrow">Poster builder</div>
+    <div class="landing-logo">FrameForm</div>
     <div class="landing-tagline">Your film life, visualised.</div>
     <p class="landing-sub">
       Create stunning poster grids from your Letterboxd or IMDb library —
@@ -340,8 +356,8 @@
 
     <div class="landing-actions">
       {% if has_data %}
-        <a href="/poster" class="landing-btn landing-btn--primary">Go to poster builder</a>
-        <a href="/films"  class="landing-btn landing-btn--secondary">Browse films</a>
+        <button class="landing-btn landing-btn--primary" onclick="openTemplates()">Go to poster builder</button>
+        <a href="/films?view=ranked" class="landing-btn landing-btn--secondary">Organise films</a>
       {% elif current_user.is_authenticated %}
         <button class="landing-btn landing-btn--primary" onclick="openModal()">Get started</button>
       {% else %}
@@ -361,6 +377,86 @@
     </div>
     {% endif %}
   </div>
+
+  {% if w_total %}
+  <!-- Templates modal -->
+  <div class="modal-backdrop" id="templatesModal" onclick="templateBackdropClick(event)">
+    <div class="modal-card modal-card--templates">
+      <button class="modal-close" onclick="closeTemplates()">&#x2715;</button>
+      <div class="welcome-header">
+        <div class="welcome-eyebrow">{{ w_total }} film{{ 's' if w_total != 1 else '' }} loaded</div>
+        <div class="welcome-title">Choose a template</div>
+        <div class="welcome-sub">Each template pre-configures the poster builder. You can adjust everything after selecting one.</div>
+      </div>
+
+      <div class="welcome-row welcome-row--portrait">
+        <a href="/poster?template=grid_top100" class="tmpl-card {% if w_total < 100 %}tmpl-card--disabled{% endif %}">
+          <div class="tmpl-preview tmpl-preview--img">
+            <img src="{{ url_for('static', filename='template_grid.jpg') }}" alt="Top 100 Grid preview">
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge">Grid</div>
+            <div class="tmpl-title">Top 100 Grid</div>
+            <div class="tmpl-sub">{% if w_total >= 100 %}Auto grid · dusk · sweep gradient · portrait{% else %}Needs {{ 100 - w_total }} more film{{ 's' if 100 - w_total != 1 else '' }}{% endif %}</div>
+          </div>
+        </a>
+        <a href="/poster?template=colour_grade" class="tmpl-card">
+          <div class="tmpl-preview tmpl-preview--img">
+            <img src="{{ url_for('static', filename='template_colour.jpg') }}" alt="Colour Grade preview">
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge tmpl-badge--exp">Colour</div>
+            <div class="tmpl-title">Colour Grade</div>
+            <div class="tmpl-sub">Posters sorted by average colour · portrait · all films</div>
+          </div>
+        </a>
+        <a href="/poster?template=top300" class="tmpl-card {% if w_total < 300 %}tmpl-card--disabled{% endif %}">
+          <div class="tmpl-preview tmpl-preview--img">
+            <img src="{{ url_for('static', filename='top300-preview.jpg') }}" alt="Top 300 preview">
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge">Ranked</div>
+            <div class="tmpl-title">Top 300 Films</div>
+            <div class="tmpl-sub">{% if w_total >= 300 %}Numbered list · 6 columns · text layout{% else %}Needs {{ 300 - w_total }} more film{{ 's' if 300 - w_total != 1 else '' }}{% endif %}</div>
+          </div>
+        </a>
+        <a href="/poster?template=year_watchlist&year={{ w_last_year }}" class="tmpl-card {% if w_last_year_count == 0 %}tmpl-card--disabled{% endif %}">
+          <div class="tmpl-preview tmpl-preview--img">
+            <img src="{{ url_for('static', filename='year-watchlist-preview.jpg') }}" alt="{{ w_last_year }} Watchlist preview">
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge tmpl-badge--year">{{ w_last_year }}</div>
+            <div class="tmpl-title">{{ w_last_year }} Watchlist</div>
+            <div class="tmpl-sub">{% if w_last_year_count > 0 %}{{ w_last_year_count }} film{{ 's' if w_last_year_count != 1 else '' }} · DD/MM dates · text layout{% else %}No films watched in {{ w_last_year }}{% endif %}</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="welcome-row welcome-row--landscape" style="justify-content:center">
+        <a href="/poster?template=top250" class="tmpl-card {% if w_total < 250 %}tmpl-card--disabled{% endif %}">
+          <div class="tmpl-preview tmpl-preview--img">
+            <img src="{{ url_for('static', filename='top250-preview.jpg') }}" alt="Top 250 preview">
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge">Ranked</div>
+            <div class="tmpl-title">Top 250 Films</div>
+            <div class="tmpl-sub">{% if w_total >= 250 %}Poster grid · landscape · image layout{% else %}Needs {{ 250 - w_total }} more film{{ 's' if 250 - w_total != 1 else '' }}{% endif %}</div>
+          </div>
+        </a>
+        <a href="/poster?template=byo" class="tmpl-card tmpl-card--byo">
+          <div class="tmpl-preview tmpl-preview--byo">
+            <div class="tmpl-byo-icon">+</div>
+          </div>
+          <div class="tmpl-info">
+            <div class="tmpl-badge tmpl-badge--dim">Custom</div>
+            <div class="tmpl-title">Create Your Own</div>
+            <div class="tmpl-sub">Start from scratch with full controls</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- Import modal -->
   <div class="modal-backdrop" id="importModal" onclick="backdropClick(event)">
@@ -461,7 +557,20 @@
       if (e.target === document.getElementById('importModal')) closeModal();
     }
 
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    function openTemplates() {
+      const el = document.getElementById('templatesModal');
+      if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeTemplates() {
+      const el = document.getElementById('templatesModal');
+      if (el) el.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function templateBackdropClick(e) {
+      if (e.target === document.getElementById('templatesModal')) closeTemplates();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeTemplates(); } });
 
     /* ── Auto-open modal with error message if redirected back due to min-films ── */
     {% if error == 'min_films' %}

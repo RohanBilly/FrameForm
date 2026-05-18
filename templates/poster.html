@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}FLM — Poster Builder{% endblock %}
+{% block title %}FrameForm — Poster Builder{% endblock %}
 {% block extra_head %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,8 +10,16 @@
 <div class="builder-layout">
 
   <!-- ── CONTROLS PANEL ── -->
-  <aside class="builder-controls">
+  <aside class="builder-controls simple-mode" id="builder-controls">
     <div class="controls-inner">
+
+      <!-- COMPLEXITY TOGGLE -->
+      <div class="complexity-bar">
+        <div class="complexity-toggle">
+          <button class="cpx-btn active" id="cpx-simple" onclick="setComplexity('simple')">Simple</button>
+          <button class="cpx-btn" id="cpx-adv" onclick="setComplexity('advanced')">Advanced</button>
+        </div>
+      </div>
 
       <!-- STYLE -->
       <details class="control-section" open>
@@ -30,6 +38,21 @@
             <div class="toggle-group">
               <button class="toggle-btn active" id="btn-orient-portrait"  onclick="setOrientation('portrait')">Portrait</button>
               <button class="toggle-btn"        id="btn-orient-landscape" onclick="setOrientation('landscape')">Landscape</button>
+            </div>
+          </div>
+          <div class="control-row" id="bold-row" style="display:none;">
+            <span class="control-label">Bold</span>
+            <div class="toggle-group">
+              <button class="toggle-btn"        id="btn-bold-on"  onclick="setBoldFilms(true)">On</button>
+              <button class="toggle-btn active" id="btn-bold-off" onclick="setBoldFilms(false)">Off</button>
+            </div>
+          </div>
+          <div class="control-row" id="order-row">
+            <span class="control-label">Order</span>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="btn-ranked" onclick="setOrder('ranked')">Ranked</button>
+              <button class="toggle-btn"        id="btn-chrono" onclick="setOrder('chrono')">Chrono</button>
+              <button class="toggle-btn"        id="btn-colour" onclick="setOrder('colour')">Colour</button>
             </div>
           </div>
         </div>
@@ -64,7 +87,7 @@
               <button class="quick-btn" onclick="setCount({{ total }})">All</button>
             </div>
           </div>
-          <div class="control-row" id="year-type-row" style="display:none;">
+          <div class="control-row adv-only" id="year-type-row" style="display:none;">
             <span class="control-label">Filter by</span>
             <div class="toggle-group">
               <button class="toggle-btn active" id="btn-yt-watch"   onclick="setYearType('watch')">Watch yr</button>
@@ -91,19 +114,11 @@
                      oninput="onYearRangeChange()">
             </div>
           </div>
-          <div class="control-row" id="order-row">
-            <span class="control-label">Order</span>
-            <div class="toggle-group">
-              <button class="toggle-btn active" id="btn-ranked" onclick="setOrder('ranked')">Ranked</button>
-              <button class="toggle-btn"        id="btn-chrono" onclick="setOrder('chrono')">Chrono</button>
-              <button class="toggle-btn"        id="btn-colour" onclick="setOrder('colour')">Colour</button>
-            </div>
-          </div>
         </div>
       </details>
 
       <!-- TITLE -->
-      <details class="control-section" open>
+      <details class="control-section">
         <summary>Title</summary>
         <div class="section-body">
           <div class="control-row">
@@ -114,9 +129,9 @@
               <button class="toggle-btn"        id="btn-tlayout-box"  onclick="setTitleLayout('box')">Box</button>
             </div>
           </div>
-          <div class="control-row" id="rule-thickness-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div class="control-row adv-only" id="rule-thickness-row" style="flex-direction:column; align-items:stretch; gap:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="control-label">Thickness</span>
+              <span class="control-label">Line thickness</span>
               <span class="control-value" id="rule-thickness-display">1.00×</span>
             </div>
             <input type="range" class="count-slider" id="rule-thickness-slider"
@@ -143,7 +158,7 @@
               <option value="josefin">Josefin Sans</option>
             </select>
           </div>
-          <div class="control-row" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div class="control-row adv-only" style="flex-direction:column; align-items:stretch; gap:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span class="control-label">Title size</span>
               <span class="control-value" id="title-size-display">1.00×</span>
@@ -165,12 +180,12 @@
               <button class="toggle-btn active" id="btn-subtitle-off" onclick="setShowSubtitle(false)">Off</button>
             </div>
           </div>
-          <div class="control-row" id="subtitle-color-row" style="display:none;">
+          <div class="control-row adv-only" id="subtitle-color-row" style="display:none;">
             <span class="control-label">Sub colour</span>
             <input type="color" class="color-input" id="color-subtitle-text" value="#00e054"
                    oninput="setSubtitleColor(this.value)">
           </div>
-          <div class="control-row" id="subtitle-size-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+          <div class="control-row adv-only" id="subtitle-size-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span class="control-label">Sub size</span>
               <span class="control-value" id="subtitle-size-display">1.00×</span>
@@ -180,14 +195,14 @@
                    oninput="onSubtitleSizeSlide(this.value)">
             <div class="slider-hints"><span>50%</span><span>100%</span><span>200%</span></div>
           </div>
-          <div class="control-row" id="subtitle-case-row" style="display:none;">
+          <div class="control-row adv-only" id="subtitle-case-row" style="display:none;">
             <span class="control-label">Sub case</span>
             <div class="toggle-group">
               <button class="toggle-btn active" id="btn-sub-upper" onclick="setSubtitleCase(true)">Upper</button>
               <button class="toggle-btn"        id="btn-sub-lower" onclick="setSubtitleCase(false)">Lower</button>
             </div>
           </div>
-          <div class="control-row" id="subtitle-font-row" style="display:none;">
+          <div class="control-row adv-only" id="subtitle-font-row" style="display:none;">
             <span class="control-label">Sub font</span>
             <select class="control-select" id="subtitle-font-select" onchange="setSubtitleFont(this.value)">
               <option value="system">Default</option>
@@ -238,7 +253,7 @@
       </details>
 
       <!-- DISPLAY -->
-      <details class="control-section">
+      <details class="control-section adv-only">
         <summary>Display</summary>
         <div class="section-body">
           <div class="control-row" id="numbering-row" style="flex-direction:column; align-items:stretch; gap:8px;">
@@ -277,10 +292,10 @@
               <span class="control-value" id="cols-display" onclick="editValue('cols-display','cols')" style="cursor:pointer;" title="Click to type value">Auto</span>
             </div>
             <input type="range" class="count-slider" id="cols-slider"
-                   min="0" max="7" value="0" step="1"
+                   min="0" max="8" value="0" step="1"
                    oninput="onColsSlide(this.value)">
             <div class="slider-hints" id="cols-hints">
-              <span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+              <span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
             </div>
           </div>
           <div class="control-row" id="font-scale-row" style="flex-direction:column; align-items:stretch; gap:10px;">
@@ -437,7 +452,7 @@
       </details>
 
       <!-- PROFILE -->
-      <details class="control-section" id="avatar-section" style="display:none;">
+      <details class="control-section adv-only" id="avatar-section" style="display:none;">
         <summary>Profile</summary>
         <div class="section-body">
           <div class="control-row">
@@ -457,67 +472,6 @@
           </div>
         </div>
       </details>
-
-      {% if has_cast %}
-      <!-- CAST -->
-      <details class="control-section">
-        <summary>Cast</summary>
-        <div class="section-body">
-          <div class="control-row">
-            <span class="control-label">Show cast</span>
-            <div class="toggle-group">
-              <button class="toggle-btn"        id="btn-cast-on"  onclick="setCastEnabled(true)">On</button>
-              <button class="toggle-btn active" id="btn-cast-off" onclick="setCastEnabled(false)">Off</button>
-            </div>
-          </div>
-          <div id="cast-options" style="display:none; flex-direction:column; gap:16px;">
-            <div class="control-row">
-              <span class="control-label">Align</span>
-              <div class="toggle-group">
-                <button class="toggle-btn active" id="btn-cast-left"   onclick="setCastAlign('left')">Left</button>
-                <button class="toggle-btn"        id="btn-cast-center" onclick="setCastAlign('center')">Centre</button>
-              </div>
-            </div>
-            <div class="control-row" style="flex-direction:column; align-items:stretch; gap:8px;">
-              <span class="control-label">Include</span>
-              <div class="toggle-group">
-                <button class="toggle-btn"        id="btn-cast-dir"  onclick="setCastType('directors')">Directors</button>
-                <button class="toggle-btn"        id="btn-cast-act"  onclick="setCastType('actors')">Actors</button>
-                <button class="toggle-btn active" id="btn-cast-both" onclick="setCastType('both')">Both</button>
-              </div>
-            </div>
-            <div id="actor-count-row" style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="control-label">Actors</span>
-                <span class="control-value" id="actor-count-display">5</span>
-              </div>
-              <input type="range" class="count-slider" id="actor-count-slider"
-                     min="1" max="15" value="5" step="1"
-                     oninput="onActorSlide(this.value)">
-            </div>
-            <div id="director-count-row" style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="control-label">Directors</span>
-                <span class="control-value" id="director-count-display">5</span>
-              </div>
-              <input type="range" class="count-slider" id="director-count-slider"
-                     min="1" max="15" value="5" step="1"
-                     oninput="onDirectorSlide(this.value)">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:stretch; gap:10px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="control-label">Font size</span>
-                <span class="control-value" id="cast-font-display">1.00×</span>
-              </div>
-              <input type="range" class="count-slider" id="cast-font-slider"
-                     min="60" max="160" value="100" step="1"
-                     oninput="onCastFontSlide(this.value)">
-              <div class="slider-hints"><span>60%</span><span>100%</span><span>160%</span></div>
-            </div>
-          </div>
-        </div>
-      </details>
-      {% endif %}
 
     </div>
   </aside>
@@ -569,7 +523,7 @@ let CW = BASE_W, CH = BASE_H;
 
 const state = {
   orientation: 'portrait',
-  order: 'ranked', mode: 'text', count: 25, cols: 0,
+  order: 'ranked', mode: 'text', count: 25, cols: 0, boldFilms: false,
   labelMode: 'numbers', dateFormat: 'DD/MM/YY',
   yearBreaks: false, monthBreaks: false,
   fontScale: 1.0, lineSpacing: 64,
@@ -685,6 +639,7 @@ function _syncControlsFromState() {
   const _tb = (id, active) => { const el = document.getElementById(id); if (el) el.className = 'toggle-btn' + (active ? ' active' : ''); };
 
   if (s.scratchMode && s.mode !== 'grid') s.mode = 'grid'; // migrate old saved state
+  _tb('btn-bold-on', s.boldFilms); _tb('btn-bold-off', !s.boldFilms);
   _tb('btn-ranked', s.order === 'ranked'); _tb('btn-chrono', s.order === 'chrono'); _tb('btn-colour', s.order === 'colour');
   _tb('btn-text',   s.mode  === 'text');   _tb('btn-images', s.mode  === 'images');
   _tb('btn-grid',   s.mode  === 'grid');
@@ -700,8 +655,8 @@ function _syncControlsFromState() {
     _cs.min = 0; _cs.max = 10;
     _ch.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>';
   } else {
-    _cs.min = 0; _cs.max = 7;
-    _ch.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>';
+    _cs.min = 0; _cs.max = 8;
+    _ch.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>';
   }
   _cs.value = s.cols;
   document.getElementById('cols-display').textContent = s.cols === 0 ? 'Auto' : String(s.cols);
@@ -784,19 +739,27 @@ document.getElementById('grad-sides-area-slider').value         = s.gradientSide
   _tb('btn-avatar-right',  s.avatarAlign === 'right');
   document.getElementById('avatar-align-row').style.display = (s.avatarUrl && s.showAvatar) ? '' : 'none';
 
-  // cast section is conditionally rendered
-  if (document.getElementById('btn-cast-on')) {
-    _tb('btn-cast-on',  s.castEnabled); _tb('btn-cast-off', !s.castEnabled);
-    document.getElementById('cast-options').style.display = s.castEnabled ? 'flex' : 'none';
-    _tb('btn-cast-left', s.castAlign==='left'); _tb('btn-cast-center', s.castAlign==='center');
-    _tb('btn-cast-dir',  s.castType==='directors'); _tb('btn-cast-act', s.castType==='actors'); _tb('btn-cast-both', s.castType==='both');
-    _sl('actor-count-slider',    s.actorCount,                'actor-count-display',    v => v);
-    _sl('director-count-slider', s.directorCount,             'director-count-display', v => v);
-    _sl('cast-font-slider',      Math.round(s.castFontScale*100),'cast-font-display',   v => (v/100).toFixed(2)+'×');
-  }
 }
 
 localStorage.removeItem('_tip_reframe');  // clear old toast-style dismissal flag
+
+// ── simple / advanced toggle ──
+function setComplexity(mode) {
+  const aside = document.getElementById('builder-controls');
+  const btnS  = document.getElementById('cpx-simple');
+  const btnA  = document.getElementById('cpx-adv');
+  if (mode === 'simple') {
+    aside.classList.add('simple-mode');
+    btnS.classList.add('active');
+    btnA.classList.remove('active');
+  } else {
+    aside.classList.remove('simple-mode');
+    btnA.classList.add('active');
+    btnS.classList.remove('active');
+  }
+  localStorage.setItem('_cpx_mode', mode);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   if (_restoreState()) {
     _syncControlsFromState();
@@ -1206,6 +1169,8 @@ window.addEventListener('DOMContentLoaded', () => {
   applyZoom(currentZoom);
   // Initialise gradient colour picker — must run on every load path (restored or fresh)
   document.getElementById('grad-color').value = state.gradientColor || state.colors.accent;
+  // Restore simple/advanced mode
+  if (localStorage.getItem('_cpx_mode') === 'advanced') setComplexity('advanced');
   render();
   setupEditHandler();
   setupPanHandler();
@@ -1245,6 +1210,7 @@ function updateControlVis() {
   const c  = state.order === 'chrono';
   const d  = state.labelMode === 'dates';
   const sy = state.selectionMode === 'year';
+  document.getElementById('bold-row').style.display          = t             ? ''     : 'none';
   document.getElementById('cols-row').style.display          = t             ? ''     : 'none';
   document.getElementById('numbering-row').style.display     = t             ? ''     : 'none';
   document.getElementById('font-scale-row').style.display    = t             ? ''     : 'none';
@@ -1342,9 +1308,9 @@ function setOrientation(v) {
     hints.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>';
     document.getElementById('cols-display').textContent = state.cols === 0 ? 'Auto' : String(state.cols);
   } else {
-    slider.min = 0; slider.max = 7;
-    if (parseInt(slider.value) > 7) { slider.value = 7; state.cols = 7; }
-    hints.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>';
+    slider.min = 0; slider.max = 8;
+    if (parseInt(slider.value) > 8) { slider.value = 8; state.cols = 8; }
+    hints.innerHTML = '<span>Auto</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>';
     document.getElementById('cols-display').textContent = state.cols === 0 ? 'Auto' : String(state.cols);
   }
   applyZoom(currentZoom);
@@ -1405,6 +1371,13 @@ function setKeepAspect(v) {
   document.getElementById('btn-aspect-on').className  = 'toggle-btn' + (v  ? ' active' : '');
   document.getElementById('btn-aspect-off').className = 'toggle-btn' + (!v ? ' active' : '');
   scheduleRender();
+}
+
+function setBoldFilms(v) {
+  state.boldFilms = v;
+  document.getElementById('btn-bold-on').className  = 'toggle-btn' + (v  ? ' active' : '');
+  document.getElementById('btn-bold-off').className = 'toggle-btn' + (!v ? ' active' : '');
+  render();
 }
 
 // ── title controls ──
@@ -1628,45 +1601,6 @@ function applyPreset(name) {
   document.getElementById('color-subtitle-text').value = p.accent;
   if (!state.gradientColor) document.getElementById('grad-color').value = p.accent;
   render();
-}
-
-// ── cast ──
-function setCastEnabled(v) {
-  state.castEnabled = v;
-  document.getElementById('btn-cast-on').className  = 'toggle-btn' + (v  ? ' active' : '');
-  document.getElementById('btn-cast-off').className = 'toggle-btn' + (!v ? ' active' : '');
-  document.getElementById('cast-options').style.display = v ? 'flex' : 'none';
-  render();
-}
-function setCastType(v) {
-  state.castType = v;
-  document.getElementById('btn-cast-both').className = 'toggle-btn' + (v === 'both'      ? ' active' : '');
-  document.getElementById('btn-cast-act').className  = 'toggle-btn' + (v === 'actors'    ? ' active' : '');
-  document.getElementById('btn-cast-dir').className  = 'toggle-btn' + (v === 'directors' ? ' active' : '');
-  document.getElementById('actor-count-row').style.display    = v !== 'directors' ? 'flex' : 'none';
-  document.getElementById('director-count-row').style.display = v !== 'actors'    ? 'flex' : 'none';
-  render();
-}
-function setCastAlign(v) {
-  state.castAlign = v;
-  document.getElementById('btn-cast-left').className   = 'toggle-btn' + (v === 'left'   ? ' active' : '');
-  document.getElementById('btn-cast-center').className = 'toggle-btn' + (v === 'center' ? ' active' : '');
-  render();
-}
-function onActorSlide(v) {
-  state.actorCount = parseInt(v);
-  document.getElementById('actor-count-display').textContent = v;
-  scheduleRender();
-}
-function onDirectorSlide(v) {
-  state.directorCount = parseInt(v);
-  document.getElementById('director-count-display').textContent = v;
-  scheduleRender();
-}
-function onCastFontSlide(v) {
-  state.castFontScale = parseInt(v) / 100;
-  document.getElementById('cast-font-display').textContent = state.castFontScale.toFixed(2) + '×';
-  scheduleRender();
 }
 
 // ── colour grade: extract dominant hue from a poster via saturation-weighted histogram ──
@@ -1945,10 +1879,11 @@ function _autoTextCols(items) {
     else if (filmCount <= 168) target = 4;
     else if (filmCount <= 240) target = 5;
     else if (filmCount <= 400) target = 6;
-    else target = 7;
+    else if (filmCount <= 600) target = 7;
+    else target = 8;
   }
 
-  const maxCols = state.orientation === 'landscape' ? 10 : 7;
+  const maxCols = state.orientation === 'landscape' ? 10 : 8;
   return Math.min(target, maxCols);
 }
 
@@ -2295,26 +2230,30 @@ function renderText(films, castData) {
       const editKey  = `film:${f.title}`;
       const rawTitle = state.editedTexts[editKey] || f.title;
       let displayTitle = rawTitle;
-      let itemTitleFs = fs;
       if (!twoLine) {
-        const titleSpanW = colW - numW - 20;
-        _mctx.font = `500 ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
+        const titleSpanW = colW - numW + Math.round(colGap * 0.5);
+        _mctx.font = `${state.boldFilms ? 700 : 500} ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
         let measured = _mctx.measureText(rawTitle).width;
         if (measured > titleSpanW && !(editKey in state.editedTexts)) {
-          // Strip leading "The " before truncating
-          if (rawTitle.startsWith('The ')) {
-            displayTitle = rawTitle.slice(4);
+          // 1. Strip leading "The "
+          if (displayTitle.startsWith('The ')) {
+            displayTitle = displayTitle.slice(4);
             measured = _mctx.measureText(displayTitle).width;
           }
-          // Near-fit scaling: shrink font up to 15% if title almost fits
-          if (measured > titleSpanW && measured < titleSpanW + fs * 2) {
-            itemTitleFs = Math.max(Math.floor(fs * titleSpanW / measured), Math.round(fs * 0.85));
-            measured = measured * (itemTitleFs / fs);
+          // 2. Strip franchise prefix — anything before the first ": "
+          if (measured > titleSpanW) {
+            const colonIdx = displayTitle.indexOf(': ');
+            if (colonIdx > 0) {
+              const after = displayTitle.slice(colonIdx + 2);
+              if (after.length > 0) {
+                displayTitle = after;
+                measured = _mctx.measureText(displayTitle).width;
+              }
+            }
           }
-          // Hard JS truncation so html2canvas renders "…" correctly
+          // 3. Hard truncation with ellipsis — no font-size reduction
           if (measured > titleSpanW) {
             let t = displayTitle;
-            _mctx.font = `500 ${itemTitleFs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
             while (t.length > 1 && _mctx.measureText(t + '…').width > titleSpanW) t = t.slice(0, -1).trimEnd();
             displayTitle = t + '…';
           }
@@ -2325,10 +2264,11 @@ function renderText(films, castData) {
       const labelHtml = label
         ? `<span style="width:${numW}px;flex-shrink:0;flex-grow:0;font-size:${fs}px;color:${state.colors.accent};font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:${rowLineH};">${_et(label)}</span>`
         : '';
+      const _fw = state.boldFilms ? 700 : 500;
       const titleStyle = twoLine
-        ? `font-size:${fs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:normal;max-height:${titleMaxH}px;`
-        : `font-size:${itemTitleFs}px;color:${state.colors.text};font-weight:500;line-height:${rowLineH};min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;`;
-      return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:${twoLine ? 'flex-start' : 'center'};padding-top:${topPad}px;gap:20px;min-height:0;min-width:0;${twoLine ? '' : 'overflow:hidden;'}">
+        ? `font-size:${fs}px;color:${state.colors.text};font-weight:${_fw};line-height:${rowLineH};min-width:0;overflow:hidden;white-space:normal;max-height:${titleMaxH}px;`
+        : `font-size:${fs}px;color:${state.colors.text};font-weight:${_fw};line-height:${rowLineH};white-space:nowrap;`;
+      return `<div style="height:${Math.round(itemH)}px;display:flex;align-items:${twoLine ? 'flex-start' : 'center'};padding-top:${topPad}px;gap:20px;min-height:0;min-width:0">
         ${labelHtml}
         <span data-edit="title" data-edit-key="${_ea(editKey)}" data-orig="${_ea(f.title)}"
               style="${titleStyle}">${display}</span>
@@ -2955,7 +2895,7 @@ function editValue(id, type) {
     const v = parseFloat(input.value);
     if (isNaN(v)) { span.textContent = origText; return; }
     if (type === 'cols') {
-      const _colsMax = state.orientation === 'landscape' ? 10 : 7;
+      const _colsMax = state.orientation === 'landscape' ? 10 : 8;
       const _colsMin = 0;
       const s = String(Math.round(Math.max(_colsMin, Math.min(_colsMax, v))));
       document.getElementById('cols-slider').value = s;
@@ -3086,7 +3026,7 @@ async function downloadPoster() {
       width: CW, height: CH,
     });
     const a = document.createElement('a');
-    a.download = `flm-poster-${state.order}-top${state.count}.png`;
+    a.download = `frameform-poster-${state.order}-top${state.count}.png`;
     a.href = c.toDataURL('image/png');
     a.click();
   } finally {

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 :root {
   --bg:           #14181c;
   --bg-alt:       #1c2228;
@@ -37,9 +39,10 @@
 }
 .onboarding-logo {
   color: var(--green);
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: 4px;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-family: 'Space Grotesk', sans-serif;
 }
 .onboarding-sub {
   font-size: 15px;
@@ -236,11 +239,11 @@ body {
 }
 .nav-logo {
   color: var(--green);
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 3px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-decoration: none;
-  text-transform: uppercase;
+  font-family: 'Space Grotesk', sans-serif;
 }
 .nav-links { display: flex; gap: 4px; }
 .nav-link {
@@ -1347,9 +1350,10 @@ body {
 }
 .auth-logo {
   color: var(--green);
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: 4px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-family: 'Space Grotesk', sans-serif;
 }
 .auth-title {
   font-size: 18px;
@@ -1457,3 +1461,39 @@ body {
   color: var(--green);
   font-weight: 600;
 }
+
+/* ── SIMPLE / ADVANCED TOGGLE ── */
+.complexity-bar {
+  padding: 14px 24px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+.complexity-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 0;
+}
+.cpx-btn {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cpx-btn:hover { color: var(--text); }
+.cpx-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+/* hide advanced-only controls when in simple mode */
+.simple-mode .adv-only { display: none !important; }
