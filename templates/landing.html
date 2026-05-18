@@ -318,7 +318,15 @@
       poster grids sorted by rank, year, colour, and more.
     </p>
 
-    {% if current_user.is_authenticated %}
+    {% if has_data %}
+    <!-- Logged in + has data — quick-nav to app -->
+    <div class="landing-actions">
+      <a href="/poster" class="landing-btn landing-btn--primary">Go to poster builder</a>
+      <a href="/films"  class="landing-btn landing-btn--secondary">Browse films</a>
+    </div>
+    <a href="/auth/logout" class="landing-demo-link">Log out &amp; clear data →</a>
+
+    {% elif current_user.is_authenticated %}
     <!-- Logged in, no data — show import panel -->
     <div class="import-panel">
       <div class="import-panel-title">Load your film library</div>

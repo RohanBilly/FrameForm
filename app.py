@@ -724,9 +724,11 @@ def _total_minutes():
 
 @app.route("/")
 def index():
-    if current_user.is_authenticated and _get_state()["data_loaded"]:
+    has_data = current_user.is_authenticated and _get_state()["data_loaded"]
+    # In production only: skip landing page for returning users with data
+    if has_data and _raw_db:
         return redirect(url_for("poster"))
-    return render_template("landing.html")
+    return render_template("landing.html", has_data=has_data)
 
 
 @app.route("/api/landing-posters")
