@@ -1673,7 +1673,7 @@ function _extractHue(url) {
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
-        const SIZE = 48;  // 4× more pixels than 24 — much more accurate colour reading
+        const SIZE = 64;
         const c = document.createElement('canvas');
         c.width = SIZE; c.height = SIZE;
         const ctx = c.getContext('2d');
@@ -1687,22 +1687,22 @@ function _extractHue(url) {
           const l = (max + min) / 2;
           const s = diff === 0 ? 0 : diff / (1 - Math.abs(2*l - 1));
           lSum += l; totalPx++;
-          if (s < 0.15 || l < 0.10 || l > 0.92) continue;  // skip grey/black/white
+          if (s < 0.18 || l < 0.08 || l > 0.93) continue;
           let h = 0;
           if (diff > 0) {
             if      (max === r) h = ((g - b) / diff + (g < b ? 6 : 0)) / 6;
             else if (max === g) h = ((b - r) / diff + 2) / 6;
             else                h = ((r - g) / diff + 4) / 6;
           }
-          hist[Math.floor(h * _HUE_BINS) % _HUE_BINS] += s;
+          // Weight by chroma (diff) so vivid colours dominate over pastel ones
+          hist[Math.floor(h * _HUE_BINS) % _HUE_BINS] += s * diff;
           sSum += s; saturated++;
         }
         if (saturated === 0) {
-          resolve({ h: 0, s: 0, l: lSum / totalPx, hist });
+          resolve({ h: 0, s: 0, l: lSum / totalPx, ratio: 0, hist: new Float32Array(_HUE_BINS) });
           return;
         }
-        // Gaussian smooth histogram before peak detection — eliminates bin-boundary flicker
-        // where two visually-identical posters straddle a bin edge and sort far apart
+        // Gaussian smooth histogram before peak detection
         const smooth = new Float32Array(_HUE_BINS);
         for (let i = 0; i < _HUE_BINS; i++) {
           smooth[i] = hist[(i-2+_HUE_BINS)%_HUE_BINS] * 0.06 +
@@ -1713,7 +1713,16 @@ function _extractHue(url) {
         }
         let peak = 0;
         for (let i = 1; i < _HUE_BINS; i++) if (smooth[i] > smooth[peak]) peak = i;
-        resolve({ h: (peak + 0.5) / _HUE_BINS * 360, s: sSum / saturated, l: lSum / totalPx, hist: smooth });
+        // Sub-bin hue: circular mean of ±2 bins around the peak for continuous precision
+        let sinC = 0, cosC = 0;
+        for (let di = -2; di <= 2; di++) {
+          const idx = (peak + di + _HUE_BINS) % _HUE_BINS;
+          const angle = (idx + 0.5) / _HUE_BINS * 2 * Math.PI;
+          sinC += Math.sin(angle) * smooth[idx];
+          cosC += Math.cos(angle) * smooth[idx];
+        }
+        const peakHue = (Math.atan2(sinC, cosC) / (2 * Math.PI) + 1) % 1 * 360;
+        resolve({ h: peakHue, s: sSum / saturated, l: lSum / totalPx, ratio: saturated / totalPx, hist: smooth });
       } catch(e) { resolve(null); }
     };
     img.onerror = () => resolve(null);
@@ -1743,12 +1752,8 @@ async function _sortFilmsByColour(films, wrap, myGen) {
 
   const globalHist = new Float32Array(_HUE_BINS);
   for (const { hsl } of entries) {
-    if (!hsl || hsl.s < 0.12) continue;
-    if (hsl.hist) {
-      for (let i = 0; i < _HUE_BINS; i++) globalHist[i] += hsl.hist[i];
-    } else {
-      globalHist[Math.floor(hsl.h / 360 * _HUE_BINS) % _HUE_BINS]++;
-    }
+    if (!hsl || hsl.ratio < 0.15) continue;
+    for (let i = 0; i < _HUE_BINS; i++) globalHist[i] += hsl.hist[i];
   }
   // Wider 5-bin (50°) window finds the true colour gap more reliably with smoothed histograms
   const GAP_W = 5;
@@ -1765,16 +1770,17 @@ async function _sortFilmsByColour(films, wrap, myGen) {
     if (!ha && !hb) return 0;
     if (!ha) return 1;
     if (!hb) return -1;
-    const aFlat = ha.s < 0.12 || ha.l < 0.10;
-    const bFlat = hb.s < 0.12 || hb.l < 0.10;
+    // ratio < 0.15 = fewer than 15% of pixels were meaningfully colourful → dark/grey poster
+    const aFlat = !ha.ratio || ha.ratio < 0.15 || ha.l < 0.08;
+    const bFlat = !hb.ratio || hb.ratio < 0.15 || hb.l < 0.08;
     if (aFlat && !bFlat) return 1;
     if (!aFlat && bFlat) return -1;
     if (aFlat && bFlat) return ha.l - hb.l;
     const rotA = (ha.h - startHue + 360) % 360;
     const rotB = (hb.h - startHue + 360) % 360;
-    // Within the same 15° hue band, sort dark → light for a gradient effect
     const hueDiff = rotA - rotB;
-    if (Math.abs(hueDiff) < 1.5) return ha.l - hb.l;
+    // Within the same 20° hue zone sort dark → light, creating a gradient within each colour band
+    if (Math.abs(hueDiff) < 20) return ha.l - hb.l;
     return hueDiff;
   });
   return entries.map(e => e.f);
