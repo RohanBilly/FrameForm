@@ -722,13 +722,16 @@ def _total_minutes():
     )
 
 
+MIN_FILMS = 20
+
 @app.route("/")
 def index():
     has_data = current_user.is_authenticated and _get_state()["data_loaded"]
     # In production only: skip landing page for returning users with data
     if has_data and _raw_db:
         return redirect(url_for("poster"))
-    return render_template("landing.html", has_data=has_data)
+    error = request.args.get("error")
+    return render_template("landing.html", has_data=has_data, error=error, min_films=MIN_FILMS)
 
 
 @app.route("/api/landing-posters")
@@ -790,6 +793,8 @@ def welcome():
     if not st["data_loaded"]:
         return redirect(url_for("index"))
     total = len(st["manager"].films)
+    if total < MIN_FILMS:
+        return redirect(url_for("index", error="min_films"))
     top_n = 100 if total >= 100 else (50 if total >= 50 else 10 if total >= 10 else total)
 
     from datetime import date as _date
@@ -810,6 +815,8 @@ def welcome():
 def poster():
     import re as _re
     st    = _get_state()
+    if not st.get("data_loaded") or len(st["manager"].films) < MIN_FILMS:
+        return redirect(url_for("index", error="min_films"))
     years = set()
     for f in st["manager"].films:
         if f.date_watched:

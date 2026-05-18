@@ -53,9 +53,9 @@
               <span class="control-value" id="count-display" onclick="editValue('count-display','count')" style="cursor:pointer;" title="Click to type value">25</span>
             </div>
             <input type="range" class="count-slider" id="count-slider"
-                   min="5" max="{{ total }}" value="25" step="1"
+                   min="20" max="{{ total }}" value="25" step="1"
                    oninput="onCountSlide(this.value)">
-            <div class="slider-hints"><span>5</span><span>All</span></div>
+            <div class="slider-hints"><span>20</span><span>All</span></div>
             <div class="quick-counts">
               <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.10))">10%</button>
               <button class="quick-btn" onclick="setCount(Math.round({{ total }} * 0.25))">25%</button>
@@ -428,7 +428,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                   <span class="control-label">Area</span><span class="control-value" id="grad-sides-area-display">35%</span>
                 </div>
-                <input type="range" class="count-slider" id="grad-sides-area-slider" min="10" max="60" value="35" step="5" oninput="onSidesArea(this.value)">
+                <input type="range" class="count-slider" id="grad-sides-area-slider" min="0" max="60" value="35" step="5" oninput="onSidesArea(this.value)">
                 <div class="slider-hints"><span>Narrow</span><span>Wide</span></div>
               </div>
             </div>
@@ -662,6 +662,8 @@ function _restoreState() {
     const saved = JSON.parse(raw);
     if (!saved || !saved.s) return false;
     Object.assign(state, saved.s);
+    if (state.mode === 'text') state.cols = 0; // always use auto-cols in text mode
+    state.count = Math.max(20, Math.min(TOTAL, state.count)); // enforce minimum
     state.customImages = {};
     CW = saved.CW || BASE_W;
     CH = saved.CH || BASE_H;
@@ -802,11 +804,11 @@ window.addEventListener('DOMContentLoaded', () => {
   // Smart defaults based on library size
   let initCount, initCols, initYearBreaks;
   if (TOTAL > 400) {
-    initCount = 400; initCols = 6; initYearBreaks = true;
+    initCount = 400; initCols = 0; initYearBreaks = true;
   } else if (TOTAL > 200) {
-    initCount = 200; initCols = 4; initYearBreaks = false;
+    initCount = 200; initCols = 0; initYearBreaks = false;
   } else if (TOTAL > 100) {
-    initCount = 100; initCols = 3; initYearBreaks = true;
+    initCount = 100; initCols = 0; initYearBreaks = true;
   } else {
     initCount = TOTAL; initCols = 0; initYearBreaks = false;
   }
@@ -837,16 +839,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const _tplYear = parseInt(_tplP.get('year')) || MAX_YEAR;
     if (_tpl === 'top_list') {
       state.order = 'ranked'; state.mode = 'text'; state.count = _tplN;
-      const _tc = _tplN > 200 ? 5 : _tplN > 100 ? 4 : _tplN > 70 ? 3 : _tplN > 30 ? 2 : 1;
-      state.cols = _tc;
+      state.cols = 0; // auto-columns via _autoTextCols
       document.getElementById('btn-ranked').className = 'toggle-btn active';
       document.getElementById('btn-chrono').className = 'toggle-btn';
       document.getElementById('btn-text').className   = 'toggle-btn active';
       document.getElementById('btn-images').className = 'toggle-btn';
       document.getElementById('count-slider').value        = _tplN;
       document.getElementById('count-display').textContent = _tplN;
-      document.getElementById('cols-slider').value         = _tc;
-      document.getElementById('cols-display').textContent  = String(_tc);
+      document.getElementById('cols-slider').value         = 0;
+      document.getElementById('cols-display').textContent  = 'Auto';
     } else if (_tpl === 'top_posters') {
       state.order = 'ranked'; state.mode = 'images'; state.count = _tplN;
       state.imageCols = 10; state.imageRows = 10;
@@ -1286,6 +1287,7 @@ function setOrder(v) {
 }
 function setMode(v) {
   state.mode = v;
+  if (v === 'text') state.cols = 0; // default to auto-columns in text mode
   document.getElementById('btn-text').className   = 'toggle-btn' + (v === 'text'   ? ' active' : '');
   document.getElementById('btn-images').className = 'toggle-btn' + (v === 'images' ? ' active' : '');
   document.getElementById('btn-grid').className   = 'toggle-btn' + (v === 'grid'   ? ' active' : '');
@@ -1472,15 +1474,17 @@ function setTitleColor(val)    { state.titleColor    = val; render(); }
 function setSubtitleColor(val) { state.subtitleColor = val; render(); }
 
 function setCount(n) {
-  n = Math.max(5, Math.min(TOTAL, n));
+  n = Math.max(20, Math.min(TOTAL, n));
   state.count = n;
   document.getElementById('count-slider').value = n;
   document.getElementById('count-display').textContent = n;
   scheduleRender();
 }
 function onCountSlide(v) {
-  state.count = parseInt(v);
-  document.getElementById('count-display').textContent = v;
+  const n = Math.max(20, Math.min(TOTAL, parseInt(v)));
+  state.count = n;
+  document.getElementById('count-slider').value = n;
+  document.getElementById('count-display').textContent = n;
   scheduleRender();
 }
 function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 120); }
@@ -1945,19 +1949,7 @@ function _autoTextCols(items) {
   }
 
   const maxCols = state.orientation === 'landscape' ? 10 : 7;
-
-  // Search ±3 of target for the column count with the fewest empty trailing slots.
-  // Among equally-gapped options, prefer the count closest to the baseline target.
-  let bestCols = target, bestGap = Infinity, bestDist = Infinity;
-  for (let c = Math.max(1, target - 3); c <= Math.min(maxCols, target + 3); c++) {
-    const rows = Math.ceil(n / c);
-    const gap  = rows * c - n;
-    const dist = Math.abs(c - target);
-    if (gap < bestGap || (gap === bestGap && dist < bestDist)) {
-      bestGap = gap; bestDist = dist; bestCols = c;
-    }
-  }
-  return bestCols;
+  return Math.min(target, maxCols);
 }
 
 function _autoImageLayout(n, availW, availH, gap) {
@@ -2139,12 +2131,17 @@ function _bgStyle() {
     }
 
     case 'sides': {
-      // Single ellipse centred on the poster — narrow horizontally (controls area),
-      // tall vertically (> 100% so it tapers to a point near top/bottom).
-      // Inside = clear; outside = gradient, producing the lens-shaped clear zone.
       const ar  = state.gradientSidesArea;
-      const hR  = Math.max(8, 52 - ar * 0.72).toFixed(1);
-      return `radial-gradient(ellipse ${hR}% 78% at 50% 50%, transparent 0%, ${a(0.35)} 60%, ${a(0.65)} 100%), ${bg}`;
+      const t   = ar / 60;
+      const tc  = Math.pow(t, 0.6);           // non-linear: more sensitive at low end
+      // width: how far the glow reaches from each edge (% of poster width)
+      // at 0: ~4% ≈ 30px at default 15% zoom; at 60: 40% (broad sides)
+      const w   = (4 + tc * 36).toFixed(1);
+      const fac = 0.4 + 0.6 * tc;            // opacity scale: subtle glow at 0 → full at 60
+      const edge = a(0.7 * fac);
+      const mid  = a(0.3 * fac);
+      return `linear-gradient(to right, ${edge} 0%, ${mid} ${(w * 0.5).toFixed(1)}%, transparent ${w}%), ` +
+             `linear-gradient(to left,  ${edge} 0%, ${mid} ${(w * 0.5).toFixed(1)}%, transparent ${w}%), ${bg}`;
     }
     default:
       return bg;
@@ -2297,20 +2294,30 @@ function renderText(films, castData) {
       const label    = filmLabel(f, idx);
       const editKey  = `film:${f.title}`;
       const rawTitle = state.editedTexts[editKey] || f.title;
-      // Strip "The " if the title overflows in single-line mode — only when not edited by user
       let displayTitle = rawTitle;
       let itemTitleFs = fs;
       if (!twoLine) {
         const titleSpanW = colW - numW - 20;
         _mctx.font = `500 ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
         let measured = _mctx.measureText(rawTitle).width;
-        if (measured > titleSpanW && !(editKey in state.editedTexts) && rawTitle.startsWith('The ')) {
-          displayTitle = rawTitle.slice(4);
-          measured = _mctx.measureText(displayTitle).width;
-        }
-        // Near-fit scaling: if a title almost fits, shrink its font just enough to show it whole
-        if (measured > titleSpanW && measured < titleSpanW + fs * 2) {
-          itemTitleFs = Math.max(Math.floor(fs * titleSpanW / measured), Math.round(fs * 0.85));
+        if (measured > titleSpanW && !(editKey in state.editedTexts)) {
+          // Strip leading "The " before truncating
+          if (rawTitle.startsWith('The ')) {
+            displayTitle = rawTitle.slice(4);
+            measured = _mctx.measureText(displayTitle).width;
+          }
+          // Near-fit scaling: shrink font up to 15% if title almost fits
+          if (measured > titleSpanW && measured < titleSpanW + fs * 2) {
+            itemTitleFs = Math.max(Math.floor(fs * titleSpanW / measured), Math.round(fs * 0.85));
+            measured = measured * (itemTitleFs / fs);
+          }
+          // Hard JS truncation so html2canvas renders "…" correctly
+          if (measured > titleSpanW) {
+            let t = displayTitle;
+            _mctx.font = `500 ${itemTitleFs}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;
+            while (t.length > 1 && _mctx.measureText(t + '…').width > titleSpanW) t = t.slice(0, -1).trimEnd();
+            displayTitle = t + '…';
+          }
         }
       }
       const display = _et(displayTitle);

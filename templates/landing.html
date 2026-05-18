@@ -367,6 +367,7 @@
     <div class="modal-card" id="modalCard">
       <button class="modal-close" onclick="closeModal()">&#x2715;</button>
       <div class="modal-title">Load your film library</div>
+      <div id="importError" style="display:none;background:rgba(220,60,60,0.18);border:1px solid rgba(220,60,60,0.5);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#ff9191;line-height:1.4;"></div>
 
       <div class="imp-section">
         <div class="imp-label">Letterboxd <span class="imp-badge">Recommended</span></div>
@@ -462,6 +463,14 @@
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+    /* ── Auto-open modal with error message if redirected back due to min-films ── */
+    {% if error == 'min_films' %}
+    document.addEventListener('DOMContentLoaded', () => {
+      openModal();
+      showImportError('You need at least {{ min_films }} films to use the poster builder. Please import a larger film list.');
+    });
+    {% endif %}
+
     /* ── Import actions ── */
     function disableAll() {
       ['zipLabel','imdbLabel','lbBtn','demoBtn'].forEach(id => {
@@ -476,17 +485,35 @@
       });
     }
 
+    const MIN_FILMS = {{ min_films }};
+
+    function showImportError(msg) {
+      const el = document.getElementById('importError');
+      el.textContent = msg; el.style.display = 'block';
+    }
+    function clearImportError() {
+      const el = document.getElementById('importError');
+      el.style.display = 'none'; el.textContent = '';
+    }
+
     async function doDemo() {
       const btn = document.getElementById('demoBtn');
       btn.textContent = 'Loading…';
-      disableAll();
+      disableAll(); clearImportError();
       try {
         const r = await fetch('/api/load-demo');
         if (r.redirected || r.status === 401 || r.status === 302) {
           window.location.href = '/auth/register'; return;
         }
         const d = await r.json();
-        if (d.loaded) window.location.href = '/welcome';
+        if (d.loaded) {
+          if (d.count < MIN_FILMS) {
+            showImportError(`Only ${d.count} film${d.count === 1 ? '' : 's'} loaded — at least ${MIN_FILMS} are needed to use the poster builder.`);
+            enableAll(); btn.textContent = 'Load demo data';
+          } else {
+            window.location.href = '/welcome';
+          }
+        }
       } catch(e) {
         btn.textContent = 'Error — try again'; enableAll();
       }
@@ -495,14 +522,20 @@
     async function doUploadZip(input) {
       const file = input.files[0]; if (!file) return;
       const label = document.getElementById('zipLabel');
-      label.textContent = 'Uploading…'; disableAll();
+      label.textContent = 'Uploading…'; disableAll(); clearImportError();
       const fd = new FormData(); fd.append('zip', file);
       try {
         const r = await fetch('/api/upload-letterboxd-zip', { method: 'POST', body: fd });
         const d = await r.json();
         if (d.loaded) {
-          label.textContent = `Loaded ${d.count} films!`;
-          setTimeout(() => window.location.href = '/welcome', 600);
+          if (d.count < MIN_FILMS) {
+            label.textContent = 'Upload Letterboxd ZIP';
+            showImportError(`Only ${d.count} film${d.count === 1 ? '' : 's'} found — at least ${MIN_FILMS} are needed to use the poster builder.`);
+            enableAll();
+          } else {
+            label.textContent = `Loaded ${d.count} films!`;
+            setTimeout(() => window.location.href = '/welcome', 600);
+          }
         } else {
           label.textContent = 'Error: ' + (d.error || 'unknown'); enableAll();
         }
@@ -530,8 +563,15 @@
             fill.style.width = Math.round(ev.current / ev.total * 100) + '%';
             msg.textContent = `(${ev.current}/${ev.total}) ${ev.film}`;
           } else if (ev.type === 'done') {
-            es.close(); msg.textContent = `Done — ${ev.count} films!`; fill.style.width = '100%';
-            setTimeout(() => window.location.href = '/welcome', 800);
+            es.close(); fill.style.width = '100%';
+            if (ev.count < MIN_FILMS) {
+              msg.textContent = `Only ${ev.count} film${ev.count === 1 ? '' : 's'} found.`;
+              showImportError(`At least ${MIN_FILMS} films are needed to use the poster builder. Please upload a larger export.`);
+              enableAll();
+            } else {
+              msg.textContent = `Done — ${ev.count} films!`;
+              setTimeout(() => window.location.href = '/welcome', 800);
+            }
           } else if (ev.type === 'error') {
             es.close(); msg.textContent = 'Error: ' + ev.message; enableAll();
           }
@@ -555,8 +595,15 @@
           fill.style.width = Math.round(d.current / d.total * 100) + '%';
           msg.textContent = `(${d.current}/${d.total}) ${d.film}`;
         } else if (d.type === 'done') {
-          es.close(); msg.textContent = `Done — ${d.count} films!`; fill.style.width = '100%';
-          setTimeout(() => window.location.href = '/welcome', 800);
+          es.close(); fill.style.width = '100%';
+          if (d.count < MIN_FILMS) {
+            msg.textContent = `Only ${d.count} film${d.count === 1 ? '' : 's'} found.`;
+            showImportError(`At least ${MIN_FILMS} films are needed to use the poster builder. Try a Letterboxd account with more watched films.`);
+            enableAll(); btn.textContent = 'Load from Letterboxd';
+          } else {
+            msg.textContent = `Done — ${d.count} films!`;
+            setTimeout(() => window.location.href = '/welcome', 800);
+          }
         } else if (d.type === 'error') {
           es.close(); msg.textContent = 'Error: ' + d.message;
           btn.textContent = 'Load from Letterboxd'; enableAll();

@@ -1,12 +1,28 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
       "Bash(pip install *)",
-      "Bash(python -c ' *)",
-      "Bash(python -c \"import sys,io; sys.stdout=io.TextIOWrapper\\(sys.stdout.buffer,encoding='utf-8',errors='replace'\\); [print\\(l,end=''\\) for l in sys.stdin]\")",
-      "Bash(python -m py_compile app.py)",
+      "Bash(start python *)",
+      "Bash(curl * http://127.0.0.1*)",
+      "Bash(curl -s http://127.0.0.1*)",
+      "Bash(curl -s -L http://127.0.0.1*)",
+      "Bash(findstr *)",
+      "Bash(netstat *)",
+      "Bash(taskkill *)",
+      "Bash(python -c *)",
+      "Bash(python -m *)",
+      "Bash(python prefetch_*.py)",
+      "Bash(python add_films*.py)",
+      "Bash(python app.py)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Stop-Process *)",
+      "PowerShell(Start-Process *)",
+      "PowerShell(Get-ChildItem *)",
       "WebSearch",
-      "Bash(python -c \"from app import app; print\\('OK'\\)\")"
+      "Read(//c/Users/rohan/.claude/projects/**)"
     ]
   }
 }
