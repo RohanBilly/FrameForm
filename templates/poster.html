@@ -1759,16 +1759,20 @@ async function _sortFilmsByColour(films, wrap, myGen) {
     if (!ha && !hb) return 0;
     if (!ha) return 1;
     if (!hb) return -1;
-    // flat = very few colourful pixels OR nearly-black mean luminance → goes to end
     const aFlat = !ha.ratio || ha.ratio < 0.12 || ha.l < 0.12;
     const bFlat = !hb.ratio || hb.ratio < 0.12 || hb.l < 0.12;
-    if (aFlat && !bFlat) return 1;
-    if (!aFlat && bFlat) return -1;
-    if (aFlat && bFlat) return ha.l - hb.l;
-    const rotA = (ha.h + 360) % 360;
-    const rotB = (hb.h + 360) % 360;
+    // Dark flat (blacks/dark greys) → very start of grid, darkest first
+    const aDarkFlat = aFlat && ha.l < 0.5;
+    const bDarkFlat = bFlat && hb.l < 0.5;
+    if (aDarkFlat && !bDarkFlat) return -1;
+    if (!aDarkFlat && bDarkFlat) return 1;
+    if (aDarkFlat && bDarkFlat) return ha.l - hb.l;
+    // Light flat (whites/pale greys) → treat as yellow (60°) so they sit with that zone
+    const aHue = aFlat ? 60 : ha.h;
+    const bHue = bFlat ? 60 : hb.h;
+    const rotA = (aHue + 360) % 360;
+    const rotB = (bHue + 360) % 360;
     const hueDiff = rotA - rotB;
-    // Within 30° band sort dark→light so each colour zone blends smoothly
     if (Math.abs(hueDiff) < 30) return ha.l - hb.l;
     return hueDiff;
   });
