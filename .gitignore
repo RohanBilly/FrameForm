@@ -1,5 +1,42 @@
-*.txt
-!requirements.txt
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 .env
+venv/
+.venv/
+
+# Database (runtime, not source)
+instance/
+*.db
+
+# Poster cache (runtime-generated, can be hundreds of MBs)
+static/poster_cache/
+
+# Personal Letterboxd / IMDb data exports
+*.csv
+!requirements.txt
+*.zip
+deleted/
+likes/
+orphaned/
+
+# Text data files
+*.txt
+!requirements.txt
+
+# Dev tools
+ngrok.exe
+*.exe
+
+# Debug / scratch files
+Bad formatting.png
+
+# Old prototype
+film_app.py
+2020\ Vision\ MY\ DATA.txt
+BillyVS_films.txt
+
+# Claude Code local settings
+.claude/
