@@ -60,6 +60,13 @@ from flask_login import user_logged_out
 @user_logged_out.connect_via(app)
 def _on_logout(_sender, user, **_extra):
     _user_state.pop(user.id, None)
+    try:
+        lib = FilmLibrary.query.filter_by(user_id=user.id).first()
+        if lib:
+            db.session.delete(lib)
+            db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 with app.app_context():
     db.create_all()
