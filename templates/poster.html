@@ -1750,37 +1750,26 @@ async function _sortFilmsByColour(films, wrap, myGen) {
   gradeOverlay.remove();
   if (myGen !== _renderGen) return null;
 
-  const globalHist = new Float32Array(_HUE_BINS);
-  for (const { hsl } of entries) {
-    if (!hsl || hsl.ratio < 0.15) continue;
-    for (let i = 0; i < _HUE_BINS; i++) globalHist[i] += hsl.hist[i];
-  }
-  // Wider 5-bin (50°) window finds the true colour gap more reliably with smoothed histograms
-  const GAP_W = 5;
-  let gapBin = 0, minSum = Infinity;
-  for (let i = 0; i < _HUE_BINS; i++) {
-    let ws = 0;
-    for (let j = 0; j < GAP_W; j++) ws += globalHist[(i + j) % _HUE_BINS];
-    if (ws < minSum) { minSum = ws; gapBin = i; }
-  }
-  const startHue = ((gapBin + Math.floor(GAP_W / 2)) % _HUE_BINS) / _HUE_BINS * 360;
+  // Always start at red (0°) for a standard ROYGBIV rainbow — gap detection caused dark
+  // posters to appear at BOTH the start and end of the cycle, creating two black zones.
+  const startHue = 0;
 
   entries.sort((a, b) => {
     const ha = a.hsl, hb = b.hsl;
     if (!ha && !hb) return 0;
     if (!ha) return 1;
     if (!hb) return -1;
-    // ratio < 0.15 = fewer than 15% of pixels were meaningfully colourful → dark/grey poster
-    const aFlat = !ha.ratio || ha.ratio < 0.15 || ha.l < 0.08;
-    const bFlat = !hb.ratio || hb.ratio < 0.15 || hb.l < 0.08;
+    // flat = very few colourful pixels OR nearly-black mean luminance → goes to end
+    const aFlat = !ha.ratio || ha.ratio < 0.12 || ha.l < 0.12;
+    const bFlat = !hb.ratio || hb.ratio < 0.12 || hb.l < 0.12;
     if (aFlat && !bFlat) return 1;
     if (!aFlat && bFlat) return -1;
     if (aFlat && bFlat) return ha.l - hb.l;
-    const rotA = (ha.h - startHue + 360) % 360;
-    const rotB = (hb.h - startHue + 360) % 360;
+    const rotA = (ha.h + 360) % 360;
+    const rotB = (hb.h + 360) % 360;
     const hueDiff = rotA - rotB;
-    // Within the same 20° hue zone sort dark → light, creating a gradient within each colour band
-    if (Math.abs(hueDiff) < 20) return ha.l - hb.l;
+    // Within 30° band sort dark→light so each colour zone blends smoothly
+    if (Math.abs(hueDiff) < 30) return ha.l - hb.l;
     return hueDiff;
   });
   return entries.map(e => e.f);
