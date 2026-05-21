@@ -757,8 +757,27 @@ def api_landing_posters():
                  if f.suffix == ".jpg" and f.stat().st_size > 5000]
     except Exception:
         files = []
-    sample = random.sample(files, min(96, len(files)))
-    return jsonify({"posters": [f"/static/poster_cache/{fn}" for fn in sample]})
+
+    if len(files) >= 8:
+        sample = random.sample(files, min(96, len(files)))
+        return jsonify({"posters": [f"/static/poster_cache/{fn}" for fn in sample]})
+
+    # Cache empty (e.g. fresh deployment) — pull popular posters from TMDb CDN directly
+    try:
+        urls = []
+        for page in (1, 2, 3):
+            r = http_req.get(
+                f"{flm.TMDB_BASE_URL}/movie/popular",
+                params={"api_key": flm.TMDB_API_KEY, "page": page},
+                timeout=5,
+            )
+            urls += [
+                f"https://image.tmdb.org/t/p/w300{m['poster_path']}"
+                for m in r.json().get("results", []) if m.get("poster_path")
+            ]
+        return jsonify({"posters": urls})
+    except Exception:
+        return jsonify({"posters": []})
 
 
 @app.route("/home")
