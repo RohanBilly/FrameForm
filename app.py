@@ -354,66 +354,119 @@ def api_load_demo():
 
 
 def _lb_regex_parse_films(html_text):
-    films = []
-    seen  = set()
+    """Parse films from a Letterboxd /username/films/page/N/ HTML response.
 
-    # Primary: data-film-slug attribute (works on current Letterboxd HTML)
-    for m in re.finditer(r'data-film-slug="([^"]+)"', html_text):
-        slug = m.group(1)
-        if not slug or slug in seen:
-            continue
-        seen.add(slug)
-        start = max(0, m.start() - 50)
-        end   = min(len(html_text), m.end() + 800)
-        chunk = html_text[start:end]
-        name_m = re.search(r'data-film-name="([^"]*)"', chunk)
-        if name_m and name_m.group(1):
-            title = _html_unescape(name_m.group(1))
-        else:
+    Tries three strategies in order and returns whichever yields the most results:
+    1. poster-container <li> elements  (most targeted)
+    2. data-film-slug attributes with a wide search window
+    3. data-target-link="/film/" attributes (original approach)
+    """
+    def _by_poster_container(html):
+        results, seen = [], set()
+        # Split on each <li that has poster-container in its class
+        for m in re.finditer(r'<li\b[^>]*\bposter-container\b', html):
+            start = m.start()
+            # find next <li to bound the chunk; fall back to 3000 chars
+            nxt = html.find('<li', start + 10)
+            chunk = html[start: nxt if nxt > start else start + 3000]
+            slug_m = (re.search(r'data-film-slug="([^"]+)"', chunk) or
+                      re.search(r'data-target-link="/film/([^"/]+)/"', chunk))
+            if not slug_m:
+                continue
+            slug = slug_m.group(1)
+            if not slug or slug in seen:
+                continue
+            seen.add(slug)
+            name_m = re.search(r'data-film-name="([^"]*)"', chunk)
+            if name_m and name_m.group(1):
+                title = _html_unescape(name_m.group(1))
+            else:
+                alt_m = re.search(r'\balt="([^"]*)"', chunk)
+                title = _html_unescape(alt_m.group(1)) if alt_m and alt_m.group(1) else ""
+            if not title:
+                continue
+            rated_m = re.search(r'\brated-(\d+)\b', chunk)
+            rated   = int(rated_m.group(1)) if rated_m else -1
+            year_m  = re.search(r'-(\d{4})$', slug)
+            results.append({
+                "title":  title,
+                "year":   year_m.group(1) if year_m else "",
+                "slug":   slug,
+                "rating": rated / 2.0 if rated > 0 else 0.0,
+            })
+        return results
+
+    def _by_film_slug(html):
+        results, seen = [], set()
+        for m in re.finditer(r'data-film-slug="([^"]+)"', html):
+            slug = m.group(1)
+            if not slug or slug in seen:
+                continue
+            seen.add(slug)
+            # Search a wide window — alt text may precede the slug attribute
+            start = max(0, m.start() - 600)
+            end   = min(len(html), m.end() + 800)
+            chunk = html[start:end]
+            name_m = re.search(r'data-film-name="([^"]*)"', chunk)
+            if name_m and name_m.group(1):
+                title = _html_unescape(name_m.group(1))
+            else:
+                alt_m = re.search(r'\balt="([^"]*)"', chunk)
+                title = _html_unescape(alt_m.group(1)) if alt_m and alt_m.group(1) else ""
+            if not title:
+                continue
+            rated_m = re.search(r'\brated-(\d+)\b', chunk)
+            rated   = int(rated_m.group(1)) if rated_m else -1
+            year_m  = re.search(r'-(\d{4})$', slug)
+            results.append({
+                "title":  title,
+                "year":   year_m.group(1) if year_m else "",
+                "slug":   slug,
+                "rating": rated / 2.0 if rated > 0 else 0.0,
+            })
+        return results
+
+    def _by_target_link(html):
+        results, seen = [], set()
+        parts = re.split(r'(?=data-target-link="/film/)', html)
+        for part in parts[1:]:
+            slug_m = re.match(r'data-target-link="/film/([^"/]+)/"', part)
+            if not slug_m:
+                continue
+            slug = slug_m.group(1)
+            if not slug or slug in seen:
+                continue
+            seen.add(slug)
+            chunk = part[:1500]
             alt_m = re.search(r'\balt="([^"]*)"', chunk)
             title = _html_unescape(alt_m.group(1)) if alt_m and alt_m.group(1) else ""
-        if not title:
-            continue
-        rated_m = re.search(r'\brated-(\d+)\b', chunk)
-        rated   = int(rated_m.group(1)) if rated_m else -1
-        year_m  = re.search(r'-(\d{4})$', slug)
-        year    = year_m.group(1) if year_m else ""
-        films.append({
-            "title":  title,
-            "year":   year,
-            "slug":   slug,
-            "rating": rated / 2.0 if rated > 0 else 0.0,
-        })
+            if not title:
+                continue
+            rated_m = re.search(r'\brated-(\d+)\b', chunk)
+            rated   = int(rated_m.group(1)) if rated_m else -1
+            year_m  = re.search(r'-(\d{4})$', slug)
+            results.append({
+                "title":  title,
+                "year":   year_m.group(1) if year_m else "",
+                "slug":   slug,
+                "rating": rated / 2.0 if rated > 0 else 0.0,
+            })
+        return results
 
-    if films:
-        return films
+    best = []
+    for fn in (_by_poster_container, _by_film_slug, _by_target_link):
+        r = fn(html_text)
+        if len(r) > len(best):
+            best = r
+    return best
 
-    # Fallback: original data-target-link approach
-    parts = re.split(r'(?=data-target-link="/film/)', html_text)
-    for part in parts[1:]:
-        slug_m = re.match(r'data-target-link="/film/([^"/]+)/"', part)
-        if not slug_m:
-            continue
-        slug = slug_m.group(1)
-        if not slug or slug in seen:
-            continue
-        seen.add(slug)
-        chunk = part[:1500]
-        alt_m = re.search(r'\balt="([^"]*)"', chunk)
-        title = _html_unescape(alt_m.group(1)) if alt_m and alt_m.group(1) else ""
-        if not title:
-            continue
-        rated_m = re.search(r'\brated-(\d+)\b', chunk)
-        rated   = int(rated_m.group(1)) if rated_m else -1
-        year_m  = re.search(r'-(\d{4})$', slug)
-        year    = year_m.group(1) if year_m else ""
-        films.append({
-            "title":  title,
-            "year":   year,
-            "slug":   slug,
-            "rating": rated / 2.0 if rated > 0 else 0.0,
-        })
-    return films
+
+def _lb_has_next_page(html_text):
+    return bool(
+        re.search(r'class="[^"]*paginate-next[^"]*"', html_text) or
+        re.search(r'rel=["\']next["\']', html_text) or
+        re.search(r'<a\b[^>]+href="[^"]+/films/page/\d+/', html_text)
+    )
 
 
 @app.route("/api/debug-letterboxd")
@@ -432,17 +485,15 @@ def api_debug_letterboxd():
             continue
         html  = r.text
         films = _lb_regex_parse_films(html)
-        has_next = bool(
-            re.search(r'class="[^"]*paginate-next[^"]*"', html) or
-            re.search(r'rel="next"', html)
-        )
         results[f"page{page}"] = {
             "status_code":            r.status_code,
             "html_length":            len(html),
             "films_parsed":           len(films),
             "first_3_films":          films[:3],
-            "has_next_link":          has_next,
+            "has_next_link":          _lb_has_next_page(html),
             "data_target_link_count": html.count("data-target-link"),
+            "data_film_slug_count":   html.count("data-film-slug"),
+            "poster_container_count": html.count("poster-container"),
         }
     return jsonify(results)
 
@@ -495,15 +546,15 @@ def api_scrape_letterboxd():
                     return
                 break
             page_films = _lb_regex_parse_films(r.text)
-            if not page_films:
-                break
+            has_next   = _lb_has_next_page(r.text)
             for f in page_films:
                 if f["slug"] and f["slug"] not in seen_slugs:
                     seen_slugs.add(f["slug"])
                     all_film_data.append(f)
+            if not has_next:
+                break
             page += 1
-            if page > 1:
-                _time.sleep(0.8)
+            _time.sleep(0.8)
 
         # ── RSS fallback ──────────────────────────────────────────────────────
         if use_rss:
