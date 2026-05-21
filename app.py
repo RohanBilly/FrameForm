@@ -775,9 +775,6 @@ MIN_FILMS = 20
 @app.route("/")
 def index():
     has_data = current_user.is_authenticated and _get_state()["data_loaded"]
-    # In production only: skip landing page for returning users with data
-    if has_data and _raw_db:
-        return redirect(url_for("poster"))
     error = request.args.get("error")
 
     w_total = w_last_year = w_last_year_count = None
