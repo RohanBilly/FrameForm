@@ -331,19 +331,64 @@ def api_reset():
 @login_required
 def api_load_demo():
     uid = current_user.id
-    flm.DATA_FILE = _find_data_file()
-    m = flm.FilmManager()
+    demo_path = Path(__file__).parent / "static" / "demo_data.json"
+    try:
+        with open(demo_path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        films = [_dict_to_film(d) for d in raw]
+    except Exception:
+        flm.DATA_FILE = _find_data_file()
+        m_tmp = flm.FilmManager()
+        films = m_tmp.films
+
+    class _M:
+        pass
+    m = _M()
+    m.films = films
     st = _get_state(uid)
     st["manager"]     = m
     st["data_loaded"] = True
     st["is_preview"]  = False
     _save_library(uid)
-    return jsonify({"loaded": True, "count": len(m.films)})
+    return jsonify({"loaded": True, "count": len(films)})
 
 
 def _lb_regex_parse_films(html_text):
     films = []
     seen  = set()
+
+    # Primary: data-film-slug attribute (works on current Letterboxd HTML)
+    for m in re.finditer(r'data-film-slug="([^"]+)"', html_text):
+        slug = m.group(1)
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+        start = max(0, m.start() - 50)
+        end   = min(len(html_text), m.end() + 800)
+        chunk = html_text[start:end]
+        name_m = re.search(r'data-film-name="([^"]*)"', chunk)
+        if name_m and name_m.group(1):
+            title = _html_unescape(name_m.group(1))
+        else:
+            alt_m = re.search(r'\balt="([^"]*)"', chunk)
+            title = _html_unescape(alt_m.group(1)) if alt_m and alt_m.group(1) else ""
+        if not title:
+            continue
+        rated_m = re.search(r'\brated-(\d+)\b', chunk)
+        rated   = int(rated_m.group(1)) if rated_m else -1
+        year_m  = re.search(r'-(\d{4})$', slug)
+        year    = year_m.group(1) if year_m else ""
+        films.append({
+            "title":  title,
+            "year":   year,
+            "slug":   slug,
+            "rating": rated / 2.0 if rated > 0 else 0.0,
+        })
+
+    if films:
+        return films
+
+    # Fallback: original data-target-link approach
     parts = re.split(r'(?=data-target-link="/film/)', html_text)
     for part in parts[1:]:
         slug_m = re.match(r'data-target-link="/film/([^"/]+)/"', part)
@@ -417,6 +462,7 @@ def api_scrape_letterboxd():
         def ev(msg_type, **kwargs):
             return f"data: {json.dumps({'type': msg_type, **kwargs})}\n\n"
 
+        import time as _time
         s = _get_state(uid)
 
         yield ev("status", message="Connecting to Letterboxd…")
@@ -440,7 +486,7 @@ def api_scrape_letterboxd():
             if r.status_code == 404 and page == 1:
                 yield ev("error", message=f"User '{username}' not found on Letterboxd.")
                 return
-            if r.status_code == 403 and page == 1:
+            if r.status_code in (403, 429):
                 use_rss = True
                 break
             if r.status_code != 200:
@@ -456,6 +502,8 @@ def api_scrape_letterboxd():
                     seen_slugs.add(f["slug"])
                     all_film_data.append(f)
             page += 1
+            if page > 1:
+                _time.sleep(0.8)
 
         # ── RSS fallback ──────────────────────────────────────────────────────
         if use_rss:
