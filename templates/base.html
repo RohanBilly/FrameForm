@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}FrameForm{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Apply saved theme before first paint to prevent flash -->
+  <script>if(localStorage.getItem('ff_theme')==='light')document.documentElement.classList.add('light-mode');</script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -21,6 +23,7 @@
         <input type="text" name="q" placeholder="Search films…" class="search-input" autocomplete="off"
                value="{{ request.args.get('q', '') }}">
       </form>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode" aria-label="Toggle theme"></button>
       <div class="nav-auth">
         {% if current_user.is_authenticated %}
           <span class="nav-user">{{ current_user.name or current_user.email }}</span>
@@ -327,6 +330,21 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => initPosters());
+
+    /* ── Theme toggle ── */
+    function _themeIcon() {
+      return document.documentElement.classList.contains('light-mode') ? '☾' : '☀';
+    }
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.toggle('light-mode');
+      localStorage.setItem('ff_theme', isLight ? 'light' : 'dark');
+      const btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = _themeIcon();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = _themeIcon();
+    });
   </script>
   {% block scripts %}{% endblock %}
 </body>

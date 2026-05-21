@@ -1497,3 +1497,93 @@ body {
 
 /* hide advanced-only controls when in simple mode */
 .simple-mode .adv-only { display: none !important; }
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.theme-toggle:hover { color: var(--text-bright); border-color: var(--text-muted); }
+
+/* ── LIGHT MODE ── */
+html.light-mode {
+  --bg:           #f0f2f5;
+  --bg-alt:       #ffffff;
+  --bg-card:      #e6ebf0;
+  --bg-card-hover:#d8e0e8;
+  --green:        #009e40;
+  --text:         #445566;
+  --text-muted:   #7a8d9c;
+  --text-bright:  #1a2530;
+  --border:       #c5d0da;
+}
+
+/* fix hardcoded dark rgba borders in tables */
+html.light-mode .film-table td   { border-bottom-color: var(--border); }
+html.light-mode .top-list li     { border-bottom-color: var(--border); }
+html.light-mode .stats-table td  { border-bottom-color: var(--border); }
+
+/* poster placeholder text readable on light card */
+html.light-mode .poster-placeholder span { color: rgba(0,0,0,0.35); }
+
+/* complexity toggle */
+html.light-mode .complexity-toggle { background: rgba(0,0,0,0.06); }
+html.light-mode .cpx-btn.active    { background: rgba(0,0,0,0.10); color: var(--text-bright); }
+
+/* template card preview swatches */
+html.light-mode .tmpl-line { background: rgba(0,0,0,0.08); }
+html.light-mode .tmpl-cell { background: rgba(0,0,0,0.07); }
+
+/* landing page overlay — lighten behind text instead of darken */
+html.light-mode .landing-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(240,242,245,0.97) 0%, rgba(240,242,245,0.88) 12%,
+      rgba(240,242,245,0.80) 35%, rgba(240,242,245,0.80) 65%,
+      rgba(240,242,245,0.88) 88%, rgba(240,242,245,0.97) 100%),
+    radial-gradient(ellipse 90% 75% at 50% 50%,
+      rgba(240,242,245,0.88) 0%, rgba(240,242,245,0.50) 60%, rgba(240,242,245,0.22) 100%);
+}
+
+/* landing nav in light mode */
+html.light-mode .landing-nav {
+  background: rgba(240,242,245,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+html.light-mode .landing-nav-link       { color: var(--text); }
+html.light-mode .landing-nav-link:hover { color: var(--text-bright); }
+html.light-mode .landing-nav-link--cta  { background: rgba(0,0,0,0.07); color: var(--text-bright); }
+
+/* landing hero text */
+html.light-mode .landing-logo    { color: var(--text-bright); text-shadow: none; }
+html.light-mode .landing-tagline { color: rgba(26,37,48,0.72); }
+html.light-mode .landing-sub     { color: var(--text); }
+html.light-mode .landing-chip    { color: var(--text-muted); border-color: var(--border); }
+
+/* landing import modal */
+html.light-mode .modal-card     { background: var(--bg-alt); border-color: var(--border); }
+html.light-mode .modal-title    { color: var(--text-bright); }
+html.light-mode .imp-input      { background: var(--bg); border-color: var(--border); color: var(--text-bright); }
+html.light-mode .imp-input::placeholder { color: var(--text-muted); }
+html.light-mode .imp-btn--dim   { background: var(--bg-card); color: var(--text-bright); }
+html.light-mode .imp-btn--dim:hover { background: var(--bg-card-hover); opacity: 1; }
+html.light-mode .imp-hint       { color: var(--text-muted); }
+html.light-mode .imp-label      { color: var(--text-muted); }
+html.light-mode .imp-divider    { color: var(--text-muted); }
+html.light-mode .imp-divider::before,
+html.light-mode .imp-divider::after { background: var(--border); }
+html.light-mode .imp-progress-track { background: var(--bg-card); }
+html.light-mode .imp-progress-msg   { color: var(--text-muted); }

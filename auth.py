@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from authlib.integrations.flask_client import OAuth
 from models import db, User
@@ -22,12 +22,19 @@ def init_auth(app):
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
+        if request.is_json:
+            return jsonify({"ok": True})
         return redirect(url_for("welcome"))
-    error = None
     if request.method == "POST":
-        email    = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        name     = request.form.get("name", "").strip()
+        if request.is_json:
+            data = request.get_json()
+            email    = data.get("email", "").strip().lower()
+            password = data.get("password", "")
+            name     = data.get("name", "").strip()
+        else:
+            email    = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "")
+            name     = request.form.get("name", "").strip()
         if not email or not password:
             error = "Email and password are required."
         elif User.query.filter_by(email=email).first():
@@ -38,26 +45,41 @@ def register():
             db.session.add(user)
             db.session.commit()
             login_user(user)
+            if request.is_json:
+                return jsonify({"ok": True})
             return redirect(url_for("welcome"))
-    return render_template("auth/register.html", error=error)
+        if request.is_json:
+            return jsonify({"error": error})
+        return render_template("auth/register.html", error=error)
+    return render_template("auth/register.html", error=None)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
+        if request.is_json:
+            return jsonify({"ok": True})
         return redirect(url_for("welcome"))
-    error = None
     if request.method == "POST":
-        email    = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        user     = User.query.filter_by(email=email).first()
+        if request.is_json:
+            data = request.get_json()
+            email    = data.get("email", "").strip().lower()
+            password = data.get("password", "")
+        else:
+            email    = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "")
+        user = User.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
             error = "Invalid email or password."
-        else:
-            login_user(user)
-            next_url = request.args.get("next") or url_for("welcome")
-            return redirect(next_url)
-    return render_template("auth/login.html", error=error)
+            if request.is_json:
+                return jsonify({"error": error})
+            return render_template("auth/login.html", error=error)
+        login_user(user)
+        if request.is_json:
+            return jsonify({"ok": True})
+        next_url = request.args.get("next") or url_for("welcome")
+        return redirect(next_url)
+    return render_template("auth/login.html", error=None)
 
 
 @auth_bp.route("/logout")
